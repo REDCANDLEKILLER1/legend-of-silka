@@ -102,6 +102,7 @@
   <textarea id="png-out" spellcheck="false" placeholder="Converted code appears here..." style="height:150px;"></textarea>
   <div class="controls">
     <button class="gold" onclick="copyPngCode()">&#128203; Copy Code</button>
+    <button onclick="downloadPngMd()">&#11015; Download .md file</button>
     <button onclick="sendPngToRenderer()">&#11015; Send to Renderer Below</button>
     <span class="meta" id="png-meta"></span>
   </div>
@@ -116,6 +117,7 @@ const A = ["............KK..........", "...........KLLK.........", "..W.K.E...KL
 const B = ["............KK..........", "...........KLLK.........", "..E.K.W...KLLdLK........", ".VE.B.EV.KLLdddLK.......", "EVWKBKWVEKLdddddLK......", ".EKVVVKE.KLLdddLLK......", "...KBK..KLdKKKKKdLK.....", "...KBK.KLLKKKKKKKLLK....", "...KBK.KLdKKKKKKKdLK....", "...KBK.KLSKRRKKRRKLK....", "...KBK.KLdKKKKKKKdLK....", ".KKKBKKKKLddKVEddLKKKK..", "KLLSSSLLLddSdVEddSLLSLLK", "KLSdKLLddSSEVddddSSLLKdK", "KLd.KdSdSSdddVEddSSdK.dK", "KK..KdSSSSddddVEdSK..K..", "....KdSSSSddEVddddK.....", "...B.KdSSSdEVSddddK.....", "...B.KddddSddVEdddK.....", "...B.KdSddddddVEddK.....", "...B.KddddddEVddddK.....", "...B.KddddSEVdddddK.....", "...B.KddddSSdVEdddK.....", "...B.KdSdddEVdddddK.....", "...B.KdddddddVEdddK.....", "...B.KddddSSddVEddK.....", "...B.KddddSSEVddddK.....", "...B.KdSdddddVEdddK.....", "...B.KdKdddEVdddKdKd....", "...B.Kd.KdKd.VEdKKdK....", "...B.K..KdK...KdK.dK....", "...K....KK.....dK..K...."];</textarea>
     <div class="controls">
       <button class="primary" onclick="renderCode()">&#9654; Render Sprite</button>
+      <button onclick="downloadInputMd()">&#11015; Save code as .md</button>
       <button onclick="document.getElementById('code-input').value=''">Clear</button>
       <select id="sprite-picker" onchange="renderSelected()" style="display:none;"></select>
       <select id="palette-picker" onchange="renderSelected()" style="display:none;"></select>
@@ -474,6 +476,7 @@ function convertPng() {
     URL.revokeObjectURL(img.src);
     const data = cx.getImageData(0, 0, w, h).data;
     const out = pngToCode(data, w, h, maxColors, name);
+    lastPng = { name, w, h, colorCount: out.colorCount, code: out.code };
     document.getElementById('png-out').value = out.code;
     meta.textContent = w + ' × ' + h + ' px → ' + out.colorCount + ' colors, ' + out.code.length + ' characters of code';
   };
@@ -493,6 +496,47 @@ function sendPngToRenderer() {
   if (!code) return;
   document.getElementById('code-input').value = code;
   renderCode();
+}
+
+// ==== FILE HAND-OFF ====
+// No more giant copy-pastes: the app saves a small .md file holding the code,
+// Michael hands the file to Muse, and Muse reads it straight into the game.
+let lastPng = null; // {name, w, h, colorCount, code} from the latest conversion
+
+function saveTextFile(filename, text) {
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const link = document.createElement('a');
+  link.download = filename;
+  link.href = URL.createObjectURL(blob);
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(link.href), 4000);
+}
+
+function mdWrap(name, metaLine, code) {
+  return '# ' + name + ' — pixel code file\n\n' + (metaLine ? metaLine + '\n\n' : '') +
+    'Hand this file to Muse — it reads the code block below and translates it into the game.\n\n' +
+    '```js\n' + code.replace(/\s+$/, '') + '\n```\n';
+}
+
+function downloadPngMd() {
+  const code = document.getElementById('png-out').value;
+  const meta = document.getElementById('png-meta');
+  if (!code) { meta.textContent = 'Convert a PNG first, then download the file.'; return; }
+  const name = (lastPng && lastPng.name) || 'PNG_SPRITE';
+  const metaLine = lastPng ? ('Size: ' + lastPng.w + ' × ' + lastPng.h + ' px · Colors: ' + lastPng.colorCount) : '';
+  saveTextFile(name.toLowerCase().replace(/_/g, '-') + '.md', mdWrap(name, metaLine, code));
+  meta.textContent = 'Saved the .md file — give that file to Muse.';
+}
+
+function downloadInputMd() {
+  const code = document.getElementById('code-input').value;
+  const errBox = document.getElementById('err-box');
+  if (!code.trim()) { errBox.textContent = 'Nothing to save yet — paste code first.'; return; }
+  const picker = document.getElementById('sprite-picker');
+  const name = (picker && picker.value) || 'SPRITE';
+  const n = Object.keys(parsedSprites).length;
+  saveTextFile(name.toLowerCase().replace(/_/g, '-') + '.md', mdWrap(name, 'Sprites in this file: ' + (n || 1), code));
+  document.getElementById('ok-box').textContent = 'Saved the .md file — give that file to Muse.';
 }
 
   renderCode();
