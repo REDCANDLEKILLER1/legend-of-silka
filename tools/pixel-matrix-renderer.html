@@ -505,26 +505,60 @@ function pngToCode(data, w, h, maxColors, name) {
   }
   let colors = [...counts.values()].sort((a, b) => b.n - a.n);
   if (colors.length > maxColors) {
-    const buckets = new Map();
+    // Median-cut: keep splitting the colour cloud at its widest channel so
+    // EVERY colour family keeps a voice in the palette. (The old count-
+    // ranked bucket pick starved smaller families — a gold corn head came
+    // out red because the big blue suit and red cape ate every slot.)
+    const totalPx = colors.reduce((s, c) => s + c.n, 0);
+    const samples = [];
     for (const c of colors) {
-      const bk = ((c.r >> 4) << 8) | ((c.g >> 4) << 4) | (c.b >> 4);
-      const b = buckets.get(bk);
-      if (b) { b.n += c.n; b.r += c.r * c.n; b.g += c.g * c.n; b.b += c.b * c.n; }
-      else buckets.set(bk, { n: c.n, r: c.r * c.n, g: c.g * c.n, b: c.b * c.n });
+      const k = Math.max(1, Math.round(c.n / totalPx * 200000));
+      for (let i = 0; i < k; i++) samples.push([c.r, c.g, c.b]);
     }
-    colors = [...buckets.values()].sort((a, b) => b.n - a.n).slice(0, maxColors)
-      .map(b => ({ n: b.n, r: Math.round(b.r / b.n), g: Math.round(b.g / b.n), b: Math.round(b.b / b.n) }));
+    let boxes = [samples];
+    while (boxes.length < maxColors) {
+      let bi = -1, bch = 0, brange = -1;
+      for (let i = 0; i < boxes.length; i++) {
+        const box = boxes[i];
+        if (box.length < 2) continue;
+        const mn = [255, 255, 255], mx = [0, 0, 0];
+        for (const p of box) for (let ch = 0; ch < 3; ch++) {
+          if (p[ch] < mn[ch]) mn[ch] = p[ch];
+          if (p[ch] > mx[ch]) mx[ch] = p[ch];
+        }
+        for (let ch = 0; ch < 3; ch++) {
+          const rg = mx[ch] - mn[ch];
+          if (rg > brange) { brange = rg; bi = i; bch = ch; }
+        }
+      }
+      if (bi < 0) break;
+      const box = boxes.splice(bi, 1)[0];
+      box.sort((a, b) => a[bch] - b[bch]);
+      const mid = box.length >> 1;
+      boxes.push(box.slice(0, mid), box.slice(mid));
+    }
+    colors = boxes.filter(b => b.length).map(box => {
+      let r = 0, g = 0, b = 0;
+      for (const p of box) { r += p[0]; g += p[1]; b += p[2]; }
+      return { n: box.length, r: Math.round(r / box.length), g: Math.round(g / box.length), b: Math.round(b / box.length) };
+    });
   }
   const CH = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const palette = {};
   colors.forEach((c, i) => { palette[CH[i]] = '#' + [c.r, c.g, c.b].map(v => v.toString(16).padStart(2, '0')).join(''); });
+  const ncache = new Map();
   const nearest = (r, g, b) => {
+    const key = (r << 16) | (g << 8) | b;
+    let hit = ncache.get(key);
+    if (hit !== undefined) return hit;
     let best = 0, bd = Infinity;
     for (let i = 0; i < colors.length; i++) {
       const d = (colors[i].r - r) ** 2 + (colors[i].g - g) ** 2 + (colors[i].b - b) ** 2;
       if (d < bd) { bd = d; best = i; }
     }
-    return CH[best];
+    hit = CH[best];
+    ncache.set(key, hit);
+    return hit;
   };
   const rows = [];
   for (let y = 0; y < h; y++) {
