@@ -36,21 +36,28 @@ Engine pieces shipped with this block:
   torches, armchairs, animated hearths, work tables, barrels/sacks, stairs,
   grand doors. Floor uses the hall stone + its texture variants.
 
+## The dungeon — BUILT 2026-11-20 (scene 'dungeon', preview #dungeon)
+
+Authored 32×24. Entry chamber with the stairs, the jailer's post (he holds
+keys for three cells and none for the vault), stores, a torch-lit corridor
+the WARDEN patrols on a four-point loop, three LOCKED cells — empty for
+years, scenery behind bars by design — a service crawlway behind the cells
+to a forgotten broken cell (slip through its bent gate), and the vault
+antechamber. At its south wall: THE VAULT DOOR — iron over oak, gold-banded,
+examinable ("No keyhole on this side"). Sealed. Walk-tested cold: 266 of
+266 open tiles reachable, zero dead; cell interiors sealed as designed.
+
 ## Next blocks (in order)
 
 1. DOOR SYSTEM — generic scene doors (step on a door tile → fade → arrive),
    so the castle connects: feast hall ↔ castle wings, castle → dungeon,
-   castle → 2F. Until then the castle is entered by the #castle preview.
-2. THE DUNGEON (below) — new authored map: cells, chains, one torch
-   corridor, a guard patrol routine, and at its heart the TREASURE VAULT
-   door: visible, examinable, and SEALED. It does not open in this game
-   until the late-game beat Michael holds. (Late secret — ruled.)
-3. UPPER FLOORS — the fitted 2F/3F pack: royal chambers, archives; stairs S
+   castle → 2F. Until then the scenes are entered by their # previews.
+2. UPPER FLOORS — the fitted 2F/3F pack: royal chambers, archives; stairs S
    in the throne room and the east wing become real.
-4. STORY HOOKUP — which act opens the castle doors to the player is a Part
+3. STORY HOOKUP — which act opens the castle doors to the player is a Part
    Two wiring decision; the rooms are built set-first so the story walks
    into a finished place.
-5. Dedicated COOK sprite (she currently wears the orchard wife's proven
+4. Dedicated COOK sprite (she currently wears the orchard wife's proven
    sprite — same apron class; her own face is an art-pass item).
 
 ## Rules carried in

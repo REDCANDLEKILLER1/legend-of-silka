@@ -250,6 +250,19 @@ TILES.castle = {
   'S': tile(g => { R(g,0,0,16,16,'#847a66'); R(g,0,0,16,3,'#a39a89'); R(g,0,5,16,3,'#948b7f'); R(g,0,10,16,3,'#7d7462'); R(g,0,15,16,1,'#655b6e'); }),
   'D': tile(g => { R(g,0,0,16,16,'#5d3a1e'); R(g,1,1,6,14,'#6b4423'); R(g,9,1,6,14,'#6b4423'); R(g,7,0,2,16,'#3a2412'); R(g,0,4,16,2,'#c9973f'); R(g,0,11,16,2,'#c9973f'); R(g,5,8,2,2,'#f5bd1f'); R(g,9,8,2,2,'#f5bd1f'); })
 };
+// Below the castle: the dungeon. Darker stone, iron, and one great door.
+TILES.dungeon = {
+  '#': tile(g => { R(g,0,0,16,16,'#35313b'); R(g,0,0,16,3,'#453f4d'); R(g,0,13,16,3,'#262330'); R(g,7,0,2,16,'#2c2833'); R(g,0,7,16,1,'#2c2833'); R(g,3,10,2,1,'#57505f'); }),
+  '.': tile(g => { R(g,0,0,16,16,'#5d554c'); R(g,0,0,16,3,'#6b6257'); R(g,0,13,16,3,'#4e483f'); R(g,4,6,3,1,'#4e483f'); R(g,10,11,3,1,'#776c5f'); }),
+  '*': TILES.castle['*'], 'S': TILES.castle['S'], 'K': TILES.castle['K'], 'T': TILES.castle['T'],
+  'b': tile(g => { R(g,0,0,16,16,'#1c1a20'); R(g,0,0,16,2,'#3a3f47'); R(g,0,14,16,2,'#3a3f47'); for (const x of [2, 6, 10, 14]){ R(g,x,0,2,16,'#8f97a3'); R(g,x,0,1,16,'#cfd6de'); } }),
+  'G': tile(g => { R(g,0,0,16,16,'#1c1a20'); R(g,0,0,16,2,'#3a3f47'); R(g,0,14,16,2,'#3a3f47'); for (const x of [1, 5, 11, 14]){ R(g,x,0,2,16,'#8f97a3'); R(g,x,0,1,16,'#cfd6de'); } R(g,7,6,3,5,'#c9973f'); R(g,8,8,1,2,'#f5bd1f'); }),
+  'g': tile(g => { R(g,0,0,16,16,'#5d554c'); R(g,0,0,16,3,'#6b6257'); R(g,2,0,2,10,'#8f97a3'); R(g,6,0,2,7,'#8f97a3'); R(g,11,0,2,16,'#6e7683'); R(g,6,7,3,2,'#8f97a3'); R(g,0,14,16,2,'#4e483f'); }),
+  'V': tile(g => { R(g,0,0,16,16,'#3a3f47'); R(g,1,1,14,14,'#454b54'); R(g,0,3,16,2,'#c9973f'); R(g,0,11,16,2,'#c9973f'); R(g,7,0,2,16,'#2c3038'); R(g,6,6,4,4,'#c9973f'); R(g,7,7,2,2,'#f5bd1f'); for (const [x, y] of [[2,1],[13,1],[2,14],[13,14],[2,7],[13,7]]) R(g,x,y,1,1,'#cfd6de'); }),
+  'h': tile(g => { R(g,0,0,16,16,'#5d554c'); R(g,2,10,12,4,'#c9a86a'); R(g,3,8,3,2,'#e0c07f'); R(g,9,9,4,2,'#b3924e'); R(g,5,12,6,1,'#e0c07f'); }),
+  'r': tile(g => { R(g,0,0,16,16,'#5d554c'); R(g,2,9,5,5,'#847a66'); R(g,8,11,6,4,'#776c5f'); R(g,5,6,4,3,'#948b7f'); R(g,11,7,3,3,'#847a66'); }),
+  'p': tile(g => { R(g,0,0,16,16,'#5d554c'); R(g,0,0,16,3,'#6b6257'); R(g,3,6,10,5,'#4a5a68'); R(g,4,7,6,2,'#7fb2d9'); R(g,9,9,3,1,'#aee4fb'); })
+};
 // ============ tile variants ============
 // The same material, textured differently from tile to tile (the Minecraft
 // lesson: texture everywhere, and no two tiles stamped identical). Chosen by
@@ -293,6 +306,10 @@ const TILEVAR = {
     [[6,9,'#7d7462'],[11,13,'#847a66'],[2,4,'#847a66']]])
 };
 TILEVAR['castle.'] = TILEVAR['hall+'];
+TILEVAR['dungeon.'] = variantTiles(TILES.dungeon['.'], [
+  [[4,5,'#776c5f'],[11,10,'#4e483f']],
+  [[7,12,'#776c5f'],[2,8,'#4e483f'],[13,4,'#776c5f']],
+  [[9,3,'#4e483f'],[5,13,'#776c5f']]]);
 // ============ maps ============
 const VILLAGE = [
 "####^^######^^^^^^^^######^^####",
@@ -361,7 +378,8 @@ const SOLID = {
   village: new Set(['#','^','R','H','W','T','F','S','c']),
   hall: new Set(['#','B','W','T','C','H']),
   cottage: new Set(['#','F','G','J','T','b','L','s','o']),
-  castle: new Set(['#','B','N','*','A','U','T','K','S','D','='])
+  castle: new Set(['#','B','N','*','A','U','T','K','S','D','=']),
+  dungeon: new Set(['#','b','G','V','h','r','K','T','S','*'])
 };
 
 // ============ engine ============
@@ -669,6 +687,32 @@ setInterval(() => { if (mode === 'play' && aPressed){ takeA(); interact(); } }, 
 const G = { stage: 0, cup: false, told: false };
 const wizSpr = t => (Math.floor(t / 8) % 2 ? SPR.wizardB : SPR.wizardA);
 
+const DUNGEON_ROWS = [
+"################################",
+"#SS.....##.......##.K..K.......#",
+"#.......##.......##............#",
+"#.......##...T...##.....K......#",
+"#.......##.......##............#",
+"####.###*####.####*######.##*###",
+"#..............................#",
+"#..............................#",
+"############################..##",
+"##bbGbbb##bbGbbb##bbGbbb####..##",
+"##......##......##......####..##",
+"##.....h##......##......####..##",
+"##......##......##......####..##",
+"##......##h.....##......####..##",
+"##......##......##.....h####..##",
+"############################..##",
+"#####.........................##",
+"#####g##############*#######..##",
+"#.......#############.........##",
+"#.r.....############*.........*#",
+"#..r....#############.p.......##",
+"#......h#############.........##",
+"#########################V######",
+"################################"
+];
 const CASTLE_ROWS = [
 "########################SS########################",
 "#BB..BB..BB..BB###*....HHHH....*###BB..BB..BB..BB#",
@@ -818,6 +862,29 @@ function buildVillage(){
     refs: {} };
 }
 
+// Below the castle: entry chamber, the jailer's post, stores, a torch-lit
+// corridor, three locked cells (empty for years — scenery behind bars), a
+// service crawlway to a forgotten broken cell, and the vault antechamber.
+// The vault door is examinable and sealed. It stays sealed.
+function buildDungeon(){
+  const warden = makeEnt(SPR.guard, 3, 6, { name: 'WARDEN',
+    routine: [[3, 6, 'right', 1200], [28, 6, 'down', 800], [28, 7, 'left', 1200], [3, 7, 'up', 800]],
+    talk: async () => say(cyc(warden, [
+      ['WARDEN', 'Dungeon watch, hero. Cells are empty \u2014 have been for years.'],
+      ['WARDEN', 'The vault door is south-east, down the passage and through the crawlway. It has not opened in my lifetime, nor my father\u2019s. King\u2019s business.'],
+      ['WARDEN', 'Mind the torches, and mind your step. The stones sweat down here.']])) });
+  const jailer = makeEnt(SPR.folkB, 13, 2, { name: 'JAILER', ambient: { pause: [2600, 5200] },
+    talk: async () => say(cyc(jailer, [
+      ['JAILER', 'Keys for three cells, and one door I\u2019ve no key for. That\u2019s the whole of my office.'],
+      ['JAILER', 'The King keeps a dungeon the way a man keeps a sword \u2014 clean, oiled, and prayed over never to use.']])) });
+  const vaultDoor = makeEnt(tile(g => {}), 25, 21, { name: '', noShadow: true,
+    talk: async () => say([['', 'The vault door. Iron over oak, gold-banded, with a lock the size of a shield.'],
+      ['', 'No keyhole on this side. Whatever opens it opens from somewhere else \u2014 or somewhen else.']]) });
+  const hero = makeEnt(SPR.cornman, 2, 2, {});
+  hero.dir = 'down';
+  return { set: 'dungeon', rows: DUNGEON_ROWS, player: hero,
+    entities: [warden, jailer, vaultDoor], triggers: {}, refs: {} };
+}
 // The King's castle at rest: throne room north-center (red carpet to the
 // dais), banquet hall center, library west, kitchen + parlor east, great
 // hall south. Fitted footprint from the castle-grounds pack; dressed here.
@@ -957,9 +1024,9 @@ async function act3(){
 }
 (async function boot(){
   const H = location.hash; // scene-preview hooks (used for screenshot checks)
-  if (H === '#hall' || H === '#village' || H === '#cottage' || H === '#castle'){
+  if (H === '#hall' || H === '#village' || H === '#cottage' || H === '#castle' || H === '#dungeon'){
     $('card').style.display = 'none';
-    loadScene(H === '#hall' ? buildHall() : H === '#village' ? buildVillage() : H === '#castle' ? buildCastle() : buildCottage());
+    loadScene(H === '#hall' ? buildHall() : H === '#village' ? buildVillage() : H === '#castle' ? buildCastle() : H === '#dungeon' ? buildDungeon() : buildCottage());
     if (H === '#village') scene.entities.push(makeEnt(wizSpr, 24, 16, { aura: true }));
     $('fade').style.opacity = 0; mode = 'play'; return;
   }
