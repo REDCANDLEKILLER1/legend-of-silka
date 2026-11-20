@@ -49,6 +49,12 @@ flow; its hall set and beats remain in the code as a previewable feast
 (#hall). The present-day King is the old King's great-grandson — the
 castle is a living court, which is why it is furnished and staffed.
 
+**THE QUEEN (Michael's tap, 2026-11-20):** gone. Her chamber on 2F is
+kept as she left it — bed made daily, mirror polished, vanity in her
+order — and it weighs on the King. Also ruled the same hour: village
+houses are TWO STORY — every door stands two tiles tall (upper half in
+the wall above), so no character reads as a giant against a house.
+
 ## The shape (superseded by the revision above)
 1. TITLE — new key art, NO characters (Michael: the old cover made the
    hero look like "a version of Zelda with a corn hat"). Working title
