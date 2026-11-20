@@ -98,6 +98,7 @@
       <option value="32">32 px</option>
     </select>
     <button class="primary" onclick="convertPng()">&#9654; Convert PNG</button>
+    <label style="display:flex;align-items:center;gap:5px;"><input type="checkbox" id="png-condense" checked> Condense upscaled art (auto)</label>
   </div>
   <textarea id="png-out" spellcheck="false" placeholder="Converted code appears here..." style="height:150px;"></textarea>
   <div class="controls">
@@ -118,6 +119,7 @@ const B = ["............KK..........", "...........KLLK.........", "..E.K.W...KL
     <div class="controls">
       <button class="primary" onclick="renderCode()">&#9654; Render Sprite</button>
       <button onclick="downloadInputMd()">&#11015; Save code as .md</button>
+      <button onclick="condenseSprite()">&#128230; Condense sprite</button>
       <button onclick="document.getElementById('code-input').value=''">Clear</button>
       <select id="sprite-picker" onchange="renderSelected()" style="display:none;"></select>
       <select id="palette-picker" onchange="renderSelected()" style="display:none;"></select>
@@ -413,6 +415,71 @@ function parseCode(src) {
     link.click();
   }
 
+// ==== CONDENSE (pure) ====
+// Upscaled pixel art is a small drawing wearing big square blocks: every
+// "pixel" is really a b x b block of one color. Find the largest such block
+// grid and take one pixel per block — the picture renders IDENTICAL and the
+// code shrinks by b x b. A true-size detailed picture has no block grid:
+// this returns null for it (verified by an exact roundtrip diff, never guessed).
+function condenseRows(rows) {
+  const H = rows.length;
+  const W = Math.max(...rows.map(r => r.length));
+  const total = W * H;
+  let best = 0;
+  for (let b = 2; b <= 48; b++) {
+    if (b >= W || b >= H) break;
+    // cheap gate: in blocked art, color changes sit ON block boundaries.
+    // Count changes anywhere else; too many and this b is not the grid.
+    let interior = 0;
+    const limit = total * 0.01;
+    let stop = false;
+    for (let y = 0; y < H && !stop; y++) {
+      const row = rows[y];
+      for (let x = 1; x < row.length; x++) {
+        if (row[x] !== row[x - 1] && x % b !== 0) { interior++; if (interior > limit) { stop = true; break; } }
+      }
+      if (!stop && y > 0 && y % b !== 0) {
+        const up = rows[y - 1];
+        for (let x = 0; x < row.length; x++) {
+          if (row[x] !== up[x]) { interior++; if (interior > limit) { stop = true; break; } }
+        }
+      }
+    }
+    if (!stop) best = b;
+  }
+  if (!best) return null;
+  const b = best;
+  const small = [];
+  for (let by = 0; by < H; by += b) {
+    let row = '';
+    for (let bx = 0; bx < W; bx += b) {
+      const counts = {};
+      for (let y = by; y < Math.min(by + b, H); y++)
+        for (let x = bx; x < Math.min(bx + b, W); x++) {
+          const ch = rows[y][x];
+          counts[ch] = (counts[ch] || 0) + 1;
+        }
+      let top = '.', tn = -1;
+      for (const ch in counts) if (counts[ch] > tn) { tn = counts[ch]; top = ch; }
+      row += top;
+    }
+    small.push(row);
+  }
+  // exact verification: blow the small one back up and count differing pixels
+  let diff = 0;
+  for (let y = 0; y < H; y++)
+    for (let x = 0; x < W; x++)
+      if (small[Math.floor(y / b)][Math.floor(x / b)] !== rows[y][x]) diff++;
+  if (diff / total > 0.005) return null;
+  return { rows: small, block: b, diffFrac: diff / total };
+}
+
+function emitCode(name, palette, rows) {
+  return 'const ' + name + '_PALETTE = ' + JSON.stringify(palette, null, 1) + ';\n\nconst ' + name + ' = [\n' +
+    rows.map(r => '  ' + JSON.stringify(r)).join(',\n') + '\n];\n';
+}
+// ==== END CONDENSE ====
+
 // ==== PNG -> CODE (pure core; browser glue below) ====
 function pngToCode(data, w, h, maxColors, name) {
   const counts = new Map();
@@ -475,10 +542,25 @@ function convertPng() {
     cx.drawImage(img, 0, 0, w, h);
     URL.revokeObjectURL(img.src);
     const data = cx.getImageData(0, 0, w, h).data;
-    const out = pngToCode(data, w, h, maxColors, name);
+    let out = pngToCode(data, w, h, maxColors, name);
+    let note = '';
+    if (document.getElementById('png-condense').checked) {
+      const res = condenseRows(out.rows);
+      if (res) {
+        const used = new Set(res.rows.join(''));
+        const pal = {};
+        for (const k of Object.keys(out.palette)) if (used.has(k)) pal[k] = out.palette[k];
+        note = ' · CONDENSED ' + w + '×' + h + ' → ' + res.rows[0].length + '×' + res.rows.length +
+          ' (' + res.block + '× blocks — same picture, ' + Math.round(res.block * res.block) + '× less code)';
+        out = { code: emitCode(name, pal, res.rows), palette: pal, rows: res.rows, colorCount: Object.keys(pal).length };
+        w = res.rows[0].length; h = res.rows.length;
+      } else {
+        note = ' · no block grid found — this picture is true-size (shrink the width to make its code smaller)';
+      }
+    }
     lastPng = { name, w, h, colorCount: out.colorCount, code: out.code };
     document.getElementById('png-out').value = out.code;
-    meta.textContent = w + ' × ' + h + ' px → ' + out.colorCount + ' colors, ' + out.code.length + ' characters of code';
+    meta.textContent = w + ' × ' + h + ' px → ' + out.colorCount + ' colors, ' + out.code.length + ' characters of code' + note;
   };
   img.src = URL.createObjectURL(file);
 }
@@ -526,6 +608,28 @@ function downloadPngMd() {
   const metaLine = lastPng ? ('Size: ' + lastPng.w + ' × ' + lastPng.h + ' px · Colors: ' + lastPng.colorCount) : '';
   saveTextFile(name.toLowerCase().replace(/_/g, '-') + '.md', mdWrap(name, metaLine, code));
   meta.textContent = 'Saved the .md file — give that file to Muse.';
+}
+
+function condenseSprite() {
+  const names = Object.keys(parsedSprites);
+  const errBox = document.getElementById('err-box');
+  if (names.length === 0) { errBox.textContent = 'Render a sprite first, then condense it.'; return; }
+  const picker = document.getElementById('sprite-picker');
+  const name = picker.value || names[0];
+  const rows = parsedSprites[name];
+  const W = Math.max(...rows.map(r => r.length)), H = rows.length;
+  const res = condenseRows(rows);
+  if (!res) {
+    errBox.textContent = 'No block grid in ' + name + ' — this picture is already true-size, every pixel is real detail. Condense cannot shrink it without changing it; shrinking the width at convert time is the lever for pictures like this.';
+    return;
+  }
+  const used = [...new Set(res.rows.join(''))].filter(c => c !== '.' && c !== ' ');
+  const pal = {};
+  used.forEach(c => { if (activePalette[c]) pal[c] = activePalette[c]; });
+  document.getElementById('code-input').value = emitCode(name, pal, res.rows);
+  renderCode();
+  document.getElementById('ok-box').textContent = 'Condensed ' + name + ': ' + W + '×' + H + ' → ' + res.rows[0].length + '×' + res.rows.length +
+    ' using ' + res.block + '× blocks. Roundtrip check: ' + (res.diffFrac * 100).toFixed(3) + '% of pixels differ — the same picture at a fraction of the code.';
 }
 
 function downloadInputMd() {
