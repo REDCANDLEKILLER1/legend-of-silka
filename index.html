@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>The Legend of Silka — Adventure of CornMan — Part One</title>
+<style>
+  html, body { margin:0; padding:0; background:#0b0910; height:100%; overflow:hidden;
+    font-family:'Courier New', monospace; -webkit-user-select:none; user-select:none; }
+  #wrap { position:relative; width:100vw; height:100vh; display:flex; align-items:center; justify-content:center; }
+  #stage { position:relative; }
+  canvas { image-rendering:pixelated; image-rendering:crisp-edges; background:#16210f; display:block;
+    width:min(100vw, 133.33vh); height:auto; aspect-ratio:4/3; }
+  .layer { position:absolute; inset:0; }
+  #card { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+    background:#000; color:#e8dfc8; z-index:30; padding:4%; box-sizing:border-box; }
+  #card.art { background-size:cover; background-position:center; }
+  #card h1 { font-size:clamp(22px, 6vw, 54px); letter-spacing:.35em; margin:.2em 0; color:#f3e9c9;
+    text-shadow:0 0 18px rgba(147,51,234,.75), 0 2px 0 #000; }
+  #card h2 { font-size:clamp(12px, 2.6vw, 20px); letter-spacing:.25em; color:#cdbf9d; font-weight:normal; margin:.2em 0 1em; }
+  #card p { font-size:clamp(13px, 2.8vw, 19px); line-height:1.7; max-width:34em; color:#e8dfc8; text-shadow:0 1px 2px #000; }
+  #card .go { margin-top:1.4em; font-size:clamp(13px, 3vw, 18px); color:#ffd91a; animation:blink 1.2s steps(2) infinite; }
+  #card .bgimg { position:absolute; inset:0; background-size:cover; background-position:center;
+    animation:kenburns 26s ease-in-out infinite alternate; }
+  @keyframes kenburns { from { transform:scale(1); } to { transform:scale(1.07); } }
+  #card .pushstart { position:absolute; left:0; right:0; bottom:7.5%; z-index:2; text-align:center;
+    font-family:Georgia, 'Times New Roman', serif; font-weight:bold; letter-spacing:.4em; text-indent:.4em;
+    font-size:clamp(15px, 3.4vw, 24px); color:#fff8e8; text-shadow:0 2px 0 #000, 0 0 14px rgba(0,0,0,.85);
+    animation:blink 1.3s steps(2) infinite; }
+  #card .gem { position:absolute; border-radius:50%; pointer-events:none; z-index:2;
+    background:radial-gradient(circle, rgba(130,255,180,.9) 0%, rgba(30,230,120,.35) 42%, rgba(0,255,120,0) 70%);
+    mix-blend-mode:screen; transform:translate(-50%,-50%); animation:gemPulse 2.8s ease-in-out infinite; }
+  @keyframes gemPulse { 0%,100% { opacity:.45; transform:translate(-50%,-50%) scale(1); }
+    50% { opacity:1; transform:translate(-50%,-50%) scale(1.3); } }
+  #card .pushglow { position:absolute; left:50%; top:89.5%; width:47%; height:10.5%; z-index:2; pointer-events:none;
+    transform:translate(-50%,-50%); border-radius:12px;
+    background:radial-gradient(ellipse, rgba(255,240,190,.55), rgba(255,240,190,0) 70%);
+    mix-blend-mode:screen; animation:pushPulse 1.5s ease-in-out infinite; }
+  @keyframes pushPulse { 0%,100% { opacity:.25; } 50% { opacity:.8; } }
+  #card .star { position:absolute; width:4px; height:4px; border-radius:50%; background:#fff; z-index:2;
+    pointer-events:none; box-shadow:0 0 6px 2px rgba(255,255,255,.75); animation:starTw 2.4s ease-in-out infinite; }
+  @keyframes starTw { 0%,100% { opacity:.15; } 50% { opacity:1; } }
+  @keyframes blink { 50% { opacity:0; } }
+  #objective { position:absolute; top:0; left:0; z-index:20; color:#ffe9a8; background:rgba(10,8,4,.72);
+    padding:.45em .8em; font-size:clamp(11px, 2.4vw, 15px); letter-spacing:.06em; border-bottom:2px solid #8c6214; display:none; }
+  #objective b { color:#fff; }
+  #dlg { position:absolute; left:3%; right:3%; bottom:3%; z-index:25; background:rgba(12,10,18,.94);
+    border:3px solid #c9b98a; outline:2px solid #181010; color:#f3ecd9; padding:.7em .9em .9em; display:none;
+    min-height:4.6em; box-sizing:border-box; cursor:pointer; }
+  #dlg .who { color:#ffd91a; font-size:clamp(11px, 2.4vw, 14px); letter-spacing:.15em; margin-bottom:.35em; }
+  #dlg .txt { font-size:clamp(13px, 3vw, 18px); line-height:1.55; white-space:pre-wrap; }
+  #dlg .next { position:absolute; right:.7em; bottom:.4em; color:#ffd91a; animation:blink 1s steps(2) infinite; font-size:14px; }
+  #fade { background:#000; opacity:0; pointer-events:none; transition:opacity .6s linear; z-index:28; }
+  #flash { background:#e9d5ff; opacity:0; pointer-events:none; z-index:27; }
+  #touch { position:absolute; inset:auto 0 0 0; z-index:26; display:none; justify-content:space-between; padding:0 3% 2.5%; pointer-events:none; }
+  #touch .pad { display:grid; grid-template-columns:repeat(3, 52px); grid-template-rows:repeat(3, 52px); pointer-events:auto; }
+  #touch button { background:rgba(20,16,28,.55); border:2px solid rgba(201,185,138,.7); color:#f3e9c9;
+    font-size:20px; border-radius:10px; touch-action:none; }
+  #touch .abtn { width:64px; height:64px; border-radius:50%; align-self:end; pointer-events:auto; font-size:22px; }
+  @media (pointer:coarse) { #touch { display:flex; } #dlg { bottom:19%; } }
+</style>
+</head>
+<body>
+<div id="wrap"><div id="stage">
+  <canvas id="cv" width="512" height="384"></canvas>
+  <div id="objective"></div>
+  <div id="dlg"><div class="who"></div><div class="txt"></div><div class="next">▼</div></div>
+  <div id="flash" class="layer"></div>
+  <div id="fade" class="layer"></div>
+  <div id="touch">
+    <div class="pad">
+      <span></span><button data-d="up">▲</button><span></span>
+      <button data-d="left">◀</button><span></span><button data-d="right">▶</button>
+      <span></span><button data-d="down">▼</button><span></span>
+    </div>
+    <button class="abtn" id="abtn">A</button>
+  </div>
+  <div id="card" class="layer art"></div>
+</div></div>
+
+<script src="sprites-data.js"></script>
+<script src="title-scene.js"></script>
+<script>
+'use strict';
+// ============ helpers / audio ============
+const $ = id => document.getElementById(id);
+const cv = $('cv'), ctx = cv.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+const TILE = 16, VW = 32, VH = 24;
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const MUS = { theme: new Audio('music/main-theme.mp3'),
+              chime: new Audio('music/secret-discovered.mp3'),
+              jingle: new Audio('music/jingle-16bit.mp3'),
+              fanfare: new Audio('music/fanfare-opera.mp3') };
+MUS.theme.loop = true; MUS.theme.volume = .8;
+function playM(a){ try{ a.currentTime = 0; a.play().catch(()=>{}); }catch(e){} }
+function stopM(a){ try{ a.pause(); }catch(e){} }
+
+// ============ sprite baking ============
+function bake(rows, pal){
+  const h = rows.length, w = rows[0].length;
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const g = c.getContext('2d');
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++){
+    const col = pal[rows[y][x]];
+    if (col){ g.fillStyle = col; g.fillRect(x, y, 1, 1); }
+  }
+  return c;
+}
+const SPR = {};
+for (const n of ['silka','pearlY','pearlO','eli','folkA','folkB','guard','cornman','crowA','crowB'])
+  SPR[n] = bake(SPRITES[n], PAL);
+SPR.king = bake(SPRITES.king, KING_PAL);
+SPR.statue = bake(SPRITES.king, STATUE_PAL);
+SPR.wizardA = bake(SPRITES.wizardA, WIZ_PAL);
+SPR.wizardB = bake(SPRITES.wizardB, WIZ_PAL);
+
+// ============ tile painters (one light, upper left) ============
+function tile(fn){ const c = document.createElement('canvas'); c.width = 16; c.height = 16;
+  const g = c.getContext('2d'); fn(g); return c; }
+function R(g, x, y, w, h, col){ g.fillStyle = col; g.fillRect(x, y, w, h); }
+const TILES = {
+village: {
+  '#': tile(g => { R(g,0,0,16,16,'#1d3312'); R(g,0,0,16,5,'#2c4d1a'); R(g,1,2,3,2,'#3c6624'); R(g,9,1,4,2,'#3c6624'); R(g,5,4,3,2,'#244016'); }),
+  '^': tile(g => { R(g,0,0,16,16,'#6b5a49'); R(g,0,0,16,4,'#8a7660'); R(g,0,12,16,4,'#4e4033'); R(g,2,6,5,2,'#7d6a55'); R(g,10,8,4,2,'#594a3a'); }),
+  'R': tile(g => { R(g,0,0,16,16,'#7a7268'); R(g,0,0,16,5,'#948b7f'); R(g,0,11,16,5,'#5b544b'); R(g,3,6,4,3,'#867d71'); R(g,10,5,3,4,'#665e54'); }),
+  '=': tile(g => { R(g,0,0,16,16,'#9a917e'); R(g,0,0,16,2,'#b3a98f'); R(g,0,14,16,2,'#7d7462'); R(g,7,0,2,16,'#847a66'); R(g,0,7,16,2,'#847a66'); }),
+  '+': tile(g => { R(g,0,0,16,16,'#a9834f'); R(g,0,0,16,3,'#bd985c'); R(g,0,13,16,3,'#8a6a3c'); R(g,3,6,3,2,'#97744a'); R(g,11,9,3,2,'#97744a'); }),
+  'H': tile(g => { R(g,0,0,16,16,'#7e2f26'); R(g,0,0,16,4,'#9c4034'); R(g,0,4,16,2,'#6b271e'); R(g,0,9,16,2,'#6b271e'); R(g,0,14,16,2,'#5d211a'); R(g,2,1,3,2,'#b05244'); }),
+  'W': tile(g => { R(g,0,0,16,16,'#e6d7b8'); R(g,0,0,2,16,'#4a2814'); R(g,14,0,2,16,'#4a2814'); R(g,0,7,16,2,'#4a2814'); R(g,6,10,4,5,'#7fb2d9'); R(g,6,10,4,1,'#cfe6f7'); R(g,0,15,16,1,'#b8a888'); }),
+  'D': tile(g => { R(g,0,0,16,16,'#e6d7b8'); R(g,0,0,2,16,'#4a2814'); R(g,14,0,2,16,'#4a2814'); R(g,4,2,8,14,'#6b3a1e'); R(g,5,3,6,12,'#7d4a28'); R(g,10,8,1,2,'#f5bd1f'); R(g,4,2,8,1,'#8c5a30'); }),
+  'T': tile(g => { R(g,0,0,16,16,'#3f7a2a'); R(g,1,1,9,7,'#4f9433'); R(g,6,5,9,8,'#356b21'); R(g,2,2,3,2,'#63aa42'); R(g,10,9,3,2,'#2c5c1c'); R(g,7,13,2,3,'#4a2814'); }),
+  '.': tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,0,0,16,3,'#5a9c38'); R(g,2,5,2,1,'#63aa42'); R(g,11,11,2,1,'#63aa42'); R(g,7,8,2,1,'#3f7425'); R(g,13,3,2,1,'#3f7425'); }),
+  'f': tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,0,0,16,3,'#5a9c38'); R(g,3,4,1,1,'#fff8e8'); R(g,11,6,1,1,'#f5bd1f'); R(g,6,11,1,1,'#e77fb0'); R(g,13,12,1,1,'#fff8e8'); R(g,8,3,1,1,'#e77fb0'); }),
+  'F': tile(g => { R(g,0,0,16,16,'#8f97a3'); R(g,2,2,12,12,'#6e7683'); R(g,4,4,8,8,'#5db9e8'); R(g,5,5,3,2,'#aee4fb'); R(g,7,2,2,3,'#cfd6de'); }),
+  'S': tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,3,11,10,4,'#8c897d'); R(g,4,12,8,2,'#a09c90'); R(g,5,10,6,1,'#76726a'); }),
+  'P': tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,0,0,16,3,'#5a9c38'); R(g,4,9,2,1,'#63aa42'); R(g,12,6,2,1,'#3f7425'); }),
+  'N': tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,0,0,16,3,'#5a9c38'); R(g,6,7,2,1,'#63aa42'); }),
+  'c': tile(g => { R(g,0,0,16,16,'#8a6a3c'); R(g,1,0,2,16,'#28823e'); R(g,5,0,2,16,'#28823e'); R(g,9,0,2,16,'#28823e'); R(g,13,0,2,16,'#28823e'); R(g,1,3,2,3,'#f5bd1f'); R(g,9,8,2,3,'#f5bd1f'); R(g,5,12,2,3,'#e0aa00'); R(g,13,2,2,3,'#e0aa00'); }),
+  'E': tile(g => { R(g,0,0,16,16,'#9a917e'); R(g,0,0,16,2,'#b3a98f'); R(g,0,14,16,2,'#7d7462'); R(g,2,7,12,2,'#847a66'); })
+},
+hall: {
+  '#': tile(g => { R(g,0,0,16,16,'#4c4453'); R(g,0,0,16,3,'#655b6e'); R(g,0,13,16,3,'#372f3d'); R(g,7,0,2,16,'#3e3646'); R(g,0,7,16,1,'#3e3646'); }),
+  'B': tile(g => { R(g,0,0,16,16,'#4c4453'); R(g,0,0,16,3,'#655b6e'); R(g,4,2,8,12,'#7e1f2b'); R(g,4,2,8,2,'#a32836'); R(g,7,5,2,5,'#f5bd1f'); R(g,4,13,8,1,'#5d141d'); }),
+  'W': tile(g => { R(g,0,0,16,16,'#4c4453'); R(g,3,2,10,12,'#2c3550'); R(g,4,3,8,10,'#46587e'); R(g,5,4,3,4,'#6d84ad'); R(g,7,2,1,12,'#181010'); R(g,3,8,10,1,'#181010'); }),
+  '+': tile(g => { R(g,0,0,16,16,'#8d8578'); R(g,0,0,16,2,'#a39a89'); R(g,0,14,16,2,'#6f675c'); R(g,7,0,1,16,'#776f62'); R(g,0,7,16,1,'#776f62'); }),
+  'r': tile(g => { R(g,0,0,16,16,'#8e2432'); R(g,0,0,16,2,'#a92c3c'); R(g,0,14,16,2,'#6e1824'); R(g,1,1,1,14,'#f5bd1f'); R(g,14,1,1,14,'#f5bd1f'); }),
+  'T': tile(g => { R(g,0,0,16,16,'#5d3a1e'); R(g,0,2,16,12,'#7d4a28'); R(g,0,2,16,2,'#9c622f'); R(g,3,5,4,3,'#e8e2d2'); R(g,10,9,4,3,'#e8e2d2'); R(g,4,6,2,1,'#f5bd1f'); R(g,11,10,2,1,'#c42838'); R(g,8,4,2,2,'#f5bd1f'); }),
+  'C': tile(g => { R(g,0,0,16,16,'#8d8578'); R(g,7,6,2,9,'#8c6214'); R(g,3,3,2,4,'#8c6214'); R(g,11,3,2,4,'#8c6214'); R(g,3,1,2,2,'#ffd91a'); R(g,11,1,2,2,'#ffd91a'); R(g,7,2,2,3,'#ffd91a'); R(g,7,1,2,1,'#fff6c9'); }),
+  'H': tile(g => { R(g,0,0,16,16,'#6e1824'); R(g,2,3,12,13,'#8e2432'); R(g,2,3,12,3,'#f5bd1f'); R(g,4,8,8,6,'#a92c3c'); R(g,7,4,2,2,'#fff066'); }),
+  'd': tile(g => { R(g,0,0,16,16,'#3e3646'); R(g,4,1,8,15,'#5d3a1e'); R(g,5,2,6,13,'#6f4525'); R(g,7,1,2,15,'#181010'); R(g,6,8,1,2,'#f5bd1f'); R(g,9,8,1,2,'#f5bd1f'); })
+},
+cottage: {
+  '#': tile(g => { R(g,0,0,16,16,'#4a2f1a'); R(g,0,3,16,2,'#5d3a1e'); R(g,0,10,16,2,'#3a2412'); R(g,0,0,16,2,'#66452a'); }),
+  'w': tile(g => { R(g,0,0,16,16,'#8a6136'); R(g,0,0,16,2,'#9c7444'); R(g,0,7,16,1,'#6f4a26'); R(g,0,15,16,1,'#6f4a26'); R(g,5,0,1,16,'#77522c'); R(g,11,0,1,16,'#77522c'); }),
+  'F': tile(g => { R(g,0,0,16,16,'#5b544b'); R(g,2,4,12,12,'#3a352f'); R(g,5,8,6,7,'#e8641e'); R(g,6,10,4,5,'#f5bd1f'); R(g,7,12,2,3,'#fff066'); R(g,2,2,12,2,'#76726a'); }),
+  'T': tile(g => { R(g,0,0,16,16,'#8a6136'); R(g,1,3,14,10,'#6f4525'); R(g,1,3,14,2,'#8c5a30'); R(g,6,6,4,3,'#e8e2d2'); }),
+  'b': tile(g => { R(g,0,0,16,16,'#8a6136'); R(g,1,2,14,12,'#7e3b4f'); R(g,1,2,14,4,'#e8e2d2'); R(g,1,10,14,4,'#93536a'); R(g,1,2,14,1,'#fff8e8'); }),
+  'r': tile(g => { R(g,0,0,16,16,'#7e2f26'); R(g,1,1,14,14,'#93392c'); R(g,3,3,10,10,'#a34a28'); R(g,5,5,6,6,'#f5bd1f'); }),
+  'd': tile(g => { R(g,0,0,16,16,'#4a2f1a'); R(g,4,1,8,15,'#5d3a1e'); R(g,5,2,6,13,'#6f4525'); R(g,10,8,1,2,'#f5bd1f'); })
+}};
+// ============ maps ============
+const VILLAGE = [
+"####^^######^^^^^^^^######^^####",
+"###R##R####R########R####R##R###",
+"##============================##",
+"#++++++++++++++++++++++++++++++#",
+"#++HHHHH+++T..f..f..T+++HHHHH++#",
+"#++WWWWW+++....S.....+++WWWWW++#",
+"#++WWDWW+++.f..F..f..+++WWDWW++#",
+"#++++P+++++T........T++++++++++#",
+"#++++++++++....N.....++++++++++#",
+"#..ccccc...++++++++++...HHHHH..#",
+"#..ccccc...++HHHHHH++...WWWWW..#",
+"#..ccccc...++WWWWWW++...WWDWW..#",
+"#..T...T...++WWDWWD++.....N....#",
+"#..HHHHH...++++++++++...HHHHH..#",
+"#..WWWWW...++..N.....+++WWWWW++#",
+"#..WWDWW...++........+++WWDWW++#",
+"#..........++..T..T..++++++++++#",
+"#..ccccc...++........+++HHHHH++#",
+"#..ccccc...++..f..f..+++WWWWW++#",
+"#..ccccc...++........+++WWDWW++#",
+"#..T...T...+++++++++++++++N++++#",
+"#..............EE..............#",
+"##############....##############",
+"##############....##############"];
+const HALL = [
+"################################",
+"#B###W#####B#####W#####B###W##B#",
+"#C++++++++++++++++++++++++++++C#",
+"#+++++++++++rrrrrrrr+++++++++++#",
+"#+++++++++++rrHHHHrr+++++++++++#",
+"#+++++++++++rrrrrrrr+++++++++++#",
+"#C++++++++++rrrrrrrr++++++++++C#",
+"#++++++++++++++++++++++++++++++#",
+"#++++TTTTTTTT++++++TTTTTTTT++++#",
+"#++++TTTTTTTT++++++TTTTTTTT++++#",
+"#++++++++++++++++++++++++++++++#",
+"#++++++++++++++++++++++++++++++#",
+"#C++++++++++++++++++++++++++++C#",
+"#++++TTTTTTTT++++++TTTTTTTT++++#",
+"#++++TTTTTTTT++++++TTTTTTTT++++#",
+"#++++++++++++++++++++++++++++++#",
+"#++++++++++++++++++++++++++++++#",
+"#++++++++++++++++++++++++++++++#",
+"#C++++++++++++++++++++++++++++C#",
+"#++++++++++++++++++++++++++++++#",
+"#++++++++++++++++++++++++++++++#",
+"#++++++++++++++++++++++++++++++#",
+"#++++++++++++++++++++++++++++++#",
+"###############dd###############"];
+const COTTAGE = [
+"################",
+"#FFF#wwwwwwwwww#",
+"#wwwwwwwwwwwwww#",
+"#wwwwwwTTwwwwww#",
+"#wwwwwwTTwwwwww#",
+"#wwwwwwwwwwwwww#",
+"#wwwwwrrrrwwwww#",
+"#wwwwwrrrrwwwww#",
+"#wwwwwwwwwwwwbb#",
+"#wwwwwwwwwwwwbb#",
+"#wwwwwwwwwwwwww#",
+"#######dd#######"];
+const SOLID = {
+  village: new Set(['#','^','R','H','W','T','F','S','c']),
+  hall: new Set(['#','B','W','T','C','H']),
+  cottage: new Set(['#','F','T','b'])
+};
+
+// ============ engine ============
+let scene = null, player = null, mode = 'card', tick = 0;
+function tileAt(s, x, y){ if (x < 0 || y < 0 || y >= s.rows.length || x >= s.rows[0].length) return '#'; return s.rows[y][x]; }
+function walkable(s, x, y, self){
+  if (SOLID[s.set].has(tileAt(s, x, y))) return false;
+  for (const e of s.entities) if (e !== self && !e.hidden && e.x === x && e.y === y) return false;
+  return true;
+}
+function makeEnt(spr, x, y, opts = {}){
+  return Object.assign({ spr, x, y, px: x * TILE, py: y * TILE, dir: 'down', moveT: 0,
+    fromX: x, fromY: y, hidden: false, name: '', talk: null }, opts);
+}
+function stepEnt(e, dir){
+  const d = { up: [0,-1], down: [0,1], left: [-1,0], right: [1,0] }[dir];
+  e.dir = dir;
+  const nx = e.x + d[0], ny = e.y + d[1];
+  if (!walkable(scene, nx, ny, e)) return false;
+  e.fromX = e.x; e.fromY = e.y; e.x = nx; e.y = ny; e.moveT = 0.0001;
+  return true;
+}
+function updateEnt(e, dt){
+  if (e.moveT > 0){
+    e.moveT += dt / 130;
+    const t = Math.min(1, e.moveT);
+    e.px = (e.fromX + (e.x - e.fromX) * t) * TILE;
+    e.py = (e.fromY + (e.y - e.fromY) * t) * TILE;
+    if (t >= 1) e.moveT = 0;
+  }
+  if (e.path && e.path.length && e.moveT === 0){
+    const dir = e.path[0];
+    stepEnt(e, dir); e.path.shift();
+  }
+}
+function pathTo(e, tx, ty){
+  const key = (x, y) => x + ',' + y;
+  const prev = new Map([[key(e.x, e.y), null]]);
+  const q = [[e.x, e.y]];
+  while (q.length){
+    const [x, y] = q.shift();
+    if (x === tx && y === ty) break;
+    for (const [d, dx, dy] of [['up',0,-1],['down',0,1],['left',-1,0],['right',1,0]]){
+      const nx = x + dx, ny = y + dy, k = key(nx, ny);
+      if (prev.has(k)) continue;
+      if (SOLID[scene.set].has(tileAt(scene, nx, ny))) continue;
+      if (!(nx === tx && ny === ty)){
+        let blocked = false;
+        for (const o of scene.entities) if (o !== e && !o.hidden && o.x === nx && o.y === ny) blocked = true;
+        if (blocked) continue;
+      }
+      prev.set(k, [key(x, y), d]); q.push([nx, ny]);
+    }
+  }
+  if (!prev.has(key(tx, ty))) return [];
+  const dirs = []; let k = key(tx, ty);
+  while (prev.get(k)){ dirs.unshift(prev.get(k)[1]); k = prev.get(k)[0]; }
+  return dirs;
+}
+function moveEntTo(e, tx, ty){
+  return new Promise(res => {
+    e.path = pathTo(e, tx, ty);
+    const iv = setInterval(() => { if ((!e.path || !e.path.length) && e.moveT === 0){ clearInterval(iv); res(); } }, 40);
+  });
+}
+function loadScene(def){
+  scene = def; scene.entities = def.entities || [];
+  for (const e of scene.entities){ e.px = e.x * TILE; e.py = e.y * TILE; e.moveT = 0; e.path = []; }
+  player = def.player || null;
+  if (player && !scene.entities.includes(player)) scene.entities.push(player);
+}
+function render(){
+  tick++;
+  ctx.fillStyle = '#0b0910'; ctx.fillRect(0, 0, 512, 384);
+  if (!scene) return;
+  const ox = scene.ox || 0, oy = scene.oy || 0;
+  for (let y = 0; y < scene.rows.length; y++)
+    for (let x = 0; x < scene.rows[0].length; x++){
+      const t = TILES[scene.set][scene.rows[y][x]];
+      if (t) ctx.drawImage(t, (x + ox) * TILE, (y + oy) * TILE);
+    }
+  const es = [...scene.entities].filter(e => !e.hidden).sort((a, b) => a.py - b.py);
+  for (const e of es){
+    const img = typeof e.spr === 'function' ? e.spr(tick) : e.spr;
+    const dx = e.px + ox * TILE, dy = e.py + oy * TILE + TILE - img.height;
+    if (e.aura){
+      const p = .5 + .5 * Math.sin(tick * .09);
+      const gx = dx + img.width / 2, gy = dy + img.height / 2;
+      const gr = ctx.createRadialGradient(gx, gy, 2, gx, gy, 26 + p * 8);
+      gr.addColorStop(0, `rgba(233,213,255,${.30 + p * .18})`);
+      gr.addColorStop(.5, `rgba(147,51,234,${.26 + p * .14})`);
+      gr.addColorStop(1, 'rgba(88,28,135,0)');
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(gx, gy, 34 + p * 8, 0, 7); ctx.fill(); ctx.restore();
+    }
+    ctx.drawImage(img, dx, dy);
+  }
+  if (scene.dim){ ctx.fillStyle = `rgba(8,4,18,${scene.dim})`; ctx.fillRect(0, 0, 512, 384); }
+}
+// ============ title screen (canvas, animated) ============
+let titleOn = false, titleStatic = null;
+function drawTitleSet(set){ for (const [x, y, w, h, p] of set){ ctx.fillStyle = TITLE_PAL[p]; ctx.fillRect(x * 4, y * 4, w * 4, h * 4); } }
+function drawTitle(ts){
+  if (!titleStatic){
+    titleStatic = document.createElement('canvas'); titleStatic.width = 512; titleStatic.height = 384;
+    const g = titleStatic.getContext('2d');
+    for (const [x, y, w, h, p] of TITLE_RECTS){ g.fillStyle = TITLE_PAL[p]; g.fillRect(x * 4, y * 4, w * 4, h * 4); }
+  }
+  ctx.drawImage(titleStatic, 0, 0);
+  drawTitleSet(TITLE_WATER[Math.floor(ts / 160) % 3]);       // the waterfall moves
+  if (Math.floor(ts / 700) % 2 === 0) drawTitleSet(TITLE_TWINK); // stars + one lit window
+  if (ts % 1400 < 950) drawTitleSet(TITLE_PUSH);             // PUSH START blinks
+}
+let lastT = 0;
+function loop(ts){
+  const dt = Math.min(50, ts - lastT); lastT = ts;
+  if (titleOn){ drawTitle(ts); requestAnimationFrame(loop); return; }
+  if (scene) for (const e of scene.entities) updateEnt(e, dt);
+  if (mode === 'play' && player && !(player.path && player.path.length)) playerControl();
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+// ============ input ============
+const held = {};
+const KEYMAP = { ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down',
+  ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right' };
+let aPressed = false;
+addEventListener('keydown', e => {
+  if (KEYMAP[e.code]){ held[KEYMAP[e.code]] = true; e.preventDefault(); }
+  if (['Space','Enter','KeyZ'].includes(e.code)){ aPressed = true; e.preventDefault(); }
+});
+addEventListener('keyup', e => { if (KEYMAP[e.code]) held[KEYMAP[e.code]] = false; });
+document.querySelectorAll('#touch button[data-d]').forEach(b => {
+  const d = b.dataset.d;
+  const on = e => { e.preventDefault(); held[d] = true; };
+  const off = e => { e.preventDefault(); held[d] = false; };
+  b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off);
+  b.addEventListener('pointerleave', off); b.addEventListener('pointercancel', off);
+});
+$('abtn').addEventListener('pointerdown', e => { e.preventDefault(); aPressed = true; });
+$('dlg').addEventListener('pointerdown', () => { aPressed = true; });
+$('card').addEventListener('pointerdown', () => { aPressed = true; });
+function playerControl(){
+  if (player.moveT > 0) return;
+  for (const d of ['up','down','left','right']) if (held[d]){ stepEnt(player, d); return; }
+}
+function takeA(){ const a = aPressed; aPressed = false; return a; }
+
+// ============ dialogue / cards / objective ============
+const dlgEl = $('dlg'), dlgWho = dlgEl.querySelector('.who'), dlgTxt = dlgEl.querySelector('.txt');
+async function say(pages){
+  mode = 'dlg'; dlgEl.style.display = 'block';
+  for (const p of pages){
+    dlgWho.textContent = p[0] || ''; dlgWho.style.display = p[0] ? 'block' : 'none';
+    const full = p[1]; let shown = 0; dlgTxt.textContent = '';
+    takeA();
+    await new Promise(res => {
+      const iv = setInterval(() => {
+        if (shown < full.length){ shown += 2; dlgTxt.textContent = full.slice(0, shown); }
+        if (takeA()){
+          if (shown < full.length){ shown = full.length; dlgTxt.textContent = full; }
+          else { clearInterval(iv); res(); }
+        }
+      }, 24);
+    });
+  }
+  dlgEl.style.display = 'none'; mode = 'play';
+}
+function objective(txt){
+  const o = $('objective');
+  if (!txt){ o.style.display = 'none'; return; }
+  o.innerHTML = '✦ <b>' + txt + '</b>'; o.style.display = 'block';
+}
+async function fadeTo(v, ms = 650){ const f = $('fade'); f.style.transitionDuration = ms + 'ms'; f.style.opacity = v; await wait(ms); }
+async function flashViolet(){
+  const f = $('flash');
+  for (const [o, ms] of [[.85, 90], [0, 140], [.6, 80], [0, 220]]){
+    f.style.transition = `opacity ${ms}ms`; f.style.opacity = o; await wait(ms + 30);
+  }
+}
+function card({ title = '', sub = '', lines = [], art = false }){
+  return new Promise(async res => {
+    mode = 'card';
+    const c = $('card');
+    c.className = 'layer' + (art ? ' art' : '');
+    c.style.backgroundImage = art ? "url('art/title-keyart.webp')" : 'none';
+    c.innerHTML = (title ? `<h1>${title}</h1>` : '') + (sub ? `<h2>${sub}</h2>` : '') +
+      lines.map(l => `<p>${l}</p>`).join('') + '<div class="go">— press A / tap —</div>';
+    c.style.display = 'flex';
+    await fadeTo(0, 300);
+    takeA();
+    await new Promise(r => { const iv = setInterval(() => { if (takeA()){ clearInterval(iv); r(); } }, 60); });
+    c.style.display = 'none'; res();
+  });
+}
+async function interact(){
+  if (!player || mode !== 'play') return;
+  const d = { up: [0,-1], down: [0,1], left: [-1,0], right: [1,0] }[player.dir];
+  const tx = player.x + d[0], ty = player.y + d[1];
+  for (const e of scene.entities){
+    if (e !== player && !e.hidden && e.x === tx && e.y === ty && e.talk){ await e.talk(); return; }
+  }
+  const fn = scene.triggers && scene.triggers[tx + ',' + ty];
+  if (fn) await fn();
+}
+setInterval(() => { if (mode === 'play' && aPressed){ takeA(); interact(); } }, 50);
+// ============ story ============
+const G = { stage: 0, cup: false, told: false };
+const wizSpr = t => (Math.floor(t / 8) % 2 ? SPR.wizardB : SPR.wizardA);
+
+function buildHall(){
+  const king = makeEnt(SPR.king, 15, 5, { name: 'THE HARVEST KING', talk: async () => {
+    if (G.stage === 1){
+      await say([['THE HARVEST KING', 'Pearl. You have your grandmother\u2019s eyes and her habit of standing where the truth is.'],
+        ['THE HARVEST KING', 'Tomorrow at dawn I seal the Great Barn myself, as my father did. What sleeps under this valley stays asleep.'],
+        ['THE HARVEST KING', 'And if any man speaks of the black castle in the north — smile, and change the subject. Some doors are walls that learned manners.'],
+        ['', 'He turns back to the feast, and for a moment he looks very tired.']]);
+      G.stage = 2; objective('Find Eli — he carries the harvest cup');
+    } else if (G.stage === 3){
+      await say([['THE HARVEST KING', 'The cup. A hundred harvests the valley has given us, and we have given it peace.'],
+        ['THE HARVEST KING', 'To the valley — and to every soul who keeps it.']]);
+      G.stage = 4; objective('');
+      await theTurn();
+    } else if (G.stage === 0){
+      await say([['', 'The King is deep in talk with his captains. Silka first — she asked for you.']]);
+    } else {
+      await say([['THE HARVEST KING', 'Go on, child. The feast won\u2019t eat itself.']]);
+    }
+  }});
+  const silka = makeEnt(SPR.silka, 17, 5, { name: 'SILKA', talk: async () => {
+    if (G.stage === 0){
+      await say([['SILKA', 'Pearl! There you are. Stand where I can see you — tonight I want every face I love in one room.'],
+        ['SILKA', 'Father seals the Great Barn at dawn. After that, he says, the valley is safe for another hundred years.'],
+        ['SILKA', 'You don\u2019t believe in the old stories, do you? The towers in the north, with their eyes shut...'],
+        ['SILKA', 'No. Neither do I. Now — go and pay your respects to my father before the toast.']]);
+      G.stage = 1; objective('Pay your respects to the Harvest King');
+    } else {
+      await say([['SILKA', 'Whatever the old stories say, tonight this hall is warm and full. That is real. Hold on to real things, Pearl.']]);
+    }
+  }});
+  const eli = makeEnt(SPR.eli, 8, 11, { name: 'ELI', talk: async () => {
+    if (G.stage === 2){
+      await say([['ELI', 'Pearl! Mind the cup — no, take it, that\u2019s why I\u2019m holding it like a fool. The King\u2019s harvest cup.'],
+        ['ELI', 'Carry it straight. If you spill on the King\u2019s carpet I\u2019ll deny knowing you, and I\u2019ve known you since you were six.']]);
+      G.cup = true; G.stage = 3; objective('Bring the harvest cup to the King');
+    } else {
+      await say([['ELI', 'Best feast in ten years. The miller\u2019s wife brought pies, the stonecutter brought opinions.']]);
+    }
+  }});
+  const folkA = makeEnt(SPR.folkA, 22, 11, { talk: async () => say([['ORCHARD WIFE', 'A hundred years of harvests without a blight. Whatever the King\u2019s family did back then, it worked.']]) });
+  const folkB = makeEnt(SPR.folkB, 10, 16, { talk: async () => say([['STONECUTTER', 'I cut the stone for the new barn door. Sealed at dawn, the King says. Sealed against what, he doesn\u2019t say.']]) });
+  const g1 = makeEnt(SPR.guard, 14, 22, { talk: async () => say([['GUARD', 'Mind the feast, little miss. Nothing leaves this hall tonight but songs.']]) });
+  const g2 = makeEnt(SPR.guard, 17, 22, { talk: async () => say([['GUARD', 'Strange sky tonight. The crows have all gone quiet at once.']]) });
+  const pearl = makeEnt(SPR.pearlY, 16, 21, {});
+  pearl.dir = 'up';
+  return { set: 'hall', rows: HALL, player: pearl,
+    entities: [king, silka, eli, folkA, folkB, g1, g2],
+    triggers: { '15,22': async () => say([['', 'The guards shake their heads. The feast is on — nobody leaves early.']]),
+                '16,22': async () => say([['', 'The guards shake their heads. The feast is on — nobody leaves early.']]) },
+    refs: { king, silka } };
+}
+async function theTurn(){
+  mode = 'script';
+  await say([['', 'Outside the tall windows, the light goes strange — amber, then violet at the edges.'],
+    ['', 'Every crow in the valley lifts at once, and for three heartbeats the sky is black wings. Then — silence.']]);
+  scene.dim = .5;
+  const crows = [];
+  for (let i = 0; i < 5; i++){
+    const c = makeEnt(i % 2 ? SPR.crowB : SPR.crowA, -5 - i * 3, 1, {});
+    c.hidden = false; scene.entities.push(c); crows.push(c);
+  }
+  await new Promise(res => {
+    let t = 0;
+    const iv = setInterval(() => {
+      t++;
+      for (let i = 0; i < crows.length; i++){
+        crows[i].px = -40 - i * 54 + t * 9;
+        crows[i].py = 8 + (i % 3) * 12 + Math.sin(t / 3 + i) * 3;
+        crows[i].spr = (Math.floor(t / 4 + i) % 2) ? SPR.crowB : SPR.crowA;
+      }
+      if (t > 68){ clearInterval(iv); res(); }
+    }, 30);
+  });
+  for (const c of crows) c.hidden = true;
+  await say([['', 'In the hall, nobody laughs. The King stands, looking north, though the windows face the fields.'],
+    ['', 'Whatever he was about to say, he does not say it.']]);
+  await fadeTo(1, 1200);
+  scene.dim = 0;
+  await card({ title: 'A HUNDRED', sub: 'HARVESTS LATER', lines: ['The feast became a story. The story became a warning.', 'And the warning was kept by one old woman, in a cottage under the cliff.'] });
+  act2();
+}
+
+function buildVillage(){
+  const statue = makeEnt(SPR.statue, 15, 5, { talk: async () => say([['', 'The Harvest King, in weathered stone. Both hands cup a great green gem at his belly.'],
+    ['', 'Somebody still leaves flowers here. The petals are fresh.']]) });
+  const folkA = makeEnt(SPR.folkA, 12, 13, { talk: async () => say([['ORCHARD WIFE', 'A stranger in the valley! Mind the statue\u2019s flowers, love — Pearl leaves those, and Pearl counts them.']]) });
+  const folkB = makeEnt(SPR.folkB, 21, 14, { talk: async () => say([['STONECUTTER', 'You\u2019ve the look of a man heading north. They all come back by the overlook, friend. The towers don\u2019t blink. They don\u2019t have to.']]) });
+  const guard = makeEnt(SPR.guard, 18, 20, { talk: async () => say([['WATCHMAN', 'South gate\u2019s mine to watch, the north is nobody\u2019s. If it\u2019s Pearl you want, her cottage is northwest, under the cliff. She\u2019s expecting — no. She\u2019s always expecting.']]) });
+  const hero = makeEnt(SPR.cornman, 15, 21, {});
+  hero.dir = 'up';
+  const doorLine = t => async () => say([['', t]]);
+  return { set: 'village', rows: VILLAGE, player: hero,
+    entities: [statue, folkA, folkB, guard],
+    triggers: {
+      '5,6': async () => { mode = 'script'; await fadeTo(1, 500); act3(); },
+      '26,6': doorLine('The Harvest Chapel. The door is shut and the little bell is still. (Part Two)'),
+      '15,12': doorLine('The general store. A sign in the window: BACK AT HARVEST. (Part Two)'),
+      '18,12': doorLine('The blacksmith\u2019s forge is cold. A note: PEARL FIRST. THEN BUSINESS.'),
+      '26,11': doorLine('The Miller house. Smoke in the chimney, bread on the sill — and nobody answers. Odd.'),
+      '5,15': doorLine('The mill. The great wheel turns slow, though the stream is low.'),
+      '26,15': doorLine('The Stonecutter house. Fresh-cut stone stacked by the door, all of it grey.'),
+      '26,19': doorLine('The Harvest Inn. The innkeep, through the door: "Beds and supper for travelers — but Pearl first, hero. Pearl first."'),
+      '15,6': async () => say([['', 'The fountain runs clear and cold. Coins glint at the bottom — a hundred years of small wishes.']]),
+      '15,2': async () => say([['', 'From the overlook: the ruined castle above the rooftops, and far north, small as a thumbnail, a castle that is not ruined at all. It is black.']]),
+      '16,2': async () => say([['', 'From the overlook: the ruined castle above the rooftops, and far north, small as a thumbnail, a castle that is not ruined at all. It is black.']]),
+      '15,22': doorLine('The road south, to the first field and the wide world. That road is Part Two\u2019s business.'),
+      '16,22': doorLine('The road south, to the first field and the wide world. That road is Part Two\u2019s business.')
+    },
+    refs: {} };
+}
+
+function buildCottage(){
+  const pearl = makeEnt(SPR.pearlO, 3, 3, { name: 'OLD PEARL', talk: async () => { if (!G.told) theTelling(); } });
+  const hero = makeEnt(SPR.cornman, 7, 10, {});
+  hero.dir = 'up';
+  return { set: 'cottage', rows: COTTAGE, ox: 8, oy: 6, player: hero,
+    entities: [pearl],
+    triggers: { '7,11': async () => { if (G.told) await endPart(); },
+                '8,11': async () => { if (G.told) await endPart(); },
+                '6,6': async () => { if (!G.told) theTelling(); },
+                '6,7': async () => { if (!G.told) theTelling(); } },
+    refs: { pearl } };
+}
+
+async function theTelling(){
+  if (G.told) return;
+  G.told = true; mode = 'script'; objective('');
+  const hero = player, pearl = scene.refs.pearl;
+  await moveEntTo(hero, 6, 5); hero.dir = 'left';
+  await say([['OLD PEARL', 'Sit, then. You have the look of the road about you, and I have been keeping this story warm for a hundred years.'],
+    ['OLD PEARL', 'I was nine the night of the last feast. I remember all of it. That is my gift, and my punishment.'],
+    ['OLD PEARL', 'Listen — and I will give it to you the way it came to me.']]);
+  await fadeTo(1, 1000);
+  // the telling: the feast hall, a hundred years gone
+  const king = makeEnt(SPR.king, 15, 5, {});
+  const silka = makeEnt(SPR.silka, 17, 5, {});
+  const witness = makeEnt(SPR.pearlY, 24, 18, {});
+  const crow1 = makeEnt(SPR.crowA, 5, 1, {}), crow2 = makeEnt(SPR.crowA, 17, 1, {}), crow3 = makeEnt(SPR.crowA, 27, 1, {});
+  const wiz = makeEnt(wizSpr, 16, 20, { aura: true }); wiz.hidden = true;
+  loadScene({ set: 'hall', rows: HALL, player: null,
+    entities: [king, silka, witness, crow1, crow2, crow3, wiz], triggers: {}, refs: {} });
+  scene.dim = .38;
+  await fadeTo(0, 900);
+  await say([['PEARL\u2019S VOICE', 'First came the crows. Every crow in the valley, settling on the roof-beams at once, the way they do before a storm that has a name.'],
+    ['PEARL\u2019S VOICE', 'Then the doors opened — though no hand touched them — and the cold came in wearing a man\u2019s shape.']]);
+  await flashViolet();
+  wiz.hidden = false;
+  await say([['THE STORM WIZARD', 'Harvest King. The valley has kept what is owed for a hundred years. I am come to collect the brightest thing in it.'],
+    ['THE HARVEST KING', 'Name your price and take it from my stores. The valley pays its debts.'],
+    ['THE STORM WIZARD', 'My price is standing beside you, wearing poppies in her hair.']]);
+  await moveEntTo(silka, 16, 9); silka.dir = 'down';
+  await say([['SILKA', 'Then hear the valley\u2019s answer, collector. I am not a debt. I am not a price. And I will not go.'],
+    ['PEARL\u2019S VOICE', 'She refused him standing straight as a stalk in the field. I have loved her for a hundred years for that one moment.']]);
+  await flashViolet();
+  wiz.hidden = true; silka.hidden = true;
+  await say([['PEARL\u2019S VOICE', 'There was no thunder. That is the part nobody believes. There was a light, and a quiet — and where Silka had stood, there was nobody.'],
+    ['PEARL\u2019S VOICE', 'The sleep took her on the road north, they say, before she had walked a mile. She sleeps still. That is the mercy in it, if there is one.']]);
+  scene.dim = .55;
+  await say([['PEARL\u2019S VOICE', 'The King did not weep where we could see it. He walked out into the dawn and sealed the Great Barn with his own hands and his own strength — all of it. What was hunting the valley could not pass that seal.'],
+    ['PEARL\u2019S VOICE', 'He came back up the hill an old man, and by harvest\u2019s end he was in the ground, and the statue had his face. I was nine. I remember.']]);
+  await fadeTo(1, 1300);
+  loadScene(buildCottage());
+  player.x = 6; player.y = 5; player.px = 6 * TILE; player.py = 5 * TILE; player.dir = 'left';
+  scene.refs.pearl.dir = 'right';
+  await fadeTo(0, 900);
+  playM(MUS.chime);
+  await say([['OLD PEARL', 'She sleeps in the black castle, in the northern mountain. The towers on the pass have never let a living soul through, and the great gate has never opened.'],
+    ['OLD PEARL', 'But the mountain is old, and the old cave runs under it — the one the children are forbidden and the foxes use. What goes under the towers does not ask their leave.'],
+    ['OLD PEARL', 'A hundred years I have kept this story. I was waiting for somebody it belonged to. Go south first, hero — learn the fields. Then come back, and we will talk about the mountain.']]);
+  objective('Part One complete — leave by the cottage door when ready');
+  mode = 'play';
+}
+
+async function endPart(){
+  mode = 'script'; objective('');
+  await fadeTo(1, 700);
+  playM(MUS.jingle);
+  await card({ art: true, title: 'PART ONE', sub: 'THE LEGEND OF SILKA — PART ONE COMPLETE',
+    lines: ['The road south leads to the first field.', 'The road north leads under the mountain.'] });
+  location.reload();
+}
+
+// ============ acts / boot ============
+async function act1(){
+  G.stage = 0; G.cup = false;
+  loadScene(buildHall());
+  await fadeTo(0, 800);
+  await say([['', 'The King\u2019s castle, the night of the harvest feast — a hundred years gone.'],
+    ['', 'You are Pearl, nine years old, small enough to be forgotten in a room full of grown-ups. Remember everything.']]);
+  objective('Speak with Princess Silka');
+  mode = 'play';
+}
+async function act2(){
+  loadScene(buildVillage());
+  await fadeTo(0, 800);
+  await say([['', 'The Castle-Foot Village, a hundred harvests later. The fields are gold. The statue\u2019s flowers are fresh.'],
+    ['', 'An old woman under the cliff has been expecting — no. She has always been expecting.']]);
+  objective('Find old Pearl\u2019s cottage — northwest, under the cliff');
+  mode = 'play';
+}
+async function act3(){
+  loadScene(buildCottage());
+  await fadeTo(0, 700);
+  mode = 'play';
+  objective('Speak with old Pearl');
+}
+(async function boot(){
+  const H = location.hash; // scene-preview hooks (used for screenshot checks)
+  if (H === '#hall' || H === '#village' || H === '#cottage'){
+    $('card').style.display = 'none';
+    loadScene(H === '#hall' ? buildHall() : H === '#village' ? buildVillage() : buildCottage());
+    if (H === '#village') scene.entities.push(makeEnt(wizSpr, 24, 16, { aura: true }));
+    $('fade').style.opacity = 0; mode = 'play'; return;
+  }
+  const c = $('card');
+  c.className = 'layer art';
+  c.style.backgroundImage = 'none';
+  const GEMS = [[50.3, 5.3, 6], [50.3, 31.7, 9.5], [40.6, 31.7, 4.5], [59.4, 31.7, 4.5],
+                [50.2, 45.2, 6], [30.6, 89.6, 4], [69.4, 89.6, 4]];
+  const STARS = [[6, 6], [12, 3.5], [88, 5], [94, 9], [80, 2.5], [20, 9], [3, 14], [97, 16]];
+  c.innerHTML = '<div class="bgimg"></div>' +
+    GEMS.map((g, i) => '<div class="gem" style="left:' + g[0] + '%;top:' + g[1] + '%;width:' + g[2] +
+      '%;aspect-ratio:1;animation-delay:' + (i * 0.37).toFixed(2) + 's"></div>').join('') +
+    '<div class="pushglow"></div>' +
+    STARS.map((s, i) => '<div class="star" style="left:' + s[0] + '%;top:' + s[1] +
+      '%;animation-delay:' + (i * 0.53).toFixed(2) + 's"></div>').join('');
+  c.style.display = 'flex';
+  const bgEl = c.querySelector('.bgimg');
+  const FR = ['art/title-frames/f0.jpg', 'art/title-frames/f1.jpg',
+              'art/title-frames/f2.jpg', 'art/title-frames/f3.jpg'];
+  if (typeof Image !== 'undefined') FR.forEach(u => { const im = new Image(); im.src = u; });
+  let fi = 0;
+  bgEl.style.backgroundImage = 'url(' + FR[0] + ')';
+  const cycle = setInterval(() => { fi = (fi + 1) % 4; bgEl.style.backgroundImage = 'url(' + FR[fi] + ')'; }, 190);
+  let woke = false;
+  const tapA = () => { aPressed = true; };
+  const wake = () => { if (!woke){ woke = true; playM(MUS.theme); } };
+  addEventListener('pointerdown', wake); addEventListener('keydown', wake);
+  addEventListener('pointerdown', tapA);
+  await new Promise(r => { const iv = setInterval(() => { if (woke){ clearInterval(iv); r(); } }, 60); });
+  takeA(); // flush the waking tap — the NEXT tap / A press is PUSH START
+  await new Promise(r => { const iv = setInterval(() => { if (takeA()){ clearInterval(iv); r(); } }, 60); });
+  removeEventListener('pointerdown', wake); removeEventListener('keydown', wake);
+  removeEventListener('pointerdown', tapA);
+  clearInterval(cycle);
+  c.style.display = 'none';
+  stopM(MUS.theme); playM(MUS.fanfare);
+  await fadeTo(1, 400); await act1();
+})();
+</script>
+</body>
+</html>

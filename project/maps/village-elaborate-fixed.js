@@ -1,0 +1,42 @@
+// Elaborate Zelda-style Village — FIXED by Muse (duplicated store-block door row removed -> true 36 rows;
+// STREET_LANTERN given its missing 16th row). NOTE: supersedes the 32x24 village ONLY if Michael rules so.
+const ELABORATE_VILLAGE_ROWS = [
+"######^^##########^^^^^^^^^^^^##########^^######",
+"#####X##X########X############X########X##X#####",
+"###==========================================###",
+"##++++++++++++++++++++++++++++++++++++++++++++##",
+"##++..T...f....T..++++++++++++..T....f...T..++##",
+"##++..RRRRRh......++...S....++......hRRRRR..++##",
+"##++..rrrrrr..T...++..f.F.f.++...T..rrrrrr..++##",
+"##++..WWWWWW......++........++......WWWWWW..++##",
+"##++..WWDWWW..b...++++++++++++...b..WWDWWW..++##",
+"##++++++P+++++++++++...N....++++++++++++++++++##",
+"##..----.----..T..++++......++++..T..----.----##",
+"##................++++..UU..++++..............##",
+"##..ccccc..T......++++..UU..++++....RRRRRh....##",
+"##..ccccc.........++++......++++....rrrrrr....##",
+"##..ccccc....*....++++++++++++++....WWWWWW....##",
+"##..ccccc.........++..AAAAAA..++....WWDWWW....##",
+"##..T...T....o....++..N....N..++......++......##",
+"##...........o....++++++++++++++......++......##",
+"##....RRRRRh......++..RRRRRh..++..++..RRRRRh..##",
+"##....rrrrrr......++..rrrrrr..++..++..rrrrrr..##",
+"##....WWWWWW..T...++..WWWWWW..++..++..WWWWWW..##",
+"##....WWDWWW......++..WWDWWD..++..++..WWDWWW..##",
+"##....WWDWWW......++..WWDWWD..++..++..WWDWWW..##",
+"##......++++++++..++++++++++++++..++++++..++++##",
+"##..T.............++....N.....++..........++..##",
+"##........f.......++..T....T..++....RRRRRh++..##",
+"##....ccccc.......++..........++....rrrrrr++..##",
+"##....ccccc...*...++++++++++++++....WWWWWW++..##",
+"##....ccccc.......++....b.....++....WWDWWW++..##",
+"##................++..........++......++..++..##",
+"##..----.----.....++++++++++++++......++++++..##",
+"##................++++..EE..++++..............##",
+"##..T......T......++++..EE..++++......T....T..##",
+"####################++++..++++##################",
+"####################++++..++++##################",
+"####################++++..++++##################"
+];
+const ZELDA_TOWN_SPRITES_FIXED = {"ROOF_RIDGE":["KKKKKKKKKKKKKKKK","OOOOOOOOOOOOOOOO","RRRRRRRRRRRRRRRR","RRDDRRRRDDRRRRDD","RRRRRRRRRRRRRRRR","DDDDDDDDDDDDDDDD","RRRRRRRRRRRRRRRR","DDRRRRDDRRRRDDRR","RRRRRRRRRRRRRRRR","DDDDDDDDDDDDDDDD","RRRRRRRRRRRRRRRR","RRDDRRRRDDRRRRDD","RRRRRRRRRRRRRRRR","DDDDDDDDDDDDDDDD","RRRRRRRRRRRRRRRR","DDDDDDDDDDDDDDDD"],"ROOF_CHIMNEY":["........KKWWKK..",".......KWWWWWWK.","........KKWWKK..","........KRRRRRK.","........KDDDDDK.","OOOOOOOOORRRRRKO","RRRRRRRRRRRRRRKR","RRDDRRRRDDRRRRDK","RRRRRRRRRRRRRRRR","DDDDDDDDDDDDDDDD","RRRRRRRRRRRRRRRR","DDRRRRDDRRRRDDRR","RRRRRRRRRRRRRRRR","BBBBBBBBBBBBBBBB","DDDDDDDDDDDDDDDD","KKKKKKKKKKKKKKKK"],"MARKET_AWNING":["KKKKKKKKKKKKKKKK","KRRWWWRRWWWRRWWK","KRRWWWRRWWWRRWWK","KRRWWWRRWWWRRWWK","KRRWWWRRWWWRRWWK","KRRWWWRRWWWRRWWK","KDDSSSDDSSSDDSSK",".KK..KK..KK..KK.",".KB..KB..KB..KB.",".KB..KB..KB..KB.","KOOOOOOOOOOOOOOK","KBBYYBBGGBBRRBBK","KBBBBBBBBBBBBBBK","KDDDDDDDDDDDDDDK","KKKKKKKKKKKKKKKK","................"],"PICKET_FENCE":["................","................","................","..KK...KK...KK..",".KOOK.KOOK.KOOK.",".KBBK.KBBK.KBBK.","KOOOOOOOOOOOOOOK","KBBBBBBBBBBBBBBK",".KBBK.KBBK.KBBK.",".KBBK.KBBK.KBBK.","KOOOOOOOOOOOOOOK","KBBBBBBBBBBBBBBK",".KBBK.KBBK.KBBK.",".KDDK.KDDK.KDDK.","KKKKKKKKKKKKKKKK","................"],"BARREL_AND_CRATE":["................","................","..KKKKKK........",".KOOOOOOK.......",".KBBBBBBK.......","KSSSSSSSSK......","KBBBBBBBBK.KKKKK","KBBBBBBBBKKOOOOK","KBBBBBBBBKKOOBOK","KBBBBBBBBKKOBOOK",".KBBBBBBKKKOOOOK",".KDDDDDDKKKDDDDK","..KKKKKKKKKKKKKK","................","................","................"],"PARK_BENCH":["................","................","................","................","..KKKKKKKKKKKK..",".KOOOOOOOOOOOOK.",".KBBBBBBBBBBBBK.","..KKKKKKKKKKKK..",".KOOOOOOOOOOOOK.",".KBBBBBBBBBBBBK.",".KSSKKKKKKKKSSK.",".KSSK......KSSK.",".KKKK......KKKK.","................","................","................"],"STREET_LANTERN":["......KKKK......",".....KYYYYK.....","....KYYWWYYK....","....KYYWWYYK....",".....KYYYYK.....","....KKKKKKKK....","......KSSK......","......KSSK......","......KSSK......","......KSSK......","......KSSK......","......KSSK......",".....KSSSSK.....","....KSSSSSSK....","....KKKKKKKK....","................"],"STONE_WELL":["....KKKKKKKK....","..KKLLLLLLLLKK..",".KLSSSSSSSSSSLK.","KLSSKKKKKKKKSSLK","KLSKCCCCCCCCKSLK","KLSKCCWWWWCCKSLK","KLSKCCCCCCCCKSLK","KLSSKKKKKKKKSSLK",".KLSSSSSSSSSSLK.",".KLSDDDDDDDDSLK.","..KKLLLLLLLLKK..","..KLSSSSSSSSLK..","..KDDDDDDDDDDK..","...KKKKKKKKKK...","................","................"]};
+module.exports = { ELABORATE_VILLAGE_ROWS, ZELDA_TOWN_SPRITES_FIXED };

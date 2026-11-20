@@ -1,0 +1,82 @@
+// HYBRID PACK CLEANUP — Muse, under fit authority (Michael: "clean up the doors
+// and things", 2026-11-19 00:54 CST). Same palette, same 16x16 discipline:
+//  1. DOOR rebuilt: stone arch, plank door, a real diamond CREST (was a gold block),
+//     brass handle, threshold, twin welcome mats.
+//  2. NEW WALL tile + WINDOW tile (the pack had none — no house could be built).
+//  3. HEDGE rosettes respaced so they read as leaf clusters, not vents.
+const P = { O:'#2B241E', D:'#245931', G:'#3E9144', L:'#6BC259', S:'#8F877B', C:'#CFC6B6', W:'#EDE6D8', B:'#5C422B', T:'#9C7853', R:'#B55B45', Y:'#E8C14A' };
+const DOOR_CLEAN = [
+"BBTTTTTTTTTTTTBB",
+"BBWWWWWWWWWWWWBB",
+"BBWWWCCCCCCWWWBB",
+"BBWWCCCYYCCCWWBB",
+"BBWCTTTTTTTTCWBB",
+"BBWCTTTYYTTTCWBB",
+"BBWCTTYYYYTTCWBB",
+"BBWCTTTYYTTTCWBB",
+"BBWCTTTTTTTTCWBB",
+"BBWCTTTTTTYTCWBB",
+"BBWCTTTTTTTTCWBB",
+"BBWCTTTTTTTTCWBB",
+"BBWWCCCCCCCCWWBB",
+"BBSSSSSSSSSSSSBB",
+"GGGOOOOGGOOOOGGG",
+"GGOCCCCOGCCCCOGG"];
+const WALL_CLEAN = [
+"BBBBBBBBBBBBBBBB",
+"BBWWWWWWWWWWWWBB",
+"BBWWWWWWWWWWWWBB",
+"BBWWWWWSWWWWWWBB",
+"BBWWWWWWWWWWWWBB",
+"BBWWWWWWWWWWWWBB",
+"BBWWWWWWWWWWWSBB",
+"BBWWWWWWWWWWWWBB",
+"BBWWWWWWWWWWWWBB",
+"BBWWWSWWWWWWWWBB",
+"BBWWWWWWWWWWWWBB",
+"BBWWWWWWWWWWWWBB",
+"BBWWWWWWWWWWWWBB",
+"BBWWWWWWWWWWWWBB",
+"BBBBBBBBBBBBBBBB",
+"SSSSSSSSSSSSSSSS"];
+const WINDOW_CLEAN = [
+"BBBBBBBBBBBBBBBB",
+"BBWWWWWWWWWWWWBB",
+"BBWWBBBBBBBBWWBB",
+"BBWBYWWWWWWYBWWB",
+"BBWWBYWYYYYBWWBB",
+"BBWWBYWYYWYBWWBB",
+"BBWWBBYYYYBBWWBB",
+"BBWWWBYYYYBWWWBB",
+"BBWWBBBBBBBBWWBB",
+"BBWWWWWWWWWWWWBB",
+"BBWWBBBBBBBBWWBB",
+"BBWBGWGWYGWGWGBB",
+"BBWWWWWWWWWWWWBB",
+"BBWWWWWWWWWWWWBB",
+"BBBBBBBBBBBBBBBB",
+"SSSSSSSSSSSSSSSS"];
+const HEDGE_CLEAN = [
+"OOLLLLLLLLLLLLOO",
+"OLGGGGGGGGGGGGLO",
+"OGLLWGGLLGGWLLGO",
+"OGLLWGGLLGGWLLGO",
+"OGGGGGGGGGGGGGGO",
+"OGGLLGGGLLGGGLGO",
+"OGGLLGGGLLGGGLGO",
+"OGGGGGGGGGGGGGGO",
+"ODDDDDDDDDDDDDDO",
+"ODGGGGGGGGGGGGDO",
+"ODDDDDDDDDDDDDDO",
+"OOBBBBBBBBBBBBOO",
+"DDDDDDDDDDDDDDDD",
+"GGGGGGGGGGGGGGGG",
+"GGGGGGGGGGGGGGGG",
+"GGGGGGGGGGGGGGGG"];
+for (const [n, rows] of Object.entries({ DOOR_CLEAN, WALL_CLEAN, WINDOW_CLEAN, HEDGE_CLEAN })) {
+  const bad = rows.map((r, i) => [i, r.length]).filter(([, l]) => l !== 16);
+  const stray = [...new Set(rows.join(''))].filter(c => !(c in P));
+  console.log(`${n}: rows=${rows.length} bad=${JSON.stringify(bad)} stray=${stray.join('') || 'none'}`);
+  rows.forEach((r, i) => { if (r.length !== 16) console.log('   ', i, JSON.stringify(r)); });
+}
+require('fs').writeFileSync('/tmp/clean.json', JSON.stringify({ DOOR_CLEAN, WALL_CLEAN, WINDOW_CLEAN, HEDGE_CLEAN, P }));
