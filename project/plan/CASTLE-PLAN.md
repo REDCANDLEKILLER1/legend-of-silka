@@ -77,6 +77,10 @@ explorable castle in the story flow is the Part Two wiring decision below.
    (characters/sprites_cook.py): white kerchief cap, flour-dusted apron
    with a pocket, rolled sleeves, a steel ladle in her screen-right hand
    in every view. Wired into the kitchen; sprite count is now 99.
+   Engine note: a new character must ALSO join the SPR bake list in
+   part1.html, or the scene that uses it crashes at render (caught by the
+   smoke test 2026-11-20 — check test exit codes directly, never through
+   a pipe, which masks them).
 
 ## Rules carried in
 
