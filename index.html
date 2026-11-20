@@ -7,10 +7,11 @@
 <style>
   html, body { margin:0; padding:0; background:#0b0910; height:100%; overflow:hidden;
     font-family:'Courier New', monospace; -webkit-user-select:none; user-select:none; }
-  #wrap { position:relative; width:100vw; height:100vh; display:flex; align-items:center; justify-content:center; }
+  #wrap { position:relative; width:100vw; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    --gw:min(100vw, 133.33vh); }
   #stage { position:relative; }
   canvas { image-rendering:pixelated; image-rendering:crisp-edges; background:#16210f; display:block;
-    width:min(100vw, 133.33vh); height:auto; aspect-ratio:4/3; }
+    width:var(--gw); height:auto; aspect-ratio:4/3; }
   .layer { position:absolute; inset:0; }
   #card { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
     background:#000; color:#e8dfc8; z-index:30; padding:4%; box-sizing:border-box; }
@@ -52,12 +53,15 @@
   #dlg .next { position:absolute; right:.7em; bottom:.4em; color:#ffd91a; animation:blink 1s steps(2) infinite; font-size:14px; }
   #fade { background:#000; opacity:0; pointer-events:none; transition:opacity .6s linear; z-index:28; }
   #flash { background:#e9d5ff; opacity:0; pointer-events:none; z-index:27; }
-  #touch { position:absolute; inset:auto 0 0 0; z-index:26; display:none; justify-content:space-between; padding:0 3% 2.5%; pointer-events:none; }
-  #touch .pad { display:grid; grid-template-columns:repeat(3, 52px); grid-template-rows:repeat(3, 52px); pointer-events:auto; }
-  #touch button { background:rgba(20,16,28,.55); border:2px solid rgba(201,185,138,.7); color:#f3e9c9;
+  #touch { display:none; width:var(--gw); box-sizing:border-box; justify-content:space-between; align-items:center;
+    padding:10px 2% 14px; }
+  #touch .pad { display:grid; grid-template-columns:repeat(3, 54px); grid-template-rows:repeat(3, 54px); }
+  #touch button { background:rgba(20,16,28,.85); border:2px solid rgba(201,185,138,.7); color:#f3e9c9;
     font-size:20px; border-radius:10px; touch-action:none; }
-  #touch .abtn { width:64px; height:64px; border-radius:50%; align-self:end; pointer-events:auto; font-size:22px; }
-  @media (pointer:coarse) { #touch { display:flex; } #dlg { bottom:19%; } }
+  #touch .btns { display:flex; gap:14px; align-items:flex-end; }
+  #touch .abtn { width:68px; height:68px; border-radius:50%; font-size:23px; }
+  #touch .bbtn { width:56px; height:56px; border-radius:50%; font-size:20px; margin-bottom:16px; }
+  @media (pointer:coarse) { #wrap { --gw:min(100vw, calc((100dvh - 150px) * 1.3333)); } #touch { display:flex; } }
 </style>
 </head>
 <body>
@@ -67,16 +71,17 @@
   <div id="dlg"><div class="who"></div><div class="txt"></div><div class="next">▼</div></div>
   <div id="flash" class="layer"></div>
   <div id="fade" class="layer"></div>
-  <div id="touch">
-    <div class="pad">
-      <span></span><button data-d="up">▲</button><span></span>
-      <button data-d="left">◀</button><span></span><button data-d="right">▶</button>
-      <span></span><button data-d="down">▼</button><span></span>
-    </div>
-    <button class="abtn" id="abtn">A</button>
-  </div>
   <div id="card" class="layer art"></div>
-</div></div>
+</div>
+<div id="touch">
+  <div class="pad">
+    <span></span><button data-d="up">▲</button><span></span>
+    <button data-d="left">◀</button><span></span><button data-d="right">▶</button>
+    <span></span><button data-d="down">▼</button><span></span>
+  </div>
+  <div class="btns"><button class="bbtn" id="bbtn">B</button><button class="abtn" id="abtn">A</button></div>
+</div>
+</div>
 
 <script src="sprites-data.js"></script>
 <script src="title-scene.js"></script>
@@ -87,6 +92,9 @@ const $ = id => document.getElementById(id);
 const cv = $('cv'), ctx = cv.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 const TILE = 16, VW = 32, VH = 24;
+// Zelda 1 proportions (Michael, 2026-11-20): the screen shows 16x12 tiles at 2x,
+// never the whole map at once — the hero stands one tile wide, like Link.
+const SCALE = 2, VIEW_W = 16, VIEW_H = 12;
 const wait = ms => new Promise(r => setTimeout(r, ms));
 const MUS = { theme: new Audio('music/main-theme.mp3'),
               chime: new Audio('music/secret-discovered.mp3'),
@@ -298,20 +306,35 @@ function loadScene(def){
   player = def.player || null;
   if (player && !scene.entities.includes(player)) scene.entities.push(player);
 }
+let camX = 0, camY = 0;
+function updateCam(){
+  const mw = scene.rows[0].length * TILE, mh = scene.rows.length * TILE;
+  const vw = VIEW_W * TILE, vh = VIEW_H * TILE;
+  const f = player || scene.focus || null;
+  let tx = (mw - vw) / 2, ty = (mh - vh) / 2;
+  if (f){ tx = f.px + TILE / 2 - vw / 2; ty = f.py + TILE / 2 - vh / 2; }
+  camX = mw <= vw ? (mw - vw) / 2 : Math.max(0, Math.min(mw - vw, tx));
+  camY = mh <= vh ? (mh - vh) / 2 : Math.max(0, Math.min(mh - vh, ty));
+}
 function render(){
   tick++;
   ctx.fillStyle = '#0b0910'; ctx.fillRect(0, 0, 512, 384);
   if (!scene) return;
-  const ox = scene.ox || 0, oy = scene.oy || 0;
-  for (let y = 0; y < scene.rows.length; y++)
-    for (let x = 0; x < scene.rows[0].length; x++){
+  updateCam();
+  ctx.save();
+  ctx.scale(SCALE, SCALE);
+  ctx.translate(-Math.round(camX), -Math.round(camY));
+  const x0 = Math.max(0, Math.floor(camX / TILE)), x1 = Math.min(scene.rows[0].length - 1, Math.ceil((camX + VIEW_W * TILE) / TILE));
+  const y0 = Math.max(0, Math.floor(camY / TILE)), y1 = Math.min(scene.rows.length - 1, Math.ceil((camY + VIEW_H * TILE) / TILE));
+  for (let y = y0; y <= y1; y++)
+    for (let x = x0; x <= x1; x++){
       const t = TILES[scene.set][scene.rows[y][x]];
-      if (t) ctx.drawImage(t, (x + ox) * TILE, (y + oy) * TILE);
+      if (t) ctx.drawImage(t, x * TILE, y * TILE);
     }
   const es = [...scene.entities].filter(e => !e.hidden).sort((a, b) => a.py - b.py);
   for (const e of es){
     const img = typeof e.spr === 'function' ? e.spr(tick) : e.spr;
-    const dx = e.px + ox * TILE, dy = e.py + oy * TILE + TILE - img.height;
+    const dx = e.px, dy = e.py + TILE - img.height;
     if (e.aura){
       const p = .5 + .5 * Math.sin(tick * .09);
       const gx = dx + img.width / 2, gy = dy + img.height / 2;
@@ -324,6 +347,7 @@ function render(){
     }
     ctx.drawImage(img, dx, dy);
   }
+  ctx.restore();
   if (scene.dim){ ctx.fillStyle = `rgba(8,4,18,${scene.dim})`; ctx.fillRect(0, 0, 512, 384); }
 }
 // ============ title screen (canvas, animated) ============
@@ -354,10 +378,11 @@ requestAnimationFrame(loop);
 const held = {};
 const KEYMAP = { ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down',
   ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right' };
-let aPressed = false;
+let aPressed = false, bPressed = false;
 addEventListener('keydown', e => {
   if (KEYMAP[e.code]){ held[KEYMAP[e.code]] = true; e.preventDefault(); }
   if (['Space','Enter','KeyZ'].includes(e.code)){ aPressed = true; e.preventDefault(); }
+  if (e.code === 'KeyX'){ bPressed = true; e.preventDefault(); }
 });
 addEventListener('keyup', e => { if (KEYMAP[e.code]) held[KEYMAP[e.code]] = false; });
 document.querySelectorAll('#touch button[data-d]').forEach(b => {
@@ -368,13 +393,14 @@ document.querySelectorAll('#touch button[data-d]').forEach(b => {
   b.addEventListener('pointerleave', off); b.addEventListener('pointercancel', off);
 });
 $('abtn').addEventListener('pointerdown', e => { e.preventDefault(); aPressed = true; });
+$('bbtn').addEventListener('pointerdown', e => { e.preventDefault(); bPressed = true; });
 $('dlg').addEventListener('pointerdown', () => { aPressed = true; });
 $('card').addEventListener('pointerdown', () => { aPressed = true; });
 function playerControl(){
   if (player.moveT > 0) return;
   for (const d of ['up','down','left','right']) if (held[d]){ stepEnt(player, d); return; }
 }
-function takeA(){ const a = aPressed; aPressed = false; return a; }
+function takeA(){ const a = aPressed || bPressed; aPressed = false; bPressed = false; return a; }
 
 // ============ dialogue / cards / objective ============
 const dlgEl = $('dlg'), dlgWho = dlgEl.querySelector('.who'), dlgTxt = dlgEl.querySelector('.txt');
@@ -553,7 +579,7 @@ function buildCottage(){
   const pearl = makeEnt(SPR.pearlO, 3, 3, { name: 'OLD PEARL', talk: async () => { if (!G.told) theTelling(); } });
   const hero = makeEnt(SPR.cornman, 7, 10, {});
   hero.dir = 'up';
-  return { set: 'cottage', rows: COTTAGE, ox: 8, oy: 6, player: hero,
+  return { set: 'cottage', rows: COTTAGE, player: hero,
     entities: [pearl],
     triggers: { '7,11': async () => { if (G.told) await endPart(); },
                 '8,11': async () => { if (G.told) await endPart(); },
@@ -579,15 +605,17 @@ async function theTelling(){
   const wiz = makeEnt(wizSpr, 16, 20, { aura: true }); wiz.hidden = true;
   loadScene({ set: 'hall', rows: HALL, player: null,
     entities: [king, silka, witness, crow1, crow2, crow3, wiz], triggers: {}, refs: {} });
+  scene.focus = king;
   scene.dim = .38;
   await fadeTo(0, 900);
   await say([['PEARL\u2019S VOICE', 'First came the crows. Every crow in the valley, settling on the roof-beams at once, the way they do before a storm that has a name.'],
     ['PEARL\u2019S VOICE', 'Then the doors opened — though no hand touched them — and the cold came in wearing a man\u2019s shape.']]);
   await flashViolet();
-  wiz.hidden = false;
+  wiz.hidden = false; scene.focus = wiz;
   await say([['THE STORM WIZARD', 'Harvest King. The valley has kept what is owed for a hundred years. I am come to collect the brightest thing in it.'],
     ['THE HARVEST KING', 'Name your price and take it from my stores. The valley pays its debts.'],
     ['THE STORM WIZARD', 'My price is standing beside you, wearing poppies in her hair.']]);
+  scene.focus = silka;
   await moveEntTo(silka, 16, 9); silka.dir = 'down';
   await say([['SILKA', 'Then hear the valley\u2019s answer, collector. I am not a debt. I am not a price. And I will not go.'],
     ['PEARL\u2019S VOICE', 'She refused him standing straight as a stalk in the field. I have loved her for a hundred years for that one moment.']]);
