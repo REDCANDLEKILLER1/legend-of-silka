@@ -15,7 +15,41 @@ he playtests when it's set up. Structure follows his own words:
 "you play as one character, you play as another character, and then
 you watch."
 
-## The shape
+## Structure — REVISED 2026-11-20 (Michael's frame: the intro movie)
+
+Michael's ruling, in his words across four messages: CornMan walks in and
+finds the King; the meeting is the story, not a greeting. The King tells
+the first part himself; then the whole story plays out like an animated
+movie — preset scenes, talk bubbles you advance (next, next, next), fades
+between places, people moving on their own — until CornMan is CornMan
+again and the adventure opens. The player only ever plays as CornMan.
+
+1. ARRIVAL (play): CornMan walks into the village; objective = find the
+   King. Villagers point the way; Pearl, visited early, sends him to the
+   King first ("Kings first. Then Pearl.").
+2. THE MEETING (scene): up the castle road, up the long red carpet, to
+   the King SEATED on the Throne of the Harvest Kings, court around him
+   (throne guards, the jester — who dances when talked to — steward,
+   courtiers). CornMan asks what happened. The King answers: the statue
+   in the village is his great-grandfather; the face comes down the line
+   with the crown. He tells the crown's part, then gives the night to
+   Pearl's memory.
+3. THE MOVIE (watch, advance with A): the feast hall a hundred years
+   gone (crows, the Wizard's demand, Silka's refusal, the vanishing —
+   Pearl's voice narrating), then the village at dawn (the old King at
+   the statue's place; the flowers explained), fading between places.
+4. THE CHARGE (scene): back in the throne room — the reveal, the secret
+   chime, the way under the mountain, and the King's charge: bring
+   Silka home.
+5. PEARL (play): return to her cottage for the road (the cave's mouth);
+   leaving by her door ends Part One on the adventure hook.
+
+The old playable-feast opening (play as young Pearl) is retired from the
+flow; its hall set and beats remain in the code as a previewable feast
+(#hall). The present-day King is the old King's great-grandson — the
+castle is a living court, which is why it is furnished and staffed.
+
+## The shape (superseded by the revision above)
 1. TITLE — new key art, NO characters (Michael: the old cover made the
    hero look like "a version of Zelda with a corn hat"). Working title
    on screen: THE BLACK CASTLE — Part One. Title music: the main theme
