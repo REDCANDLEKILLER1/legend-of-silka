@@ -70,6 +70,38 @@
   <span class="meta" id="dim-badge">0 × 0 px</span>
 </h1>
 
+<div class="panel" id="png-panel">
+  <label>&#128444; PNG &#8594; CODE — pick an image file and turn it into palette + matrix code:</label>
+  <div class="controls">
+    <input type="file" id="png-file" accept="image/*" style="color:#B8B0C8;">
+    <label>Name:</label>
+    <input type="text" id="png-name" value="PNG_SPRITE" style="background:#0D0C14;color:#E8E2F5;border:1px solid #3D3654;border-radius:6px;padding:7px 10px;font-family:inherit;font-size:12px;width:130px;">
+    <label>Max colors:</label>
+    <select id="png-colors">
+      <option value="8">8</option>
+      <option value="12">12</option>
+      <option value="16" selected>16</option>
+      <option value="24">24</option>
+      <option value="32">32</option>
+    </select>
+    <label>Shrink to width:</label>
+    <select id="png-width">
+      <option value="0" selected>Original</option>
+      <option value="96">96 px</option>
+      <option value="64">64 px</option>
+      <option value="48">48 px</option>
+      <option value="32">32 px</option>
+    </select>
+    <button class="primary" onclick="convertPng()">&#9654; Convert PNG</button>
+  </div>
+  <textarea id="png-out" spellcheck="false" placeholder="Converted code appears here..." style="height:150px;"></textarea>
+  <div class="controls">
+    <button class="gold" onclick="copyPngCode()">&#128203; Copy Code</button>
+    <button onclick="sendPngToRenderer()">&#11015; Send to Renderer Below</button>
+    <span class="meta" id="png-meta"></span>
+  </div>
+</div>
+
 <div class="layout">
   <div class="panel">
     <label>1. Paste palette + sprite code (any of our formats — JS or JSON, quoted or not):</label>
@@ -311,6 +343,90 @@ function parseCode(src) {
     link.href = canvas.toDataURL('image/png');
     link.click();
   }
+
+// ==== PNG -> CODE (pure core; browser glue below) ====
+function pngToCode(data, w, h, maxColors, name) {
+  const counts = new Map();
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i + 3] < 128) continue;
+    const key = (data[i] << 16) | (data[i + 1] << 8) | data[i + 2];
+    const e = counts.get(key);
+    if (e) e.n++; else counts.set(key, { n: 1, r: data[i], g: data[i + 1], b: data[i + 2] });
+  }
+  let colors = [...counts.values()].sort((a, b) => b.n - a.n);
+  if (colors.length > maxColors) {
+    const buckets = new Map();
+    for (const c of colors) {
+      const bk = ((c.r >> 4) << 8) | ((c.g >> 4) << 4) | (c.b >> 4);
+      const b = buckets.get(bk);
+      if (b) { b.n += c.n; b.r += c.r * c.n; b.g += c.g * c.n; b.b += c.b * c.n; }
+      else buckets.set(bk, { n: c.n, r: c.r * c.n, g: c.g * c.n, b: c.b * c.n });
+    }
+    colors = [...buckets.values()].sort((a, b) => b.n - a.n).slice(0, maxColors)
+      .map(b => ({ n: b.n, r: Math.round(b.r / b.n), g: Math.round(b.g / b.n), b: Math.round(b.b / b.n) }));
+  }
+  const CH = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const palette = {};
+  colors.forEach((c, i) => { palette[CH[i]] = '#' + [c.r, c.g, c.b].map(v => v.toString(16).padStart(2, '0')).join(''); });
+  const nearest = (r, g, b) => {
+    let best = 0, bd = Infinity;
+    for (let i = 0; i < colors.length; i++) {
+      const d = (colors[i].r - r) ** 2 + (colors[i].g - g) ** 2 + (colors[i].b - b) ** 2;
+      if (d < bd) { bd = d; best = i; }
+    }
+    return CH[best];
+  };
+  const rows = [];
+  for (let y = 0; y < h; y++) {
+    let row = '';
+    for (let x = 0; x < w; x++) {
+      const i = (y * w + x) * 4;
+      row += data[i + 3] < 128 ? '.' : nearest(data[i], data[i + 1], data[i + 2]);
+    }
+    rows.push(row);
+  }
+  const code = 'const ' + name + '_PALETTE = ' + JSON.stringify(palette, null, 1) + ';\n\nconst ' + name + ' = [\n' +
+    rows.map(r => '  ' + JSON.stringify(r)).join(',\n') + '\n];\n';
+  return { code, palette, rows, colorCount: colors.length };
+}
+
+function convertPng() {
+  const file = document.getElementById('png-file').files[0];
+  const meta = document.getElementById('png-meta');
+  if (!file) { meta.textContent = 'Pick an image file first.'; return; }
+  const name = (document.getElementById('png-name').value || 'PNG_SPRITE').toUpperCase().replace(/[^A-Z0-9_]/g, '_');
+  const maxColors = parseInt(document.getElementById('png-colors').value, 10);
+  const maxW = parseInt(document.getElementById('png-width').value, 10);
+  const img = new Image();
+  img.onload = () => {
+    let w = img.width, h = img.height;
+    if (maxW > 0 && w > maxW) { h = Math.max(1, Math.round(h * maxW / w)); w = maxW; }
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    const cx = cv.getContext('2d'); cx.imageSmoothingEnabled = false;
+    cx.drawImage(img, 0, 0, w, h);
+    URL.revokeObjectURL(img.src);
+    const data = cx.getImageData(0, 0, w, h).data;
+    const out = pngToCode(data, w, h, maxColors, name);
+    document.getElementById('png-out').value = out.code;
+    meta.textContent = w + ' × ' + h + ' px → ' + out.colorCount + ' colors, ' + out.code.length + ' characters of code';
+  };
+  img.src = URL.createObjectURL(file);
+}
+
+function copyPngCode() {
+  const t = document.getElementById('png-out');
+  if (!t.value) return;
+  t.select();
+  if (navigator.clipboard) navigator.clipboard.writeText(t.value);
+  else document.execCommand('copy');
+}
+
+function sendPngToRenderer() {
+  const code = document.getElementById('png-out').value;
+  if (!code) return;
+  document.getElementById('code-input').value = code;
+  renderCode();
+}
 
   renderCode();
 </script>
