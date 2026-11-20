@@ -231,6 +231,25 @@ cottage: {
   'r': tile(g => { R(g,0,0,16,16,'#7e2f26'); R(g,1,1,14,14,'#93392c'); R(g,3,3,10,10,'#a34a28'); R(g,5,5,6,6,'#f5bd1f'); }),
   'd': tile(g => { R(g,0,0,16,16,'#4a2f1a'); R(g,4,1,8,15,'#5d3a1e'); R(g,5,2,6,13,'#6f4525'); R(g,10,8,1,2,'#f5bd1f'); })
 }};
+// The King's castle interior shares the hall's stone, then dresses itself.
+TILES.castle = {
+  '.': TILES.hall['+'], '#': TILES.hall['#'],
+  'H': tile(g => { R(g,0,0,16,16,'#8e2320'); R(g,0,0,2,16,'#c9973f'); R(g,14,0,2,16,'#c9973f'); R(g,7,3,2,2,'#c9973f'); R(g,7,11,2,2,'#c9973f'); R(g,3,7,2,2,'#a52a24'); R(g,11,7,2,2,'#a52a24'); R(g,0,0,16,1,'#6e1a17'); R(g,0,15,16,1,'#6e1a17'); }),
+  '=': tile(g => { R(g,0,0,16,16,'#6b4423'); R(g,0,0,16,2,'#8c5a30'); R(g,0,14,16,2,'#4e3016'); R(g,2,4,3,3,'#e6d7b8'); R(g,11,4,3,3,'#e6d7b8'); R(g,2,10,3,3,'#e6d7b8'); R(g,11,10,3,3,'#e6d7b8'); R(g,7,7,2,2,'#f5bd1f'); }),
+  'B': tile(g => { R(g,0,0,16,16,'#4a2f1a'); R(g,0,1,16,2,'#66452a'); R(g,0,8,16,2,'#66452a'); R(g,1,4,2,3,'#a52a24'); R(g,4,4,2,3,'#2c4d6e'); R(g,7,4,2,3,'#c9973f'); R(g,10,4,2,3,'#38663a'); R(g,13,4,2,3,'#a52a24'); R(g,1,11,2,3,'#38663a'); R(g,4,11,2,3,'#c9973f'); R(g,7,11,2,3,'#a52a24'); R(g,10,11,2,3,'#2c4d6e'); R(g,13,11,2,3,'#e6d7b8'); }),
+  'N': tile(g => { R(g,0,0,16,16,'#948b7f'); R(g,4,13,8,3,'#7d7462'); R(g,5,12,6,1,'#a39a89'); R(g,7,4,2,8,'#8c897d'); R(g,6,2,4,2,'#a09c90'); R(g,7,1,2,1,'#c9973f'); R(g,6,6,1,2,'#7d7462'); R(g,9,6,1,2,'#7d7462'); }),
+  '*': [0,1].map(f => tile(g => { R(g,0,0,16,16,'#4c4453'); R(g,0,0,16,3,'#655b6e'); R(g,7,8,2,5,'#2e2a33'); R(g,6,12,4,1,'#57505f');
+    if (f === 0){ R(g,7,2,2,6,'#e07820'); R(g,7,3,2,3,'#f5bd1f'); }
+    else { R(g,6,3,2,5,'#e07820'); R(g,8,2,2,6,'#e07820'); R(g,7,3,2,3,'#ffd91a'); } })),
+  'A': tile(g => { R(g,0,0,16,16,'#948b7f'); R(g,3,2,10,6,'#7e2f26'); R(g,4,3,8,4,'#9c4034'); R(g,2,7,12,6,'#8e2320'); R(g,3,8,10,4,'#a52a24'); R(g,2,13,3,2,'#4a2f1a'); R(g,11,13,3,2,'#4a2f1a'); }),
+  'U': [0,1].map(f => tile(g => { R(g,0,0,16,16,'#6e6257'); R(g,0,0,16,2,'#847a66'); R(g,0,13,16,3,'#57504a'); R(g,2,9,12,4,'#3a352f');
+    if (f === 0){ R(g,4,5,3,4,'#e07820'); R(g,9,4,3,5,'#e07820'); R(g,6,6,4,3,'#f5bd1f'); }
+    else { R(g,5,4,3,5,'#e07820'); R(g,8,5,3,4,'#e07820'); R(g,6,5,4,4,'#ffd91a'); } R(g,3,2,10,2,'#2e2a33'); })),
+  'T': tile(g => { R(g,0,0,16,16,'#8c5a30'); R(g,0,0,16,2,'#a8743f'); R(g,0,14,16,2,'#6b4423'); R(g,2,4,4,4,'#e6d7b8'); R(g,10,9,4,3,'#c9b995'); R(g,11,3,3,2,'#7d7462'); R(g,3,11,2,2,'#a52a24'); }),
+  'K': tile(g => { R(g,0,0,16,16,'#948b7f'); R(g,1,6,6,9,'#8c5a30'); R(g,1,9,6,2,'#6b4423'); R(g,9,7,6,8,'#a9834f'); R(g,9,7,6,2,'#c9a86a'); R(g,10,10,4,1,'#8a6a3c'); }),
+  'S': tile(g => { R(g,0,0,16,16,'#847a66'); R(g,0,0,16,3,'#a39a89'); R(g,0,5,16,3,'#948b7f'); R(g,0,10,16,3,'#7d7462'); R(g,0,15,16,1,'#655b6e'); }),
+  'D': tile(g => { R(g,0,0,16,16,'#5d3a1e'); R(g,1,1,6,14,'#6b4423'); R(g,9,1,6,14,'#6b4423'); R(g,7,0,2,16,'#3a2412'); R(g,0,4,16,2,'#c9973f'); R(g,0,11,16,2,'#c9973f'); R(g,5,8,2,2,'#f5bd1f'); R(g,9,8,2,2,'#f5bd1f'); })
+};
 // ============ tile variants ============
 // The same material, textured differently from tile to tile (the Minecraft
 // lesson: texture everywhere, and no two tiles stamped identical). Chosen by
@@ -273,6 +292,7 @@ const TILEVAR = {
     [[8,3,'#847a66'],[3,12,'#7d7462'],[13,8,'#847a66']],
     [[6,9,'#7d7462'],[11,13,'#847a66'],[2,4,'#847a66']]])
 };
+TILEVAR['castle.'] = TILEVAR['hall+'];
 // ============ maps ============
 const VILLAGE = [
 "####^^######^^^^^^^^######^^####",
@@ -340,7 +360,8 @@ const COTTAGE = [
 const SOLID = {
   village: new Set(['#','^','R','H','W','T','F','S','c']),
   hall: new Set(['#','B','W','T','C','H']),
-  cottage: new Set(['#','F','G','J','T','b','L','s','o'])
+  cottage: new Set(['#','F','G','J','T','b','L','s','o']),
+  castle: new Set(['#','B','N','*','A','U','T','K','S','D','='])
 };
 
 // ============ engine ============
@@ -354,7 +375,7 @@ function walkable(s, x, y, self){
 function makeEnt(spr, x, y, opts = {}){
   return Object.assign({ spr, x, y, px: x * TILE, py: y * TILE, dir: 'down', moveT: 0,
     fromX: x, fromY: y, hidden: false, name: '', talk: null,
-    ambT: 0, punch: null, noShadow: false }, opts);
+    ambT: 0, rStep: 0, rWait: 0, punch: null, noShadow: false }, opts);
 }
 function stepEnt(e, dir){
   const d = { up: [0,-1], down: [0,1], left: [-1,0], right: [1,0] }[dir];
@@ -432,6 +453,19 @@ function entImg(e){
 const DIRS4 = ['up','down','left','right'];
 const DVEC = { up: [0,-1], down: [0,1], left: [-1,0], right: [1,0] };
 function ambient(e, dt){
+  // Work routines: an NPC with a routine walks a loop of waypoints — go to
+  // the spot, face the work, stay a while, move on. This is how the cook
+  // cooks and the guard patrols. Runs only in free play (the caller gates
+  // on mode), and a blocked path just means wait and try again.
+  if (e.routine && e !== player && !e.hidden && !e.punch){
+    if ((e.path && e.path.length) || e.moveT > 0) return;
+    if (e.rWait > 0){ e.rWait -= dt; return; }
+    const wp = e.routine[e.rStep % e.routine.length];
+    if (e.x === wp[0] && e.y === wp[1]){ e.dir = wp[2]; e.rWait = wp[3]; e.rStep = (e.rStep + 1) % e.routine.length; return; }
+    e.path = pathTo(e, wp[0], wp[1]);
+    if (!e.path.length) e.rWait = 900;
+    return;
+  }
   if (!e.ambient || e === player || e.hidden || e.punch) return;
   if ((e.path && e.path.length) || e.moveT > 0) return;
   e.ambT -= dt;
@@ -635,6 +669,44 @@ setInterval(() => { if (mode === 'play' && aPressed){ takeA(); interact(); } }, 
 const G = { stage: 0, cup: false, told: false };
 const wizSpr = t => (Math.floor(t / 8) % 2 ? SPR.wizardB : SPR.wizardA);
 
+const CASTLE_ROWS = [
+"########################SS########################",
+"#BB..BB..BB..BB###*....HHHH....*###BB..BB..BB..BB#",
+"#..............###..N..HHHH..N..###..N........N..#",
+"#..B........B..###..............###..====..====..#",
+"#..............###*....====....*###..............#",
+"#..B..N.....B..###..N..====..N..###..B........B..#",
+"#..............###..............###..............#",
+"#..............###*............*###......UU......#",
+"#..............###..............###..............#",
+"#..............###..#........#..###..............#",
+"######....#############....#############....######",
+"######....#############....#############....######",
+"######....#############....#############....######",
+"#..B........B..###*............*###..A........A..#",
+"#..............###..N..====..N..###..............#",
+"#..N........N..###..N..====..N..###..N........N..#",
+"#..............###..N..====..N..###..............#",
+"#......==............N.====.N............==......#",
+"#....................N.====.N....................#",
+"#..B........B..###..N..====..N..###..A........A..#",
+"#..............###*............*###..............#",
+"#..............###..#........#..###..............#",
+"######....#############....#############....######",
+"######....#############....#############....######",
+"######....#############....#############....######",
+"#..B........B..###*............*###..A........A..#",
+"#..............###..............###..............#",
+"#..====..====..###..#........#..###..====..====..#",
+"#..N........N..###..............###..N........N..#",
+"#................................................#",
+"#................................................#",
+"#..B........B..###..#........#..###..A........A..#",
+"#..............###*............*###..............#",
+"#..............###..............###..............#",
+"########################DD########################",
+"########################DD########################"
+];
 function buildHall(){
   const king = makeEnt(SPR.king, 15, 5, { name: 'THE HARVEST KING', ambient: { pause: [2800, 5600] }, talk: async () => {
     if (G.stage === 1){
@@ -746,6 +818,46 @@ function buildVillage(){
     refs: {} };
 }
 
+// The King's castle at rest: throne room north-center (red carpet to the
+// dais), banquet hall center, library west, kitchen + parlor east, great
+// hall south. Fitted footprint from the castle-grounds pack; dressed here.
+function buildCastle(){
+  const rows = CASTLE_ROWS.map(r => r.split(''));
+  const st = (x, y, c) => { rows[y][x] = c; };
+  for (const y of [3, 4, 5]) for (const x of [24, 25, 26, 27]) st(x, y, 'H');
+  for (let y = 6; y <= 12; y++) for (const x of [24, 25]) st(x, y, 'H');
+  for (let y = 22; y <= 33; y++) for (const x of [24, 25]) st(x, y, 'H');
+  st(38, 4, 'T'); st(39, 4, 'T'); st(36, 8, 'K'); st(47, 8, 'K'); st(48, 8, 'K');
+  const out = rows.map(r => r.join(''));
+  const cook = makeEnt(SPR.folkA, 42, 8, { name: 'COOK',
+    routine: [[42, 8, 'up', 2800], [38, 5, 'up', 2200], [41, 2, 'up', 1600]],
+    talk: async () => say(cyc(cook, [
+      ['COOK', 'Mind the hearth, love. Feast or no feast, this kitchen feeds the whole castle.'],
+      ['COOK', 'A hundred years of harvests, and I still count the sacks twice before a feast. Habit.'],
+      ['COOK', 'Throne room is north-center, hero \u2014 through the banquet hall, up the red carpet. Mind your feet for the King.']])) });
+  const patrol = makeEnt(SPR.guard, 20, 30, { name: 'GUARD',
+    routine: [[20, 30, 'down', 1500], [29, 30, 'down', 1500]],
+    talk: async () => say(cyc(patrol, [
+      ['GUARD', 'Great hall, hero. Doors south, throne north \u2014 through the feast hall and up the carpet.'],
+      ['GUARD', 'I pace the carpet. The carpet wears thin. We understand each other, it and I.']])) });
+  const mason = makeEnt(SPR.folkB, 4, 4, { name: 'MASON',
+    routine: [[4, 4, 'down', 3000], [11, 15, 'left', 2400], [4, 18, 'up', 2000]],
+    talk: async () => say(cyc(mason, [
+      ['MASON', 'Checking the King\u2019s stonework, course by course. Good stone tells you its age, if you listen.'],
+      ['MASON', 'Library first, then the west wall. A castle is just a hill that learned manners.']])) });
+  const king = makeEnt(SPR.king, 24, 1, { name: 'THE HARVEST KING', ambient: { pause: [3000, 6000] },
+    talk: async () => say(cyc(king, [
+      ['THE HARVEST KING', 'Walk the castle as you like, hero. It was built to be walked in.'],
+      ['THE HARVEST KING', 'A hundred harvests I have kept this valley. The keeping is the crown.']])) });
+  const silka = makeEnt(SPR.silka, 27, 2, { name: 'SILKA', ambient: { pause: [2400, 5000] },
+    talk: async () => say(cyc(silka, [
+      ['SILKA', 'The hall is quieter like this. I like it both ways \u2014 full of feast, and like this.'],
+      ['SILKA', 'If you are looking for Father, he is never far from the carpet\u2019s end.']])) });
+  const hero = makeEnt(SPR.cornman, 24, 33, {});
+  hero.dir = 'up';
+  return { set: 'castle', rows: out, player: hero,
+    entities: [cook, patrol, mason, king, silka], triggers: {}, refs: {} };
+}
 function buildCottage(){
   const pearl = makeEnt(SPR.pearlO, 3, 3, { name: 'OLD PEARL', ambient: { pause: [1600, 3400] }, talk: async () => { if (!G.told) theTelling(); } });
   const hero = makeEnt(SPR.cornman, 7, 10, {});
@@ -845,9 +957,9 @@ async function act3(){
 }
 (async function boot(){
   const H = location.hash; // scene-preview hooks (used for screenshot checks)
-  if (H === '#hall' || H === '#village' || H === '#cottage'){
+  if (H === '#hall' || H === '#village' || H === '#cottage' || H === '#castle'){
     $('card').style.display = 'none';
-    loadScene(H === '#hall' ? buildHall() : H === '#village' ? buildVillage() : buildCottage());
+    loadScene(H === '#hall' ? buildHall() : H === '#village' ? buildVillage() : H === '#castle' ? buildCastle() : buildCottage());
     if (H === '#village') scene.entities.push(makeEnt(wizSpr, 24, 16, { aura: true }));
     $('fade').style.opacity = 0; mode = 'play'; return;
   }
