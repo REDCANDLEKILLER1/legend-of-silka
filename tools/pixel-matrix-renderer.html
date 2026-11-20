@@ -299,11 +299,20 @@ function parseCode(src) {
 
   function effectiveZoom(w, h) {
     const v = document.getElementById('zoom-sel').value;
-    if (v !== 'fit') return parseFloat(v);
-    const stage = document.getElementById('stage');
-    const availW = Math.max(60, stage.clientWidth - 34);
-    const availH = Math.max(200, Math.round(window.innerHeight * 0.72));
-    return Math.max(0.05, Math.min(availW / w, availH / h, 6));
+    let z;
+    if (v !== 'fit') z = parseFloat(v);
+    else {
+      const stage = document.getElementById('stage');
+      const availW = Math.max(60, stage.clientWidth - 34);
+      const availH = Math.max(200, Math.round(window.innerHeight * 0.72));
+      z = Math.min(availW / w, availH / h, 6);
+    }
+    // A browser tab dies (the frowny face) when a canvas gets too big, so cap
+    // the display size no matter what zoom was picked: a huge picture simply
+    // shows at the biggest safe zoom instead of crashing the page.
+    z = Math.min(z, 4096 / w, 4096 / h);
+    if (w * z * (h * z) > 16000000) z = Math.sqrt(16000000 / (w * h));
+    return Math.max(0.05, z);
   }
 
   function renderSelected() {
@@ -318,7 +327,10 @@ function parseCode(src) {
     if (sheetMode) {
       // every sprite on one sheet, labeled — for reviewing a whole cast drop at once
       const rawZ = document.getElementById('zoom-sel').value;
-      const zoom = rawZ === 'fit' ? 1 : parseFloat(rawZ);
+      let zoom = rawZ === 'fit' ? 1 : parseFloat(rawZ);
+      const maxSW = Math.max(...names.map(n => Math.max(...parsedSprites[n].map(r => r.length))));
+      const maxSH = Math.max(...names.map(n => parsedSprites[n].length));
+      zoom = Math.min(zoom, 2048 / maxSW, 2048 / maxSH); // same crash cap, per sheet cell
       const cellW = Math.max(...names.map(n => Math.max(...parsedSprites[n].map(r => r.length)))) * zoom;
       const cellH = Math.max(...names.map(n => parsedSprites[n].length)) * zoom + 18;
       const cols = Math.min(4, names.length);
@@ -393,8 +405,10 @@ function parseCode(src) {
         // Export at the chosen zoom when zoomed in, but never below native 1x —
         // a Fit / zoomed-out view still downloads the full-resolution picture.
         const v = document.getElementById('zoom-sel').value;
-        const ez = v === 'fit' ? 2 : Math.max(1, parseFloat(v));
+        let ez = v === 'fit' ? 2 : Math.max(1, parseFloat(v));
         const { cv } = spriteCanvas(rows);
+        ez = Math.min(ez, 8192 / cv.width, 8192 / cv.height); // export canvas cap — same crash guard
+        if (cv.width * ez * (cv.height * ez) > 64000000) ez = Math.sqrt(64000000 / (cv.width * cv.height));
         const out = document.createElement('canvas');
         out.width = Math.round(cv.width * ez);
         out.height = Math.round(cv.height * ez);
