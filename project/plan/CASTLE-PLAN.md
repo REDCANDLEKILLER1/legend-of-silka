@@ -73,8 +73,10 @@ explorable castle in the story flow is the Part Two wiring decision below.
 1. STORY HOOKUP — which act opens the castle doors to the player is a Part
    Two wiring decision; the rooms are built set-first so the story walks
    into a finished place.
-2. Dedicated COOK sprite (she currently wears the orchard wife's proven
-   sprite — same apron class; her own face is an art-pass item).
+2. ~~Dedicated COOK sprite~~ — DONE 2026-11-20: her own sprite
+   (characters/sprites_cook.py): white kerchief cap, flour-dusted apron
+   with a pocket, rolled sleeves, a steel ladle in her screen-right hand
+   in every view. Wired into the kitchen; sprite count is now 99.
 
 ## Rules carried in
 

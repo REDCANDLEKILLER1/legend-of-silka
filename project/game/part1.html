@@ -1053,7 +1053,7 @@ function buildCastle(){
   st(38, 4, 'T'); st(39, 4, 'T'); st(36, 8, 'K'); st(47, 8, 'K'); st(48, 8, 'K');
   st(48, 9, 'S'); // the cellar stair, in the kitchen's south-east corner
   const out = rows.map(r => r.join(''));
-  const cook = makeEnt(SPR.folkA, 42, 8, { name: 'COOK',
+  const cook = makeEnt(SPR.cook, 42, 8, { name: 'COOK',
     routine: [[42, 8, 'up', 2800], [38, 5, 'up', 2200], [41, 2, 'up', 1600]],
     talk: async () => say(cyc(cook, [
       ['COOK', 'Mind the hearth, love. Feast or no feast, this kitchen feeds the whole castle.'],
