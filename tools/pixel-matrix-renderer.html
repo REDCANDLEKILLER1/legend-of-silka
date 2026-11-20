@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legend of Corn — Pixel Matrix & Palette Renderer</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 14px;
+    background: #0B0A10; color: #F5EFE6;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  h1 {
+    margin: 0; font-size: 16px; color: #FFD21E;
+    letter-spacing: 0.5px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 780px) { .layout { grid-template-columns: 1fr; } }
+  .panel {
+    background: #14121E; border: 2px solid #2D283E; border-radius: 8px;
+    padding: 12px; display: flex; flex-direction: column; gap: 10px;
+  }
+  label { font-size: 12px; color: #B8B0C8; font-weight: bold; }
+  textarea {
+    width: 100%; height: 260px;
+    background: #0D0C14; color: #E8E2F5;
+    border: 1px solid #3D3654; border-radius: 6px;
+    padding: 10px; font-family: inherit; font-size: 12px; line-height: 1.4;
+    resize: vertical;
+  }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  button, select {
+    background: #242036; color: #FFFDF7;
+    border: 1px solid #524970; border-radius: 6px;
+    padding: 7px 12px; font-family: inherit; font-size: 12px; cursor: pointer;
+  }
+  button:hover { background: #342E4D; }
+  button.primary { background: #2E8540; border-color: #63C756; font-weight: bold; }
+  button.gold { background: #8A5A08; border-color: #FFD21E; color: #FFF68F; font-weight: bold; }
+  .stage-wrap {
+    flex: 1; min-height: 300px;
+    border: 2px dashed #38314D; border-radius: 8px;
+    display: flex; align-items: flex-start; justify-content: center;
+    overflow: auto; padding: 16px; position: relative;
+  }
+  .bg-dark { background: #14121C; }
+  .bg-grass { background: #3E8E41; }
+  .bg-checker {
+    background-color: #222;
+    background-image: linear-gradient(45deg, #2e2e2e 25%, transparent 25%),
+      linear-gradient(-45deg, #2e2e2e 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #2e2e2e 75%),
+      linear-gradient(-45deg, transparent 75%, #2e2e2e 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  }
+  canvas { image-rendering: pixelated; image-rendering: crisp-edges; box-shadow: 0 8px 24px rgba(0,0,0,0.65); }
+  .meta { font-size: 12px; color: #9E96B0; }
+  .err { color: #FF6B8B; font-size: 12px; min-height: 16px; }
+  .warn { color: #FFD21E; font-size: 12px; min-height: 16px; }
+  .ok { color: #63C756; font-size: 12px; min-height: 16px; }
+</style>
+</head>
+<body>
+
+<h1>
+  <span>&#9876; LEGEND OF CORN — PIXEL MATRIX RENDERER</span>
+  <span class="meta" id="dim-badge">0 × 0 px</span>
+</h1>
+
+<div class="layout">
+  <div class="panel">
+    <label>1. Paste palette + sprite code (any of our formats — JS or JSON, quoted or not):</label>
+    <textarea id="code-input" spellcheck="false">// Paste ANY palette + sprite matrix block here and click Render!
+const STORM_WIZARD_PALETTE = {
+  K: '#09080F',
+  R: '#FF2A3C',
+  W: '#FFFFFF',
+  E: '#E9D5FF',
+  V: '#9333EA',
+  d: '#181E2C',
+  S: '#2B354A',
+  L: '#4E5E80',
+  B: '#5C3D24',
+  H: '#F7C294',
+  M: '#613E85'
+};
+
+const STORM_WIZARD_FRAME_A = [
+  "............KK..........",
+  "...........KLLK.........",
+  "..W.K.E...KLLdLK........",
+  ".EV.B.VE.KLLdddLK.......",
+  "WEVKBKVEWKLdddddLK......",
+  ".VKVVVKV.KLLdddLLK......",
+  "...KBK..KLdKKKKKdLK.....",
+  "...KBK.KLLKKKKKKKLLK....",
+  "...KBK.KLdKKKKKKKdLK....",
+  "...KBK.KLSKRRKKRRKLK....",
+  "...KBK.KLdKKKKKKKdLK....",
+  ".KKKBKKKKLddKKKddLKKKK..",
+  "KLLSSSLLLddSVWVddSLLSLHK",
+  "KLSdKLLddVWEWddSSLLKdK..",
+  "KLd.KdSdVWEVddSSMdK.dK..",
+  "KK..KdVWEVdSSVWEVSK..K..",
+  "....KVWEVdSSVWEVddK.....",
+  "...B.KdVddSVWEVdddK.....",
+  "...B.KdSdVWEVdVdddK.....",
+  "...B.KdVWEVddSVWEdK.....",
+  "...B.KVWEdSSVWEVddK.....",
+  "...B.KdVddSVWEVdddK.....",
+  "...B.KdSdVWEVdSSddK.....",
+  "...B.KdVWEVddVWEVdK.....",
+  "...B.KVWEdSSVWEVddK.....",
+  "...B.KdVddSVWEVdddK.....",
+  "...B.KdSdVWEVdVdddK.....",
+  "...B.KdVWEVddSVWEdK......",
+  "...B.KdKdVddKdVWKdKd....",
+  "...B.Kd.KdKd.KdEVKdK....",
+  "...B.K..KdK...KVE.dK....",
+  "...K....KK.....WK..K...."
+];</textarea>
+    <div class="controls">
+      <button class="primary" onclick="renderCode()">&#9654; Render Sprite</button>
+      <button onclick="document.getElementById('code-input').value=''">Clear</button>
+      <select id="sprite-picker" onchange="renderSelected()" style="display:none;"></select>
+      <select id="palette-picker" onchange="renderSelected()" style="display:none;"></select>
+    </div>
+    <div class="ok" id="ok-box"></div>
+    <div class="warn" id="warn-box"></div>
+    <div class="err" id="err-box"></div>
+  </div>
+
+  <div class="panel">
+    <div class="controls">
+      <label>Zoom:</label>
+      <select id="zoom-sel" onchange="renderSelected()">
+        <option value="4">4×</option>
+        <option value="8">8×</option>
+        <option value="12" selected>12×</option>
+        <option value="16">16×</option>
+      </select>
+      <label>Backdrop:</label>
+      <select id="bg-sel" onchange="updateBg()">
+        <option value="bg-dark" selected>Dark Slate</option>
+        <option value="bg-grass">Zelda Grass</option>
+        <option value="bg-checker">Transparent Checker</option>
+      </select>
+      <button onclick="toggleGrid()" id="grid-btn">Grid: OFF</button>
+      <button onclick="toggleSheet()" id="sheet-btn">Sheet: OFF</button>
+      <button class="gold" onclick="downloadPng()">&#11015; Download PNG</button>
+    </div>
+    <div class="stage-wrap bg-dark" id="stage">
+      <canvas id="preview-canvas"></canvas>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==== PARSER (pure — handles every format our pipeline produces) ====
+// - palettes as JS objects with quoted OR unquoted keys: {"K": "#fff"} / {K: '#fff'}
+// - several named palettes in one paste (PAL, STATUE_PAL, WIZ_PAL...) — all kept, picker chooses
+// - palettes nested in JSON dumps: "palette": {...}
+// - sprite arrays as NAME = [...], NAME: [...], or "rows": [...] in JSON
+function parseCode(src) {
+  const palettes = {};   // name -> {char: hex}
+  const sprites = {};    // name -> [rows]
+
+  // 1) named palette objects: NAME = { ... } whose body is char:hex entries
+  const objRe = /(?:const|let|var)?\s*"?([A-Za-z0-9_]+)"?\s*[:=]\s*\{([^{}]*)\}/g;
+  for (const m of src.matchAll(objRe)) {
+    const entries = {};
+    for (const e of m[2].matchAll(/['"]?([A-Za-z0-9_])['"]?\s*:\s*['"](#[0-9A-Fa-f]{3,8})['"]/g)) entries[e[1]] = e[2];
+    if (Object.keys(entries).length >= 2) palettes[m[1]] = entries;
+  }
+  // 2) JSON-nested palettes: "palette": { ... }
+  let pn = 0;
+  for (const m of src.matchAll(/"palette"\s*:\s*\{([^{}]*)\}/g)) {
+    const entries = {};
+    for (const e of m[1].matchAll(/['"]?([A-Za-z0-9_])['"]?\s*:\s*['"](#[0-9A-Fa-f]{3,8})['"]/g)) entries[e[1]] = e[2];
+    if (Object.keys(entries).length >= 2) palettes['palette_' + (++pn)] = entries;
+  }
+  // 3) sprite arrays: NAME = [...] or NAME: [...]
+  const arrRe = /(?:const|let|var)?\s*"?([A-Za-z0-9_]+)"?\s*[:=]\s*\[\s*((?:['"][^'"]*['"]\s*,?\s*)+)\]/g;
+  for (const m of src.matchAll(arrRe)) {
+    const rows = [...m[2].matchAll(/['"]([^'"]+)['"]/g)].map(r => r[1]);
+    if (rows.length > 0 && rows.every(r => r.length >= 2)) sprites[m[1]] = rows;
+  }
+  // 4) JSON "rows": [...] arrays, named by their parent key when visible
+  for (const m of src.matchAll(/"rows"\s*:\s*\[\s*((?:['"][^'"]*['"]\s*,?\s*)+)\]/g)) {
+    const rows = [...m[1].matchAll(/['"]([^'"]+)['"]/g)].map(r => r[1]);
+    if (rows.length === 0) continue;
+    const before = src.slice(Math.max(0, m.index - 60), m.index);
+    const parent = [...before.matchAll(/"(\w+)"\s*:\s*\{/g)].pop();
+    sprites[parent ? parent[1] + '_rows' : 'rows_' + Object.keys(sprites).length] = rows;
+  }
+  // 5) fallback: raw quoted lines with no name at all
+  if (Object.keys(sprites).length === 0) {
+    const rawRows = [...src.matchAll(/['"]([ .#A-Za-z0-9_]{2,})['"]/g)].map(r => r[1]).filter(r => /[.#]/.test(r));
+    if (rawRows.length > 0) sprites['SPRITE_1'] = rawRows;
+  }
+  return { palettes, sprites };
+}
+// ==== END PARSER ====
+
+  let parsedSprites = {};
+  let parsedPalettes = {};
+  let activePalette = {};
+  let showGrid = false;
+  let sheetMode = false;
+
+  const DEFAULT_PALETTE = {
+    K: '#141218', W: '#FFFFFF', R: '#D9383A', G: '#3E8E41',
+    B: '#6E4226', Y: '#FFD21E', V: '#8B5CF6', E: '#E9D5FF',
+    S: '#8C857B', L: '#C4BDB2', D: '#4A433D', O: '#FF6A1A',
+    C: '#3D8FD1', P: '#E86B8A', M: '#6EB54C', T: '#D9A066'
+  };
+
+  function pickPalette(name) {
+    // merge: defaults under the chosen palette, so a partial palette still renders
+    activePalette = { ...DEFAULT_PALETTE, ...(parsedPalettes[name] || {}) };
+    return name;
+  }
+
+  function renderCode() {
+    const errBox = document.getElementById('err-box');
+    const okBox = document.getElementById('ok-box');
+    const warnBox = document.getElementById('warn-box');
+    errBox.textContent = ''; okBox.textContent = ''; warnBox.textContent = '';
+    const src = document.getElementById('code-input').value;
+    try {
+      const { palettes, sprites } = parseCode(src);
+      parsedPalettes = palettes;
+      parsedSprites = sprites;
+      const names = Object.keys(sprites);
+      if (names.length === 0) throw new Error('No sprite row arrays found. Paste a palette + array block.');
+      const picker = document.getElementById('sprite-picker');
+      picker.innerHTML = names.map(n => `<option value="${n}">${n}</option>`).join('');
+      picker.style.display = names.length > 1 ? 'inline-block' : 'none';
+      const palNames = Object.keys(palettes);
+      const palPicker = document.getElementById('palette-picker');
+      palPicker.innerHTML = palNames.map(n => `<option value="${n}">Palette: ${n}</option>`).join('');
+      palPicker.style.display = palNames.length > 1 ? 'inline-block' : 'none';
+      if (palNames.length > 0) pickPalette(palPicker.value || palNames[0]);
+      else activePalette = { ...DEFAULT_PALETTE };
+      okBox.textContent = `Found ${names.length} sprite(s)` + (palNames.length ? `, ${palNames.length} palette(s): ${palNames.join(', ')}` : ' — no palette found, using built-in defaults');
+      renderSelected();
+    } catch (e) {
+      errBox.textContent = e.message;
+    }
+  }
+
+  function drawSprite(ctx, rows, ox, oy, zoom) {
+    const missing = new Set();
+    for (let y = 0; y < rows.length; y++) {
+      const row = rows[y];
+      for (let x = 0; x < row.length; x++) {
+        const ch = row[x];
+        if (ch === '.' || ch === ' ') continue;
+        const hex = activePalette[ch];
+        if (!hex) missing.add(ch);
+        ctx.fillStyle = hex || '#FF00FF';
+        ctx.fillRect(ox + x * zoom, oy + y * zoom, zoom, zoom);
+      }
+    }
+    return missing;
+  }
+
+  function drawGrid(ctx, w, h, zoom, ox, oy) {
+    if (!showGrid || zoom < 4) return;
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
+    ctx.lineWidth = 1;
+    for (let x = 0; x <= w; x++) { ctx.beginPath(); ctx.moveTo(ox + x * zoom + 0.5, oy); ctx.lineTo(ox + x * zoom + 0.5, oy + h * zoom); ctx.stroke(); }
+    for (let y = 0; y <= h; y++) { ctx.beginPath(); ctx.moveTo(ox, oy + y * zoom + 0.5); ctx.lineTo(ox + w * zoom, oy + y * zoom + 0.5); ctx.stroke(); }
+  }
+
+  function renderSelected() {
+    const warnBox = document.getElementById('warn-box');
+    warnBox.textContent = '';
+    const names = Object.keys(parsedSprites);
+    if (names.length === 0) return;
+    const zoom = parseInt(document.getElementById('zoom-sel').value, 10);
+    const canvas = document.getElementById('preview-canvas');
+    const ctx = canvas.getContext('2d');
+    const missingAll = new Set();
+
+    if (sheetMode) {
+      // every sprite on one sheet, labeled — for reviewing a whole cast drop at once
+      const cellW = Math.max(...names.map(n => Math.max(...parsedSprites[n].map(r => r.length)))) * zoom;
+      const cellH = Math.max(...names.map(n => parsedSprites[n].length)) * zoom + 18;
+      const cols = Math.min(4, names.length);
+      const rowsN = Math.ceil(names.length / cols);
+      canvas.width = cols * cellW + (cols + 1) * 8;
+      canvas.height = rowsN * cellH + (rowsN + 1) * 8;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.font = '11px monospace'; ctx.fillStyle = '#B8B0C8';
+      names.forEach((n, i) => {
+        const rows = parsedSprites[n];
+        const ox = 8 + (i % cols) * (cellW + 8), oy = 8 + Math.floor(i / cols) * (cellH + 8);
+        drawSprite(ctx, rows, ox, oy, zoom).forEach(c => missingAll.add(c));
+        drawGrid(ctx, Math.max(...rows.map(r => r.length)), rows.length, zoom, ox, oy);
+        ctx.fillStyle = '#B8B0C8';
+        ctx.fillText(n, ox, oy + rows.length * zoom + 13);
+      });
+      document.getElementById('dim-badge').textContent = `${names.length} sprites`;
+    } else {
+      const picker = document.getElementById('sprite-picker');
+      const name = picker.value || names[0];
+      const rows = parsedSprites[name];
+      if (!rows) return;
+      const h = rows.length;
+      const w = Math.max(...rows.map(r => r.length));
+      document.getElementById('dim-badge').textContent = `${w} × ${h} px`;
+      canvas.width = w * zoom;
+      canvas.height = h * zoom;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawSprite(ctx, rows, 0, 0, zoom).forEach(c => missingAll.add(c));
+      drawGrid(ctx, w, h, zoom, 0, 0);
+    }
+    if (missingAll.size > 0) {
+      warnBox.textContent = 'Shown in bright pink — these letters have no color in the chosen palette: ' + [...missingAll].join(', ') + '. Pick another palette above, or add them to the pasted palette.';
+    }
+  }
+
+  function toggleGrid() {
+    showGrid = !showGrid;
+    document.getElementById('grid-btn').textContent = `Grid: ${showGrid ? 'ON' : 'OFF'}`;
+    renderSelected();
+  }
+
+  function toggleSheet() {
+    sheetMode = !sheetMode;
+    document.getElementById('sheet-btn').textContent = `Sheet: ${sheetMode ? 'ON' : 'OFF'}`;
+    renderSelected();
+  }
+
+  function updateBg() {
+    const stage = document.getElementById('stage');
+    stage.className = 'stage-wrap ' + document.getElementById('bg-sel').value;
+  }
+
+  function downloadPng() {
+    const canvas = document.getElementById('preview-canvas');
+    const picker = document.getElementById('sprite-picker');
+    const name = (sheetMode ? 'sheet' : (picker.value || 'sprite')).toLowerCase();
+    const link = document.createElement('a');
+    link.download = `${name}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }
+
+  renderCode();
+</script>
+</body>
+</html>
