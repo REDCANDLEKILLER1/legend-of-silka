@@ -16,3 +16,7 @@ This repo is the game's own home — separate from the corn-games hub.
 Title (animated) → play as young Pearl at the harvest feast →
 a hundred harvests later, play as CornMan in the Castle-Foot Village →
 the Telling at old Pearl's hearth.
+
+## Credits
+
+Fountain basin and village terrain tiles adapted from "Zelda-like tilesets and sprites" by ArMM1998 (CC0), OpenGameArt — palette-fitted and composited into our own maps; the Harvest King statue and all characters are original to this game.
