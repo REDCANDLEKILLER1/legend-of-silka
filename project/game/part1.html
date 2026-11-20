@@ -211,7 +211,7 @@ village: {
   'F': [0,1].map(f => tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,1,4,14,12,'#6e675e'); R(g,1,4,14,2,'#8c857b'); R(g,5,8,6,8,'#2c1e14');
     if (f === 0){ R(g,6,10,4,6,'#ff6a1a'); R(g,7,8,2,8,'#ffd21e'); } else { R(g,6,11,4,5,'#ff6a1a'); R(g,7,9,2,7,'#ffd21e'); } })),
   'a': tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,6,10,4,5,'#5d3a1e'); R(g,3,6,10,3,'#8c897d'); R(g,5,4,6,3,'#a09c90'); R(g,7,8,2,2,'#6e675e'); }),
-  'K': tile(g => { R(g,0,0,16,16,'#57504a'); R(g,0,0,16,2,'#8c857b'); R(g,0,8,16,1,'#3e3833'); R(g,7,0,1,16,'#3e3833'); R(g,2,3,4,3,'#6e675e'); }),
+  'K': tile(g => { R(g,0,0,16,16,'#7d7462'); R(g,1,1,6,6,'#b3a98f'); R(g,9,1,6,6,'#a39a89'); R(g,1,9,6,6,'#a39a89'); R(g,9,9,6,6,'#b3a98f'); R(g,2,2,2,1,'#c4bdb2'); R(g,10,10,2,1,'#c4bdb2'); }),
   'u': tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,4,8,8,7,'#8c857b'); R(g,5,9,6,5,'#3d8fd1'); R(g,4,8,8,1,'#c4bdb2'); R(g,3,2,2,8,'#5d3a1e'); R(g,11,2,2,8,'#5d3a1e'); R(g,2,1,12,2,'#7e2f26'); }),
   'E': tile(g => { R(g,0,0,16,16,'#a9834f'); R(g,0,0,2,16,'#5d3a1e'); R(g,14,0,2,16,'#5d3a1e'); R(g,0,0,16,2,'#8a6a3c'); R(g,3,6,3,2,'#97744a'); R(g,11,9,3,2,'#97744a'); }),
   'A': tile(g => { R(g,0,0,16,16,'#9a917e'); R(g,0,0,16,2,'#b3a98f'); R(g,0,14,16,2,'#7d7462'); R(g,7,0,2,16,'#847a66'); R(g,0,7,16,2,'#847a66'); }),
@@ -957,9 +957,14 @@ function buildVillage(){
   for (const [ry, x0, x1, rc, sc] of roofs)
     for (let x = x0; x <= x1; x++){ if (g[ry][x] === 'R') g[ry][x] = rc; if (g[ry + 1][x] === 'r') g[ry + 1][x] = sc; }
   for (let x = 32; x <= 47; x++) g[21][x] = '+';
+  g[16][20] = 'o'; g[16][27] = 'o';
+  for (const y of [13, 14, 15]){ g[y][20] = 'f'; g[y][21] = 'f'; g[y][26] = 'f'; g[y][27] = 'f'; }
   const VROWS = g.map(r => r.join(''));
-  const statue = makeEnt(SPR.statue, 23, 15, { talk: async () => say([['', 'The Harvest King, in weathered stone. Both hands cup a great green gem at his belly.'],
+  const statue = makeEnt(STATUE_PROP, 22, 15, { talk: async () => say([['', 'The Harvest King, in weathered stone. Both hands cup a great green gem at his belly.'],
+    ['', 'It stands bigger than any man in the valley. That is the size of what he did.'],
     ['', 'Somebody still leaves flowers here. The petals are fresh.']]) });
+  const statueSideA = makeEnt(tile(g => {}), 23, 15, { noShadow: true, talk: statue.talk });
+  const statueSideB = makeEnt(tile(g => {}), 24, 15, { noShadow: true, talk: statue.talk });
   const folkA = makeEnt(SPR.folkA, 15, 11, { ambient: { pause: [2000, 4200], roam: [14, 11, 19, 12] }, talk: async () => say(cyc(folkA, [['ORCHARD WIFE', 'A stranger in the valley! Mind the statue\u2019s flowers, love \u2014 Pearl leaves those, and Pearl counts them.'], ['ORCHARD WIFE', 'Pearl\u2019s cottage? Northwest, under the cliff \u2014 the green roof, you can see it from the plaza.'], ['ORCHARD WIFE', 'A hundred years since the last feast, and the statue still gets fresh flowers. That\u2019s Pearl. That\u2019s the whole story of Pearl.']])) });
   const folkB = makeEnt(SPR.folkB, 34, 21, { ambient: { pause: [2000, 4200], roam: [32, 20, 38, 22] }, talk: async () => say(cyc(folkB, [['STONECUTTER', 'You\u2019ve the look of a man heading north. They all come back by the overlook, friend. The towers don\u2019t blink. They don\u2019t have to.'], ['STONECUTTER', 'My house is the green roof by the fields, if you\u2019re asking. Cut the stone for half the doors in this town.'], ['STONECUTTER', 'East road takes you to the fields, south gate too. The valley\u2019s bigger than it looks from the gate, hero.']])) });
   const guard = makeEnt(SPR.guard, 25, 31, { ambient: { pause: [2400, 4800] }, talk: async () => say(cyc(guard, [['WATCHMAN', 'South gate\u2019s mine to watch. If it\u2019s the King you\u2019ve come for, his road climbs from the north overlook \u2014 the whole village knows why you\u2019re here, hero. Word travels.'], ['WATCHMAN', 'Northwest for Pearl, hero. Under the cliff, green roof. You\u2019ll smell the woodsmoke before you see the door.'], ['WATCHMAN', 'I watch the gate. The gate watches the road. The towers watch us all \u2014 that\u2019s the arrangement, like it or not.']])) });
@@ -967,7 +972,7 @@ function buildVillage(){
   hero.dir = 'up';
   const doorLine = t => async () => say([['', t]]);
   return { set: 'village', rows: VROWS, player: hero,
-    entities: [statue, folkA, folkB, guard],
+    entities: [statue, statueSideA, statueSideB, folkA, folkB, guard],
     triggers: {
       '8,7': async () => { mode = 'script'; await fadeTo(1, 500); act3(); },
       '38,7': doorLine('The Harvest Chapel. Stone walls, plum roof \u2014 and the door is shut for the morning count. The little bell is still.'),
@@ -1074,6 +1079,24 @@ function throneKingCanvas(){
 }
 const THRONE_SPR = (() => { const i = throneKingCanvas();
   return { down: { i }, up: { i }, left: { i }, right: { i } }; })();
+// The Weathered Harvest King — a MONUMENT, not a man (Michael's scale
+// ruling, 2026-11-20: "use more squares"). The King's own drawing at
+// double size in stone, on a two-tier pedestal with moss worked into
+// the steps and Pearl's flowers at the base. 48x72: three tiles wide,
+// standing over four.
+function statuePropCanvas(){
+  const rows2 = [];
+  for (const r of SPRITES.king_down){ const d = [...r].map(ch => ch + ch).join(''); rows2.push(d, d); }
+  const fig = bake(rows2, STATUE_PAL);
+  return bigTile(48, 72, g => {
+    R(g,4,52,40,8,'#57504a'); R(g,4,52,40,2,'#8c857b');
+    R(g,8,44,32,8,'#6e675e'); R(g,8,44,32,2,'#a39a89');
+    R(g,10,48,4,2,'#46a842'); R(g,34,49,5,2,'#46a842'); R(g,20,54,6,2,'#3d8b37');
+    R(g,6,58,2,2,'#e77fb0'); R(g,14,59,2,2,'#fff8e8'); R(g,26,58,2,2,'#f5bd1f'); R(g,38,59,2,2,'#e77fb0');
+    g.drawImage(fig, 8, 0);
+  });
+}
+const STATUE_PROP = statuePropCanvas();
 // Upper floors of the King's castle. Same stone family as below; beds and
 // chairs up here, a railed gallery looking down into the banquet hall.
 TILES.castle2 = {
