@@ -126,7 +126,7 @@ function bakeSet(name, pal){
   }
   return set;
 }
-for (const n of ['silka','pearlY','pearlO','eli','folkA','folkB','guard','cornman','cook'])
+for (const n of ['silka','pearlY','pearlO','eli','folkA','folkB','guard','cornman','cook','jester'])
   SPR[n] = bakeSet(n, PAL);
 SPR.king = bakeSet('king', KING_PAL);
 SPR.statue = bake(SPRITES.king_down, STATUE_PAL);
@@ -380,7 +380,7 @@ const SOLID = {
   cottage: new Set(['#','F','G','J','T','b','L','s','o']),
   castle: new Set(['#','B','N','*','A','U','T','K','S','D','=']),
   dungeon: new Set(['#','b','G','V','h','r','K','T','S','*']),
-  castle2: new Set(['#','B','C','T','A','U','=','R','*']),
+  castle2: new Set(['#','B','C','T','A','U','=','R','*','b','e','V','q','p']),
   castle3: new Set(['#','T','G','U','*'])
 };
 
@@ -830,7 +830,7 @@ const CASTLE_ROWS = [
 "########################DD########################"
 ];
 function buildHall(){
-  const king = makeEnt(SPR.king, 15, 5, { name: 'THE HARVEST KING', ambient: { pause: [2800, 5600] }, talk: async () => {
+  const king = makeEnt(THRONE_SPR, 14, 5, { name: 'THE HARVEST KING', talk: async () => {
     if (G.stage === 1){
       await say([['THE HARVEST KING', 'Pearl. You have your grandmother\u2019s eyes and her habit of standing where the truth is.'],
         ['THE HARVEST KING', 'Tomorrow at dawn I seal the Great Barn myself, as my father did. What sleeps under this valley stays asleep.'],
@@ -874,8 +874,9 @@ function buildHall(){
   const g2 = makeEnt(SPR.guard, 17, 22, { ambient: { pause: [2200, 4600] }, talk: async () => say(cyc(g2, [['GUARD', 'Strange sky tonight. The crows have all gone quiet at once.'], ['GUARD', 'Quiet crows, quiet bells. I don\u2019t care for either, if I\u2019m honest.']])) });
   const pearl = makeEnt(SPR.pearlY, 16, 21, {});
   pearl.dir = 'up';
+  const kingSide = makeEnt(tile(g => {}), 15, 5, { noShadow: true, talk: king.talk });
   return { set: 'hall', rows: HALL, player: pearl,
-    entities: [king, silka, eli, folkA, folkB, g1, g2],
+    entities: [king, kingSide, silka, eli, folkA, folkB, g1, g2],
     triggers: { '15,22': async () => say([['', 'The guards shake their heads. The feast is on — nobody leaves early.']]),
                 '16,22': async () => say([['', 'The guards shake their heads. The feast is on — nobody leaves early.']]) },
     refs: { king, silka } };
@@ -916,7 +917,7 @@ function buildVillage(){
     ['', 'Somebody still leaves flowers here. The petals are fresh.']]) });
   const folkA = makeEnt(SPR.folkA, 12, 13, { ambient: { pause: [2000, 4200], roam: [9, 11, 14, 16] }, talk: async () => say(cyc(folkA, [['ORCHARD WIFE', 'A stranger in the valley! Mind the statue\u2019s flowers, love — Pearl leaves those, and Pearl counts them.'], ['ORCHARD WIFE', 'Pearl\u2019s cottage? Northwest, under the cliff. Follow the path past the fountain and keep the cliff on your right.'], ['ORCHARD WIFE', 'A hundred years since the last feast, and the statue still gets fresh flowers. That\u2019s Pearl. That\u2019s the whole story of Pearl.']])) });
   const folkB = makeEnt(SPR.folkB, 21, 14, { ambient: { pause: [2000, 4200], roam: [19, 12, 24, 17] }, talk: async () => say(cyc(folkB, [['STONECUTTER', 'You\u2019ve the look of a man heading north. They all come back by the overlook, friend. The towers don\u2019t blink. They don\u2019t have to.'], ['STONECUTTER', 'If it\u2019s the overlook you want, it\u2019s the north edge, past the statue. Mind the balustrade — and mind what\u2019s past it.'], ['STONECUTTER', 'South road takes you to the fields, if the valley\u2019s all you came for. Somehow I doubt it.']])) });
-  const guard = makeEnt(SPR.guard, 18, 20, { ambient: { pause: [2400, 4800] }, talk: async () => say(cyc(guard, [['WATCHMAN', 'South gate\u2019s mine to watch, the north is nobody\u2019s. If it\u2019s Pearl you want, her cottage is northwest, under the cliff. She\u2019s expecting — no. She\u2019s always expecting.'], ['WATCHMAN', 'Northwest for Pearl, hero. Under the cliff. You\u2019ll smell the woodsmoke before you see the door.'], ['WATCHMAN', 'I watch the gate. The gate watches the road. The towers watch us all — that\u2019s the arrangement, like it or not.']])) });
+  const guard = makeEnt(SPR.guard, 18, 20, { ambient: { pause: [2400, 4800] }, talk: async () => say(cyc(guard, [['WATCHMAN', 'South gate\u2019s mine to watch. If it\u2019s the King you\u2019ve come for, his road climbs from the north overlook \u2014 the whole village knows why you\u2019re here, hero. Word travels.'], ['WATCHMAN', 'Northwest for Pearl, hero. Under the cliff. You\u2019ll smell the woodsmoke before you see the door.'], ['WATCHMAN', 'I watch the gate. The gate watches the road. The towers watch us all \u2014 that\u2019s the arrangement, like it or not.']])) });
   const hero = makeEnt(SPR.cornman, 15, 21, {});
   hero.dir = 'up';
   const doorLine = t => async () => say([['', t]]);
@@ -932,7 +933,10 @@ function buildVillage(){
       '26,15': doorLine('The Stonecutter house. Fresh-cut stone stacked by the door, all of it grey.'),
       '26,19': doorLine('The Harvest Inn. The innkeep, through the door: "Beds and supper for travelers — but Pearl first, hero. Pearl first."'),
       '15,6': async () => say([['', 'The fountain runs clear and cold. Coins glint at the bottom — a hundred years of small wishes.']]),
-      '15,2': async () => say([['', 'From the overlook: the ruined castle above the rooftops, and far north, small as a thumbnail, a castle that is not ruined at all. It is black.']]),
+      '15,2': async () => { if (!G.roadSeen){ G.roadSeen = true;
+          await say([['', 'From the overlook: the King\u2019s castle above the rooftops \u2014 and far north, small as a thumbnail, a castle that is not a castle for the living at all. It is black.'],
+            ['', 'The castle road climbs from here.']]); }
+        await travel(buildCastle, 24, 33, 'up'); },
       '16,2': async () => say([['', 'From the overlook: the ruined castle above the rooftops, and far north, small as a thumbnail, a castle that is not ruined at all. It is black.']]),
       '15,22': doorLine('The road south, to the first field and the wide world. That road is Part Two\u2019s business.'),
       '16,22': doorLine('The road south, to the first field and the wide world. That road is Part Two\u2019s business.')
@@ -940,6 +944,43 @@ function buildVillage(){
     refs: {} };
 }
 
+// The Throne of the Harvest Kings — one composed prop (plan/FURNITURE.md):
+// tall back with a golden cob crest, gold finials, red cushion, and the
+// King SEATED in it, arms on the rests, robe over the seat front. Drawn
+// once as a 32x44 canvas; an entity image anchors bottom-left, so it
+// stands two tiles wide and rises above its tile.
+function bigTile(w, h, fn){ const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const g = c.getContext('2d'); fn(g); return c; }
+function throneKingCanvas(){
+  return bigTile(32, 44, g => {
+    R(g,5,4,3,36,'#4a2f1a'); R(g,24,4,3,36,'#4a2f1a');           // posts
+    R(g,5,4,1,36,'#66452a'); R(g,24,4,1,36,'#66452a');
+    R(g,4,1,5,4,'#c9973f'); R(g,23,1,5,4,'#c9973f');             // finials
+    R(g,5,2,1,1,'#fff066'); R(g,24,2,1,1,'#fff066');
+    R(g,8,6,16,26,'#66452a'); R(g,9,7,14,24,'#8e2320');          // back + cushion
+    R(g,9,7,14,2,'#a52a24'); R(g,11,12,2,2,'#6e1a17'); R(g,19,12,2,2,'#6e1a17');
+    R(g,11,20,2,2,'#6e1a17'); R(g,19,20,2,2,'#6e1a17');          // tufts
+    R(g,13,1,6,1,'#28823e'); R(g,14,2,4,4,'#f5bd1f');            // cob crest
+    R(g,14,2,1,4,'#fff066'); R(g,16,2,1,4,'#e0aa00'); R(g,13,3,1,2,'#5ec956'); R(g,18,3,1,2,'#5ec956');
+    R(g,12,10,8,2,'#f5bd1f'); R(g,12,12,8,1,'#c9973f');          // crown
+    R(g,13,10,1,2,'#f5bd1f'); R(g,15,10,1,2,'#f5bd1f'); R(g,17,10,1,2,'#f5bd1f'); R(g,15,11,1,1,'#c42838');
+    R(g,12,13,8,6,'#f7c294'); R(g,18,13,2,6,'#de8e58');          // face
+    R(g,13,15,1,1,'#181010'); R(g,17,15,1,1,'#181010');          // eyes
+    R(g,11,18,10,5,'#e4e0d4'); R(g,12,22,8,2,'#b8b4a8');         // beard
+    R(g,13,19,6,2,'#f7c294');
+    R(g,9,21,14,10,'#144a24'); R(g,9,21,14,2,'#28823e');         // robe torso
+    R(g,8,20,3,9,'#8e2320'); R(g,21,20,3,9,'#8e2320');           // cape at shoulders
+    R(g,14,23,4,5,'#f5bd1f'); R(g,15,23,1,5,'#fff066'); R(g,14,24,4,1,'#e0aa00'); // cob emblem
+    R(g,5,27,4,3,'#c9973f'); R(g,23,27,4,3,'#c9973f');           // armrest tops
+    R(g,6,26,2,2,'#f7c294'); R(g,24,26,2,2,'#f7c294');           // hands
+    R(g,9,30,14,10,'#144a24'); R(g,9,30,14,2,'#1d6a34');         // robe skirt
+    R(g,15,32,1,8,'#0d3319'); R(g,9,38,14,2,'#c9973f');          // fold + gold hem
+    R(g,10,41,4,2,'#2a1a10'); R(g,18,41,4,2,'#2a1a10');          // boots
+    R(g,2,42,28,2,'#5b544b'); R(g,2,42,28,1,'#76726a');          // plinth step
+  });
+}
+const THRONE_SPR = (() => { const i = throneKingCanvas();
+  return { down: { i }, up: { i }, left: { i }, right: { i } }; })();
 // Upper floors of the King's castle. Same stone family as below; beds and
 // chairs up here, a railed gallery looking down into the banquet hall.
 TILES.castle2 = {
@@ -948,7 +989,14 @@ TILES.castle2 = {
   'A': TILES.castle['A'], '*': TILES.castle['*'],
   'B': tile(g => { R(g,0,0,16,16,'#948b7f'); R(g,2,1,12,3,'#4a2f1a'); R(g,3,2,10,2,'#66452a'); R(g,3,4,10,3,'#e6d7b8'); R(g,2,7,12,8,'#8e2320'); R(g,2,7,12,2,'#a52a24'); R(g,2,13,12,2,'#6e1a17'); }),
   'C': tile(g => { R(g,0,0,16,16,'#948b7f'); R(g,5,2,6,5,'#6b4423'); R(g,5,2,6,1,'#8c5a30'); R(g,4,7,8,2,'#8c5a30'); R(g,4,9,2,6,'#4a2f1a'); R(g,10,9,2,6,'#4a2f1a'); }),
-  'R': tile(g => { R(g,0,0,16,16,'#14101c'); R(g,0,0,16,3,'#a39a89'); R(g,0,3,16,1,'#847a66'); for (const x of [1, 5, 9, 13]) R(g,x,4,2,12,'#847a66'); R(g,0,14,16,2,'#57505f'); })
+  'R': tile(g => { R(g,0,0,16,16,'#14101c'); R(g,0,0,16,3,'#a39a89'); R(g,0,3,16,1,'#847a66'); for (const x of [1, 5, 9, 13]) R(g,x,4,2,12,'#847a66'); R(g,0,14,16,2,'#57505f'); }),
+  // the grand bed, in two halves — gold finials for the King, plum for the Queen
+  'b': tile(g => { R(g,0,0,16,16,'#948b7f'); R(g,1,1,15,4,'#4a2f1a'); R(g,2,1,2,2,'#f5bd1f'); R(g,1,5,15,2,'#e6d7b8'); R(g,1,7,15,9,'#8e2320'); R(g,1,7,15,2,'#a52a24'); R(g,8,10,8,1,'#6e1a17'); }),
+  'e': tile(g => { R(g,0,0,16,16,'#948b7f'); R(g,0,1,15,4,'#4a2f1a'); R(g,12,1,2,2,'#f5bd1f'); R(g,0,5,15,2,'#e6d7b8'); R(g,0,7,15,9,'#8e2320'); R(g,0,7,15,2,'#a52a24'); R(g,0,10,8,1,'#6e1a17'); }),
+  'q': tile(g => { R(g,0,0,16,16,'#948b7f'); R(g,1,1,15,4,'#4a2f1a'); R(g,2,1,2,2,'#e4e0d4'); R(g,1,5,15,2,'#e6d7b8'); R(g,1,7,15,9,'#613e85'); R(g,1,7,15,2,'#8e69b5'); R(g,8,10,8,1,'#3b2354'); }),
+  'p': tile(g => { R(g,0,0,16,16,'#948b7f'); R(g,0,1,15,4,'#4a2f1a'); R(g,12,1,2,2,'#e4e0d4'); R(g,0,5,15,2,'#e6d7b8'); R(g,0,7,15,9,'#613e85'); R(g,0,7,15,2,'#8e69b5'); R(g,0,10,8,1,'#3b2354'); }),
+  'V': tile(g => { R(g,0,0,16,16,'#948b7f'); R(g,3,1,10,9,'#66452a'); R(g,5,2,6,6,'#aee4fb'); R(g,5,2,6,2,'#e8f7ff'); R(g,2,10,12,2,'#4a2f1a'); R(g,4,12,2,3,'#8e2320'); R(g,7,12,2,3,'#28823e'); R(g,10,12,2,3,'#f5bd1f'); }),
+  'd': tile(g => { R(g,0,0,16,16,'#948b7f'); R(g,0,0,3,16,'#4a2f1a'); R(g,13,0,3,16,'#4a2f1a'); R(g,0,0,16,2,'#66452a'); R(g,3,2,10,14,'#b3aa9d'); })
 };
 TILES.castle3 = {
   '.': TILES.hall['+'], '#': TILES.hall['#'], '*': TILES.castle['*'],
@@ -979,6 +1027,15 @@ async function travel(buildFn, x, y, dir){
 function buildCastle2F(){
   const rows = CASTLE2_ROWS.map(r => r.split(''));
   for (let y = 17; y <= 18; y++) for (let x = 20; x <= 31; x++) if (rows[y][x] === '=') rows[y][x] = 'H';
+  const st = (x, y, c) => { rows[y][x] = c; };
+  // The King's chamber (centre-north): the grand bed, red and gold.
+  st(24, 1, 'b'); st(25, 1, 'e'); st(26, 1, '.'); st(27, 1, '.');
+  st(24, 3, 'H'); st(25, 3, 'H'); st(20, 3, 'C'); st(29, 3, 'C');
+  // The Queen's chamber (east-north): her bed in plum, her vanity, her rug.
+  st(40, 1, 'q'); st(41, 1, 'p'); st(42, 1, '.'); st(43, 1, '.');
+  st(40, 3, 'H'); st(41, 3, 'H'); st(45, 3, 'V');
+  // Doorways in the thick wall band, so the royal chambers have doors.
+  st(23, 11, 'd'); st(24, 11, 'd'); st(39, 11, 'd'); st(40, 11, 'd');
   const out = rows.map(r => r.join(''));
   const chamberlain = makeEnt(SPR.folkB, 6, 5, { name: 'CHAMBERLAIN',
     routine: [[6, 5, 'down', 2600], [11, 14, 'left', 2200]],
@@ -1052,6 +1109,12 @@ function buildCastle(){
   for (let y = 22; y <= 33; y++) for (const x of [24, 25]) st(x, y, 'H');
   st(38, 4, 'T'); st(39, 4, 'T'); st(36, 8, 'K'); st(47, 8, 'K'); st(48, 8, 'K');
   st(48, 9, 'S'); // the cellar stair, in the kitchen's south-east corner
+  // Michael's walkway ruling: no tables in the throne room's walking floor,
+  // and the statues stand against the north wall, not in the aisle.
+  for (let y = 3; y <= 6; y++) for (let x = 20; x <= 32; x++) if (rows[y][x] === '=') st(x, y, '.');
+  if (rows[5][23] === 'N') st(23, 5, '.');
+  if (rows[5][31] === 'N') st(31, 5, '.');
+  st(21, 2, 'N'); st(30, 2, 'N');
   const out = rows.map(r => r.join(''));
   const cook = makeEnt(SPR.cook, 42, 8, { name: 'COOK',
     routine: [[42, 8, 'up', 2800], [38, 5, 'up', 2200], [41, 2, 'up', 1600]],
@@ -1069,84 +1132,160 @@ function buildCastle(){
     talk: async () => say(cyc(mason, [
       ['MASON', 'Checking the King\u2019s stonework, course by course. Good stone tells you its age, if you listen.'],
       ['MASON', 'Library first, then the west wall. A castle is just a hill that learned manners.']])) });
-  const king = makeEnt(SPR.king, 25, 1, { name: 'THE HARVEST KING', ambient: { pause: [3000, 6000] },
-    talk: async () => say(cyc(king, [
-      ['THE HARVEST KING', 'Walk the castle as you like, hero. It was built to be walked in.'],
-      ['THE HARVEST KING', 'A hundred harvests I have kept this valley. The keeping is the crown.']])) });
-  const silka = makeEnt(SPR.silka, 27, 2, { name: 'SILKA', ambient: { pause: [2400, 5000] },
-    talk: async () => say(cyc(silka, [
-      ['SILKA', 'The hall is quieter like this. I like it both ways \u2014 full of feast, and like this.'],
-      ['SILKA', 'If you are looking for Father, he is never far from the carpet\u2019s end.']])) });
+  const king = makeEnt(THRONE_SPR, 24, 3, { name: 'THE KING',
+    talk: async () => { if (!G.told) await theMovie();
+      else await say(cyc(king, [
+        ['THE KING', 'Pearl, in the village, hero. Northwest cottage, under the cliff. She kept the story — now let her give you the road.'],
+        ['THE KING', 'The castle is yours to walk while you prepare. A crown that fears guests has already fallen.'],
+        ['THE KING', 'When you go north, go under. The towers have never been passed, and I will not have your name added to their count.']])); } });
+  const kingSide = makeEnt(tile(g => {}), 25, 3, { noShadow: true, talk: king.talk });
+  const throneGuardA = makeEnt(SPR.guard, 23, 3, { name: 'GUARD',
+    talk: async () => say(cyc(throneGuardA, [
+      ['GUARD', 'Throne watch. We stand so the King can sit.'],
+      ['GUARD', 'Mind the carpet, hero. A hundred years of kings at the end of it.']])) });
+  const throneGuardB = makeEnt(SPR.guard, 26, 3, { name: 'GUARD',
+    talk: async () => say(cyc(throneGuardB, [
+      ['GUARD', 'Throne watch. Speak when spoken to — he\u2019ll speak to you.'],
+      ['GUARD', 'The jester\u2019s the only man in this room paid to move. The rest of us are furniture with opinions.']])) });
+  const jester = makeEnt(SPR.jester, 21, 7, { name: 'JESTER', ambient: { pause: [2000, 4200] },
+    talk: async () => {
+      if (!jester.met){
+        jester.met = true;
+        await say([['JESTER', 'A guest! A guest on the carpet! Oh, hold still — no, don\u2019t. Nobody should hold still when there\u2019s news.']]);
+        mode = 'script';
+        await moveEntTo(jester, 24, 10); await moveEntTo(jester, 24, 6);
+        for (const d of ['left','up','right','down','left','up','right','down']){ jester.dir = d; await wait(110); }
+        await moveEntTo(jester, 25, 10); await moveEntTo(jester, 21, 7);
+        jester.dir = 'right'; mode = 'play';
+        await say([['JESTER', 'I\u2019m the jester. That was the dance of a man who has waited a hundred years for somebody to come and ask the King THAT question.'],
+          ['JESTER', 'Go on, then. He\u2019s been practicing his serious face all morning.']]);
+      } else {
+        mode = 'script';
+        for (const d of ['left','up','right','down']){ jester.dir = d; await wait(110); }
+        mode = 'play';
+        await say(cyc(jester, [
+          ['JESTER', 'Why did the crow cross the valley? To tell the towers they blinked first. They hadn\u2019t. He\u2019s still embarrassed.'],
+          ['JESTER', 'I told the King a joke about the black castle once. Once. The towers laughed. That\u2019s how I knew it was a bad joke.'],
+          ['JESTER', 'A hundred years of peace, and my job is to be the loudest thing in the valley. I take it very seriously. That\u2019s the joke.']]));
+      } } });
+  const steward = makeEnt(SPR.folkB, 28, 8, { name: 'STEWARD', ambient: { pause: [2600, 5200] },
+    talk: async () => say(cyc(steward, [
+      ['STEWARD', 'The court keeps its hours, hero. Audience at the carpet\u2019s end, petitions after, dancing only from the jester.'],
+      ['STEWARD', 'Everything in this castle has a place. Mine is two steps behind the King and one step ahead of trouble.']])) });
+  const lady = makeEnt(SPR.silka, 27, 2, { name: 'LADY OF THE COURT', ambient: { pause: [2400, 5000] },
+    talk: async () => say(cyc(lady, [
+      ['LADY OF THE COURT', 'The court is glad of a guest who comes asking honest questions. There are so few.'],
+      ['LADY OF THE COURT', 'The King is never far from the carpet\u2019s end. None of us are, on a day like this.']])) });
+  const courtier = makeEnt(SPR.folkA, 20, 28, { name: 'COURTIER', ambient: { pause: [2200, 4600], roam: [18, 27, 23, 31] },
+    talk: async () => say(cyc(courtier, [
+      ['COURTIER', 'Word travels the great hall faster than the patrol walks it. A stranger, come to ask about the old story.'],
+      ['COURTIER', 'Mind the jester, hero. He\u2019s been saving that dance. We\u2019ve all seen it twice this week already.']])) });
   const hero = makeEnt(SPR.cornman, 24, 33, {});
   hero.dir = 'up';
   return { set: 'castle', rows: out, player: hero,
-    entities: [cook, patrol, mason, king, silka],
+    entities: [cook, patrol, mason, king, kingSide, throneGuardA, throneGuardB, jester, steward, lady, courtier],
     triggers: { '24,0': async () => travel(buildCastle2F, 23, 32, 'up'),
                 '25,0': async () => travel(buildCastle2F, 23, 32, 'up'),
-                '48,9': async () => travel(buildDungeon, 3, 2, 'down') },
+                '48,9': async () => travel(buildDungeon, 3, 2, 'down'),
+                '24,34': async () => travel(buildVillage, 15, 3, 'down'),
+                '25,34': async () => travel(buildVillage, 15, 3, 'down') },
     refs: {} };
 }
 function buildCottage(){
-  const pearl = makeEnt(SPR.pearlO, 3, 3, { name: 'OLD PEARL', ambient: { pause: [1600, 3400] }, talk: async () => { if (!G.told) theTelling(); } });
+  const pearl = makeEnt(SPR.pearlO, 3, 3, { name: 'OLD PEARL', ambient: { pause: [1600, 3400] }, talk: async () => {
+    if (!G.told){
+      await say([['OLD PEARL', 'So the road brought you to my door first. It usually does. But this story does not start with an old woman, hero.'],
+        ['OLD PEARL', 'It starts with a king. Go up and find him \u2014 the castle road climbs from the north overlook. Ask him what happened. Ask him plainly.'],
+        ['OLD PEARL', 'Then come back to me, and I will give you the parts a crown cannot. Kings first. Then Pearl.']]);
+      objective('Find the King \u2014 the castle road climbs from the north overlook');
+    } else {
+      await say(cyc(pearl, [
+        ['OLD PEARL', 'Now you know it the way I know it. The cave, hero \u2014 the old cave under the mountain, the one the children are forbidden and the foxes use. Its mouth is in the fields south, where the ground first turns to stone.'],
+        ['OLD PEARL', 'A hundred years I kept the story warm. It is yours now. When you are ready, the door is behind you \u2014 and the road is in front of you.']]));
+      if (!G.ready){ G.ready = true; objective('Part One complete \u2014 leave by the cottage door when ready'); }
+    } } });
   const hero = makeEnt(SPR.cornman, 7, 10, {});
   hero.dir = 'up';
   return { set: 'cottage', rows: COTTAGE, player: hero,
     entities: [pearl],
-    triggers: { '7,11': async () => { if (G.told) await endPart(); },
-                '8,11': async () => { if (G.told) await endPart(); },
-                '6,6': async () => { if (!G.told) theTelling(); },
-                '6,7': async () => { if (!G.told) theTelling(); } },
+    triggers: { '7,11': async () => { if (G.told) await endPart(); else await travel(buildVillage, 5, 7, 'down'); },
+                '8,11': async () => { if (G.told) await endPart(); else await travel(buildVillage, 5, 7, 'down'); } },
     refs: { pearl } };
 }
 
-async function theTelling(){
+// The spine of Part One (Michael's frame, 2026-11-20): CornMan walks in
+// and finds the King. The meeting is a story beat, not a greeting. The
+// King tells the first part himself; then the story plays out like a
+// movie — preset scenes, talk bubbles, fades between places, people
+// moving on their own — until CornMan is CornMan again and the adventure
+// opens. The player only ever plays as CornMan.
+async function theMovie(){
   if (G.told) return;
   G.told = true; mode = 'script'; objective('');
-  const hero = player, pearl = scene.refs.pearl;
-  await moveEntTo(hero, 6, 5); hero.dir = 'left';
-  await say([['OLD PEARL', 'Sit, then. You have the look of the road about you, and I have been keeping this story warm for a hundred years.'],
-    ['OLD PEARL', 'I was nine the night of the last feast. I remember all of it. That is my gift, and my punishment.'],
-    ['OLD PEARL', 'Listen — and I will give it to you the way it came to me.']]);
-  await fadeTo(1, 1000);
-  // the telling: the feast hall, a hundred years gone
-  const king = makeEnt(SPR.king, 15, 5, {});
+  await say([['THE KING', 'You have come a long road to stand on that carpet, hero. Men come to this throne for grain, for justice, for pardon. You have come for none of those.'],
+    ['CORNMAN', 'Majesty \u2014 the village below keeps a statue of a king, and an old woman keeps fresh flowers on it. I came to ask what happened here.'],
+    ['THE KING', 'Then hear it from the crown first. The statue is my great-grandfather. The face comes down the line with the crown \u2014 you are looking at both.'],
+    ['THE KING', 'A hundred years ago he held a harvest feast in this castle, and something came to collect a debt the valley did not know it owed. I can tell you what the crown knows.'],
+    ['THE KING', 'For the night itself \u2014 Pearl was there. Nine years old, small enough to be forgotten in a room full of grown-ups. She remembers everything. Hear it the way she tells it.']]);
+  mode = 'script';
+  await fadeTo(1, 1100);
+  // the movie: the feast hall, a hundred years gone
+  const king = makeEnt(THRONE_SPR, 14, 5, {});
+  const kingSide = makeEnt(tile(g => {}), 15, 5, { noShadow: true });
   const silka = makeEnt(SPR.silka, 17, 5, {});
   const witness = makeEnt(SPR.pearlY, 24, 18, {});
   const crow1 = makeEnt(SPR.crowA, 5, 1, {}), crow2 = makeEnt(SPR.crowA, 17, 1, {}), crow3 = makeEnt(SPR.crowA, 27, 1, {});
   const wiz = makeEnt(wizSpr, 16, 20, { aura: true }); wiz.hidden = true;
   loadScene({ set: 'hall', rows: HALL, player: null,
-    entities: [king, silka, witness, crow1, crow2, crow3, wiz], triggers: {}, refs: {} });
+    entities: [king, kingSide, silka, witness, crow1, crow2, crow3, wiz], triggers: {}, refs: {} });
   scene.focus = king;
   scene.dim = .38;
   await fadeTo(0, 900);
   await say([['PEARL\u2019S VOICE', 'First came the crows. Every crow in the valley, settling on the roof-beams at once, the way they do before a storm that has a name.'],
-    ['PEARL\u2019S VOICE', 'Then the doors opened — though no hand touched them — and the cold came in wearing a man\u2019s shape.']]);
+    ['PEARL\u2019S VOICE', 'Then the doors opened \u2014 though no hand touched them \u2014 and the cold came in wearing a man\u2019s shape.']]);
+  mode = 'script';
   await flashViolet();
   wiz.hidden = false; scene.focus = wiz;
   await say([['THE STORM WIZARD', 'Harvest King. The valley has kept what is owed for a hundred years. I am come to collect the brightest thing in it.'],
     ['THE HARVEST KING', 'Name your price and take it from my stores. The valley pays its debts.'],
     ['THE STORM WIZARD', 'My price is standing beside you, wearing poppies in her hair.']]);
+  mode = 'script';
   scene.focus = silka;
   await moveEntTo(silka, 16, 9); silka.dir = 'down';
   await say([['SILKA', 'Then hear the valley\u2019s answer, collector. I am not a debt. I am not a price. And I will not go.'],
     ['PEARL\u2019S VOICE', 'She refused him standing straight as a stalk in the field. I have loved her for a hundred years for that one moment.']]);
+  mode = 'script';
   await flashViolet();
   wiz.hidden = true; silka.hidden = true;
-  await say([['PEARL\u2019S VOICE', 'There was no thunder. That is the part nobody believes. There was a light, and a quiet — and where Silka had stood, there was nobody.'],
+  await say([['PEARL\u2019S VOICE', 'There was no thunder. That is the part nobody believes. There was a light, and a quiet \u2014 and where Silka had stood, there was nobody.'],
     ['PEARL\u2019S VOICE', 'The sleep took her on the road north, they say, before she had walked a mile. She sleeps still. That is the mercy in it, if there is one.']]);
+  mode = 'script';
   scene.dim = .55;
-  await say([['PEARL\u2019S VOICE', 'The King did not weep where we could see it. He walked out into the dawn and sealed the Great Barn with his own hands and his own strength — all of it. What was hunting the valley could not pass that seal.'],
-    ['PEARL\u2019S VOICE', 'He came back up the hill an old man, and by harvest\u2019s end he was in the ground, and the statue had his face. I was nine. I remember.']]);
-  await fadeTo(1, 1300);
-  loadScene(buildCottage());
-  player.x = 6; player.y = 5; player.px = 6 * TILE; player.py = 5 * TILE; player.dir = 'left';
-  scene.refs.pearl.dir = 'right';
+  await say([['PEARL\u2019S VOICE', 'The King did not weep where we could see it. He walked out into the dawn and sealed the Great Barn with his own hands and his own strength \u2014 all of it. What was hunting the valley could not pass that seal.']]);
+  mode = 'script';
+  await fadeTo(1, 1200);
+  // the movie: the village at dawn
+  loadScene(buildVillage());
+  player.hidden = true;
+  scene.dim = .42;
+  scene.focus = scene.entities[0];
+  const oldKing = makeEnt(SPR.king, 15, 8, {}); oldKing.dir = 'up';
+  const youngPearl = makeEnt(SPR.pearlY, 13, 9, {}); youngPearl.dir = 'up';
+  scene.entities.push(oldKing, youngPearl);
+  await fadeTo(0, 900);
+  await say([['PEARL\u2019S VOICE', 'At dawn he came down to the village himself, and stood a long while looking at the fields he had saved, and the price of them.'],
+    ['PEARL\u2019S VOICE', 'By harvest\u2019s end he was in the ground, and the village raised this stone where he had stood. I leave the flowers. I have always left the flowers.']]);
+  mode = 'script';
+  await fadeTo(1, 1200);
+  // back in the throne room, a hundred years later
+  loadScene(buildCastle());
+  player.x = 24; player.y = 6; player.px = 24 * TILE; player.py = 6 * TILE; player.dir = 'up';
   await fadeTo(0, 900);
   playM(MUS.chime);
-  await say([['OLD PEARL', 'She sleeps in the black castle, in the northern mountain. The towers on the pass have never let a living soul through, and the great gate has never opened.'],
-    ['OLD PEARL', 'But the mountain is old, and the old cave runs under it — the one the children are forbidden and the foxes use. What goes under the towers does not ask their leave.'],
-    ['OLD PEARL', 'A hundred years I have kept this story. I was waiting for somebody it belonged to. Go south first, hero — learn the fields. Then come back, and we will talk about the mountain.']]);
-  objective('Part One complete — leave by the cottage door when ready');
+  await say([['THE KING', 'She sleeps in the black castle, in the northern mountain. The towers on the pass have never let a living soul through, and the great gate has never opened.'],
+    ['THE KING', 'But the mountain is old, and there is a way that goes under it. Pearl knows where the old cave opens \u2014 she has kept more than the story, hero.'],
+    ['THE KING', 'Go back to her. Then go north \u2014 and bring Silka home. A hundred years late, and not one day too late.']]);
+  objective('Return to Pearl \u2014 her cottage is northwest in the village, under the cliff');
   mode = 'play';
 }
 
@@ -1155,7 +1294,7 @@ async function endPart(){
   await fadeTo(1, 700);
   playM(MUS.jingle);
   await card({ art: true, title: 'PART ONE', sub: 'THE LEGEND OF SILKA — PART ONE COMPLETE',
-    lines: ['The road south leads to the first field.', 'The road north leads under the mountain.'] });
+    lines: ['The story is told. The valley is waiting.', 'Part Two: the road under the mountain.'] });
   location.reload();
 }
 
@@ -1170,11 +1309,13 @@ async function act1(){
   mode = 'play';
 }
 async function act2(){
+  mode = 'script';
   loadScene(buildVillage());
   await fadeTo(0, 800);
-  await say([['', 'The Castle-Foot Village, a hundred harvests later. The fields are gold. The statue\u2019s flowers are fresh.'],
-    ['', 'An old woman under the cliff has been expecting — no. She has always been expecting.']]);
-  objective('Find old Pearl\u2019s cottage — northwest, under the cliff');
+  await moveEntTo(player, 15, 18);
+  await say([['', 'Castle-Foot Village, a hundred harvests after the last feast. The fields are gold. The statue\u2019s flowers are fresh.'],
+    ['', 'You have come to ask what happened here. Begin where the valley begins: with its King.']]);
+  objective('Find the King \u2014 his road climbs from the north overlook');
   mode = 'play';
 }
 async function act3(){
@@ -1224,7 +1365,7 @@ async function act3(){
   clearInterval(cycle);
   c.style.display = 'none';
   stopM(MUS.theme); playM(MUS.fanfare);
-  await fadeTo(1, 400); await act1();
+  await fadeTo(1, 400); await act2();
 })();
 </script>
 </body>
