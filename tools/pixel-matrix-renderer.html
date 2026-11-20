@@ -73,7 +73,7 @@
 <div class="layout">
   <div class="panel">
     <label>1. Paste palette + sprite code (any of our formats — JS or JSON, quoted or not):</label>
-    <textarea id="code-input" spellcheck="false">// Paste ANY palette + sprite matrix block here and click Render!
+    <textarea id="code-input" spellcheck="false" oninput="debouncedRender()">// Paste ANY palette + sprite matrix block here — it renders as you paste!
 const STORM_WIZARD_PALETTE = {
   K: '#09080F',
   R: '#FF2A3C',
@@ -222,6 +222,12 @@ function parseCode(src) {
     // merge: defaults under the chosen palette, so a partial palette still renders
     activePalette = { ...DEFAULT_PALETTE, ...(parsedPalettes[name] || {}) };
     return name;
+  }
+
+  let renderTimer = null;
+  function debouncedRender() {
+    clearTimeout(renderTimer);
+    renderTimer = setTimeout(renderCode, 250);
   }
 
   function renderCode() {
