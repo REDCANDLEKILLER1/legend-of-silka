@@ -47,17 +47,33 @@ antechamber. At its south wall: THE VAULT DOOR — iron over oak, gold-banded,
 examinable ("No keyhole on this side"). Sealed. Walk-tested cold: 266 of
 266 open tiles reachable, zero dead; cell interiors sealed as designed.
 
+## Doors + upper floors — BUILT 2026-11-20
+
+Door grammar = the game's own: face the stair/door tile, press A, fade,
+arrive inside (travel() in part1.html). The whole castle is now one
+walkable place:
+- Throne-room stairs (1F north) ↔ 2F south stairwell.
+- Kitchen cellar stair (1F south-east corner) ↔ the dungeon's entry stairs.
+- 2F east stairs ↔ 3F east tower.
+2F (walked 1,084/1,084, zero dead): guest chambers west (beds, tables, a
+chamberlain on a work loop), royal chamber north-center (door guard),
+study east, railed gallery over the banquet hall with a carpeted bridge.
+3F (walked 253/253, zero dead): the archives tower west (the harvest
+ledgers, examinable), the King's sky-watch east (a stargazer on watch),
+open gallery between.
+Every door arrival tile verified walkable in its destination scene.
+
+Note on the FEAST HALL: it stays a separate staged set (Act One's feast),
+depicting this same castle's banquet hall dressed for the feast. Merging
+the two banquet halls would break the staging; how the player reaches the
+explorable castle in the story flow is the Part Two wiring decision below.
+
 ## Next blocks (in order)
 
-1. DOOR SYSTEM — generic scene doors (step on a door tile → fade → arrive),
-   so the castle connects: feast hall ↔ castle wings, castle → dungeon,
-   castle → 2F. Until then the scenes are entered by their # previews.
-2. UPPER FLOORS — the fitted 2F/3F pack: royal chambers, archives; stairs S
-   in the throne room and the east wing become real.
-3. STORY HOOKUP — which act opens the castle doors to the player is a Part
+1. STORY HOOKUP — which act opens the castle doors to the player is a Part
    Two wiring decision; the rooms are built set-first so the story walks
    into a finished place.
-4. Dedicated COOK sprite (she currently wears the orchard wife's proven
+2. Dedicated COOK sprite (she currently wears the orchard wife's proven
    sprite — same apron class; her own face is an art-pass item).
 
 ## Rules carried in

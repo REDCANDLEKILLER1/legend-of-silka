@@ -379,7 +379,9 @@ const SOLID = {
   hall: new Set(['#','B','W','T','C','H']),
   cottage: new Set(['#','F','G','J','T','b','L','s','o']),
   castle: new Set(['#','B','N','*','A','U','T','K','S','D','=']),
-  dungeon: new Set(['#','b','G','V','h','r','K','T','S','*'])
+  dungeon: new Set(['#','b','G','V','h','r','K','T','S','*']),
+  castle2: new Set(['#','B','C','T','A','U','=','R','*']),
+  castle3: new Set(['#','T','G','U','*'])
 };
 
 // ============ engine ============
@@ -713,6 +715,82 @@ const DUNGEON_ROWS = [
 "#########################V######",
 "################################"
 ];
+const CASTLE2_ROWS = [
+"################################################",
+"#*....BBBB....*##*....BBBB....*##*............*#",
+"#..............##..............##..............#",
+"#..B........C..##..B........B..##..A........A..#",
+"#..............##..............##..............#",
+"#......TT......##..............##......TT......#",
+"#..............##..............##..............#",
+"#..B........B..##*............*##......UU......#",
+"#..............##..............##..............#",
+"#..............##..............##..............#",
+"######....############....############....######",
+"######....############....############....######",
+"######....############....############....######",
+"#*............*##*............*##*............*#",
+"#..B........B..##..RRRRRRRRRR..##..A........A..#",
+"#..............##..RRRRRRRRRR..##..............#",
+"#..B........B..##..RRRRRRRRRR..##..A........A..#",
+"#..............RR....======....RR..............#",
+"#..............RR....======....RR..............#",
+"#..B........B..##..RRRRRRRRRR..##..A........A..#",
+"#..............##..RRRRRRRRRR..##..............#",
+"#*............*##*............*##*............*#",
+"######....############....############....######",
+"######....############....############....######",
+"######....############....############....######",
+"#*............*##*............*##*............*#",
+"#..A........A..##..............##..A........A..#",
+"#..............##..#........#..##..............#",
+"#..C........................................C..#",
+"#..............................................#",
+"#..............##..#........#..##..............#",
+"#..A........A..##..............##..A........A..#",
+"#*............*##*............*##*............*#",
+"################.......==.......################",
+"################.......==.......################",
+"################.......==.......################"
+];
+const CASTLE3_ROWS = [
+"################################################",
+"####*......*########################*......*####",
+"###..........######################..........###",
+"###....GG....######################....GG....###",
+"###....GG....######################....GG....###",
+"###....TT....######################....TT....###",
+"###..........######################..........###",
+"####........########################........####",
+"#######..##############################..#######",
+"#######..##############################..#######",
+"#######..##########..........##########..#######",
+"####........................................####",
+"####..*........*.......CC.......*........*..####",
+"####........................................####",
+"################################################",
+"################################################",
+"################################################",
+"################################################",
+"################################################",
+"################################################",
+"################################################",
+"################################################",
+"################################################",
+"################################################",
+"################################################",
+"################################################",
+"################################################",
+"################################################",
+"################################################",
+"################################################",
+"################################################",
+"################################################",
+"################################################",
+"################################################",
+"################################################",
+"################################################"
+];
 const CASTLE_ROWS = [
 "########################SS########################",
 "#BB..BB..BB..BB###*....HHHH....*###BB..BB..BB..BB#",
@@ -862,10 +940,85 @@ function buildVillage(){
     refs: {} };
 }
 
+// Upper floors of the King's castle. Same stone family as below; beds and
+// chairs up here, a railed gallery looking down into the banquet hall.
+TILES.castle2 = {
+  '.': TILES.hall['+'], '#': TILES.hall['#'], 'H': TILES.castle['H'],
+  '=': TILES.castle['S'], 'U': TILES.castle['S'], 'T': TILES.castle['T'],
+  'A': TILES.castle['A'], '*': TILES.castle['*'],
+  'B': tile(g => { R(g,0,0,16,16,'#948b7f'); R(g,2,1,12,3,'#4a2f1a'); R(g,3,2,10,2,'#66452a'); R(g,3,4,10,3,'#e6d7b8'); R(g,2,7,12,8,'#8e2320'); R(g,2,7,12,2,'#a52a24'); R(g,2,13,12,2,'#6e1a17'); }),
+  'C': tile(g => { R(g,0,0,16,16,'#948b7f'); R(g,5,2,6,5,'#6b4423'); R(g,5,2,6,1,'#8c5a30'); R(g,4,7,8,2,'#8c5a30'); R(g,4,9,2,6,'#4a2f1a'); R(g,10,9,2,6,'#4a2f1a'); }),
+  'R': tile(g => { R(g,0,0,16,16,'#14101c'); R(g,0,0,16,3,'#a39a89'); R(g,0,3,16,1,'#847a66'); for (const x of [1, 5, 9, 13]) R(g,x,4,2,12,'#847a66'); R(g,0,14,16,2,'#57505f'); })
+};
+TILES.castle3 = {
+  '.': TILES.hall['+'], '#': TILES.hall['#'], '*': TILES.castle['*'],
+  'T': TILES.castle['T'], 'U': TILES.castle['S'],
+  'G': tile(g => { R(g,0,0,16,16,'#4a2f1a'); R(g,1,1,14,14,'#66452a'); R(g,3,3,10,10,'#7fb2d9'); R(g,3,3,10,3,'#aee4fb'); R(g,5,8,2,3,'#f5bd1f'); R(g,9,7,3,4,'#c9973f'); R(g,7,10,2,2,'#e6d7b8'); })
+};
+TILEVAR['castle2.'] = TILEVAR['hall+'];
+TILEVAR['castle3.'] = TILEVAR['hall+'];
+// Doors: face the stair or door tile and press A — the game's standing
+// grammar for triggers. Travel fades, swaps the scene, sets you down inside.
+async function travel(buildFn, x, y, dir){
+  mode = 'cutscene';
+  await fadeTo(1, 320);
+  loadScene(buildFn());
+  player.x = x; player.y = y; player.px = x * TILE; player.py = y * TILE;
+  player.fromX = x; player.fromY = y; player.moveT = 0; player.path = [];
+  player.dir = dir;
+  updateCam();
+  await fadeTo(0, 320);
+  mode = 'play';
+}
 // Below the castle: entry chamber, the jailer's post, stores, a torch-lit
 // corridor, three locked cells (empty for years — scenery behind bars), a
 // service crawlway to a forgotten broken cell, and the vault antechamber.
 // The vault door is examinable and sealed. It stays sealed.
+// Second floor: guest chambers west (beds, tables), the royal chamber
+// north-center, a study east, and a railed gallery over the banquet hall.
+function buildCastle2F(){
+  const rows = CASTLE2_ROWS.map(r => r.split(''));
+  for (let y = 17; y <= 18; y++) for (let x = 20; x <= 31; x++) if (rows[y][x] === '=') rows[y][x] = 'H';
+  const out = rows.map(r => r.join(''));
+  const chamberlain = makeEnt(SPR.folkB, 6, 5, { name: 'CHAMBERLAIN',
+    routine: [[6, 5, 'down', 2600], [11, 14, 'left', 2200]],
+    talk: async () => say(cyc(chamberlain, [
+      ['CHAMBERLAIN', 'Guest chambers, hero. Every bed aired, every candle trimmed. The castle keeps its manners upstairs too.'],
+      ['CHAMBERLAIN', 'The gallery rail looks down on the banquet hall. Fine view of a feast, if you\u2019re not invited.']])) });
+  const doorGuard = makeEnt(SPR.guard, 21, 9, { name: 'GUARD', ambient: { pause: [2600, 5200] },
+    talk: async () => say(cyc(doorGuard, [
+      ['GUARD', 'Royal chamber watch. Mind the carpet, and close no doors behind you.'],
+      ['GUARD', 'Quiet floor. The whole castle breathes slower up here.']])) });
+  const hero = makeEnt(SPR.cornman, 23, 32, {});
+  hero.dir = 'up';
+  return { set: 'castle2', rows: out, player: hero,
+    entities: [chamberlain, doorGuard],
+    triggers: { '23,33': async () => travel(buildCastle, 24, 2, 'down'),
+                '24,33': async () => travel(buildCastle, 24, 2, 'down'),
+                '39,7': async () => travel(buildCastle3F, 44, 3, 'left'),
+                '40,7': async () => travel(buildCastle3F, 44, 3, 'left') },
+    refs: {} };
+}
+// Third floor: two towers over the roof — the archives west, the King's
+// sky-watch east — joined by an open gallery.
+function buildCastle3F(){
+  const rows = CASTLE3_ROWS.map(r => r.split(''));
+  rows[2][44] = 'U'; // the stair down, in the east tower's east wall corner
+  const out = rows.map(r => r.join(''));
+  const stargazer = makeEnt(SPR.eli, 43, 6, { name: 'STARGAZER', ambient: { pause: [2400, 4800] },
+    talk: async () => say(cyc(stargazer, [
+      ['STARGAZER', 'From here you can see the whole valley \u2014 and the black towers north, when the haze lets you.'],
+      ['STARGAZER', 'The King has me watch the northern sky. A hundred years, and it has only ever been weather. So far.']])) });
+  const ledgers = makeEnt(tile(g => {}), 8, 2, { name: '', noShadow: true,
+    talk: async () => say([['', 'The harvest ledgers. A hundred years of corn, counted kernel-careful, in a clerk\u2019s fine hand.'],
+      ['', 'The last page is this year\u2019s. The ink is still fresh.']]) });
+  const hero = makeEnt(SPR.cornman, 44, 3, {});
+  hero.dir = 'left';
+  return { set: 'castle3', rows: out, player: hero,
+    entities: [stargazer, ledgers],
+    triggers: { '44,2': async () => travel(buildCastle2F, 39, 8, 'down') },
+    refs: {} };
+}
 function buildDungeon(){
   const warden = makeEnt(SPR.guard, 3, 6, { name: 'WARDEN',
     routine: [[3, 6, 'right', 1200], [28, 6, 'down', 800], [28, 7, 'left', 1200], [3, 7, 'up', 800]],
@@ -883,7 +1036,10 @@ function buildDungeon(){
   const hero = makeEnt(SPR.cornman, 2, 2, {});
   hero.dir = 'down';
   return { set: 'dungeon', rows: DUNGEON_ROWS, player: hero,
-    entities: [warden, jailer, vaultDoor], triggers: {}, refs: {} };
+    entities: [warden, jailer, vaultDoor],
+    triggers: { '1,1': async () => travel(buildCastle, 47, 9, 'left'),
+                '2,1': async () => travel(buildCastle, 47, 9, 'left') },
+    refs: {} };
 }
 // The King's castle at rest: throne room north-center (red carpet to the
 // dais), banquet hall center, library west, kitchen + parlor east, great
@@ -895,6 +1051,7 @@ function buildCastle(){
   for (let y = 6; y <= 12; y++) for (const x of [24, 25]) st(x, y, 'H');
   for (let y = 22; y <= 33; y++) for (const x of [24, 25]) st(x, y, 'H');
   st(38, 4, 'T'); st(39, 4, 'T'); st(36, 8, 'K'); st(47, 8, 'K'); st(48, 8, 'K');
+  st(48, 9, 'S'); // the cellar stair, in the kitchen's south-east corner
   const out = rows.map(r => r.join(''));
   const cook = makeEnt(SPR.folkA, 42, 8, { name: 'COOK',
     routine: [[42, 8, 'up', 2800], [38, 5, 'up', 2200], [41, 2, 'up', 1600]],
@@ -912,7 +1069,7 @@ function buildCastle(){
     talk: async () => say(cyc(mason, [
       ['MASON', 'Checking the King\u2019s stonework, course by course. Good stone tells you its age, if you listen.'],
       ['MASON', 'Library first, then the west wall. A castle is just a hill that learned manners.']])) });
-  const king = makeEnt(SPR.king, 24, 1, { name: 'THE HARVEST KING', ambient: { pause: [3000, 6000] },
+  const king = makeEnt(SPR.king, 25, 1, { name: 'THE HARVEST KING', ambient: { pause: [3000, 6000] },
     talk: async () => say(cyc(king, [
       ['THE HARVEST KING', 'Walk the castle as you like, hero. It was built to be walked in.'],
       ['THE HARVEST KING', 'A hundred harvests I have kept this valley. The keeping is the crown.']])) });
@@ -923,7 +1080,11 @@ function buildCastle(){
   const hero = makeEnt(SPR.cornman, 24, 33, {});
   hero.dir = 'up';
   return { set: 'castle', rows: out, player: hero,
-    entities: [cook, patrol, mason, king, silka], triggers: {}, refs: {} };
+    entities: [cook, patrol, mason, king, silka],
+    triggers: { '24,0': async () => travel(buildCastle2F, 23, 32, 'up'),
+                '25,0': async () => travel(buildCastle2F, 23, 32, 'up'),
+                '48,9': async () => travel(buildDungeon, 3, 2, 'down') },
+    refs: {} };
 }
 function buildCottage(){
   const pearl = makeEnt(SPR.pearlO, 3, 3, { name: 'OLD PEARL', ambient: { pause: [1600, 3400] }, talk: async () => { if (!G.told) theTelling(); } });
@@ -1024,9 +1185,9 @@ async function act3(){
 }
 (async function boot(){
   const H = location.hash; // scene-preview hooks (used for screenshot checks)
-  if (H === '#hall' || H === '#village' || H === '#cottage' || H === '#castle' || H === '#dungeon'){
+  if (H === '#hall' || H === '#village' || H === '#cottage' || H === '#castle' || H === '#dungeon' || H === '#castle2' || H === '#castle3'){
     $('card').style.display = 'none';
-    loadScene(H === '#hall' ? buildHall() : H === '#village' ? buildVillage() : H === '#castle' ? buildCastle() : H === '#dungeon' ? buildDungeon() : buildCottage());
+    loadScene(H === '#hall' ? buildHall() : H === '#village' ? buildVillage() : H === '#castle' ? buildCastle() : H === '#dungeon' ? buildDungeon() : H === '#castle2' ? buildCastle2F() : H === '#castle3' ? buildCastle3F() : buildCottage());
     if (H === '#village') scene.entities.push(makeEnt(wizSpr, 24, 16, { aura: true }));
     $('fade').style.opacity = 0; mode = 'play'; return;
   }
