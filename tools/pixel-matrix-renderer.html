@@ -83,10 +83,15 @@
       <option value="16" selected>16</option>
       <option value="24">24</option>
       <option value="32">32</option>
+      <option value="48">48</option>
     </select>
     <label>Shrink to width:</label>
     <select id="png-width">
       <option value="0" selected>Original</option>
+      <option value="384">384 px</option>
+      <option value="256">256 px</option>
+      <option value="192">192 px</option>
+      <option value="128">128 px</option>
       <option value="96">96 px</option>
       <option value="64">64 px</option>
       <option value="48">48 px</option>
@@ -124,7 +129,14 @@ const B = ["............KK..........", "...........KLLK.........", "..E.K.W...KL
     <div class="controls">
       <label>Zoom:</label>
       <select id="zoom-sel" onchange="renderSelected()">
+        <option value="fit">Fit whole picture</option>
+        <option value="0.25">&#188;&#215;</option>
+        <option value="0.5">&#189;&#215;</option>
+        <option value="1">1×</option>
+        <option value="2">2×</option>
+        <option value="3">3×</option>
         <option value="4">4×</option>
+        <option value="6">6×</option>
         <option value="8">8×</option>
         <option value="12" selected>12×</option>
         <option value="16">16×</option>
@@ -269,33 +281,58 @@ function parseCode(src) {
     for (let y = 0; y <= h; y++) { ctx.beginPath(); ctx.moveTo(ox, oy + y * zoom + 0.5); ctx.lineTo(ox + w * zoom, oy + y * zoom + 0.5); ctx.stroke(); }
   }
 
+  // Draw a sprite once at native 1x onto its own canvas; the stage then scales
+  // that canvas up or down, so zoom can go BELOW 1x — a whole village picture
+  // (hundreds of pixels wide) can be seen entire instead of only in slices.
+  function spriteCanvas(rows) {
+    const cv = document.createElement('canvas');
+    cv.width = Math.max(...rows.map(r => r.length));
+    cv.height = rows.length;
+    const cx = cv.getContext('2d');
+    const missing = drawSprite(cx, rows, 0, 0, 1);
+    return { cv, missing };
+  }
+
+  function effectiveZoom(w, h) {
+    const v = document.getElementById('zoom-sel').value;
+    if (v !== 'fit') return parseFloat(v);
+    const stage = document.getElementById('stage');
+    const availW = Math.max(60, stage.clientWidth - 34);
+    const availH = Math.max(200, Math.round(window.innerHeight * 0.72));
+    return Math.max(0.05, Math.min(availW / w, availH / h, 6));
+  }
+
   function renderSelected() {
     const warnBox = document.getElementById('warn-box');
     warnBox.textContent = '';
     const names = Object.keys(parsedSprites);
     if (names.length === 0) return;
-    const zoom = parseInt(document.getElementById('zoom-sel').value, 10);
     const canvas = document.getElementById('preview-canvas');
     const ctx = canvas.getContext('2d');
     const missingAll = new Set();
 
     if (sheetMode) {
       // every sprite on one sheet, labeled — for reviewing a whole cast drop at once
+      const rawZ = document.getElementById('zoom-sel').value;
+      const zoom = rawZ === 'fit' ? 1 : parseFloat(rawZ);
       const cellW = Math.max(...names.map(n => Math.max(...parsedSprites[n].map(r => r.length)))) * zoom;
       const cellH = Math.max(...names.map(n => parsedSprites[n].length)) * zoom + 18;
       const cols = Math.min(4, names.length);
       const rowsN = Math.ceil(names.length / cols);
-      canvas.width = cols * cellW + (cols + 1) * 8;
-      canvas.height = rowsN * cellH + (rowsN + 1) * 8;
+      canvas.width = Math.ceil(cols * cellW + (cols + 1) * 8);
+      canvas.height = Math.ceil(rowsN * cellH + (rowsN + 1) * 8);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.imageSmoothingEnabled = false;
       ctx.font = '11px monospace'; ctx.fillStyle = '#B8B0C8';
       names.forEach((n, i) => {
         const rows = parsedSprites[n];
+        const { cv, missing } = spriteCanvas(rows);
+        missing.forEach(c => missingAll.add(c));
         const ox = 8 + (i % cols) * (cellW + 8), oy = 8 + Math.floor(i / cols) * (cellH + 8);
-        drawSprite(ctx, rows, ox, oy, zoom).forEach(c => missingAll.add(c));
-        drawGrid(ctx, Math.max(...rows.map(r => r.length)), rows.length, zoom, ox, oy);
+        ctx.drawImage(cv, ox, oy, Math.round(cv.width * zoom), Math.round(cv.height * zoom));
+        drawGrid(ctx, cv.width, cv.height, zoom, ox, oy);
         ctx.fillStyle = '#B8B0C8';
-        ctx.fillText(n, ox, oy + rows.length * zoom + 13);
+        ctx.fillText(n, ox, oy + Math.round(rows.length * zoom) + 13);
       });
       document.getElementById('dim-badge').textContent = `${names.length} sprites`;
     } else {
@@ -305,17 +342,25 @@ function parseCode(src) {
       if (!rows) return;
       const h = rows.length;
       const w = Math.max(...rows.map(r => r.length));
-      document.getElementById('dim-badge').textContent = `${w} × ${h} px`;
-      canvas.width = w * zoom;
-      canvas.height = h * zoom;
+      const { cv, missing } = spriteCanvas(rows);
+      missing.forEach(c => missingAll.add(c));
+      const zoom = effectiveZoom(w, h);
+      document.getElementById('dim-badge').textContent = `${w} × ${h} px · ${Math.round(zoom * 100) / 100}×`;
+      canvas.width = Math.max(1, Math.round(w * zoom));
+      canvas.height = Math.max(1, Math.round(h * zoom));
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawSprite(ctx, rows, 0, 0, zoom).forEach(c => missingAll.add(c));
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(cv, 0, 0, canvas.width, canvas.height);
       drawGrid(ctx, w, h, zoom, 0, 0);
     }
     if (missingAll.size > 0) {
       warnBox.textContent = 'Shown in bright pink — these letters have no color in the chosen palette: ' + [...missingAll].join(', ') + '. Pick another palette above, or add them to the pasted palette.';
     }
   }
+
+  window.addEventListener('resize', () => {
+    if (document.getElementById('zoom-sel').value === 'fit') renderSelected();
+  });
 
   function toggleGrid() {
     showGrid = !showGrid;
@@ -335,11 +380,33 @@ function parseCode(src) {
   }
 
   function downloadPng() {
-    const canvas = document.getElementById('preview-canvas');
     const picker = document.getElementById('sprite-picker');
-    const name = (sheetMode ? 'sheet' : (picker.value || 'sprite')).toLowerCase();
+    if (!sheetMode) {
+      const names = Object.keys(parsedSprites);
+      const name = picker.value || names[0];
+      const rows = parsedSprites[name];
+      if (rows) {
+        // Export at the chosen zoom when zoomed in, but never below native 1x —
+        // a Fit / zoomed-out view still downloads the full-resolution picture.
+        const v = document.getElementById('zoom-sel').value;
+        const ez = v === 'fit' ? 2 : Math.max(1, parseFloat(v));
+        const { cv } = spriteCanvas(rows);
+        const out = document.createElement('canvas');
+        out.width = Math.round(cv.width * ez);
+        out.height = Math.round(cv.height * ez);
+        const ox = out.getContext('2d');
+        ox.imageSmoothingEnabled = false;
+        ox.drawImage(cv, 0, 0, out.width, out.height);
+        const link = document.createElement('a');
+        link.download = `${(name || 'sprite').toLowerCase()}.png`;
+        link.href = out.toDataURL('image/png');
+        link.click();
+        return;
+      }
+    }
+    const canvas = document.getElementById('preview-canvas');
     const link = document.createElement('a');
-    link.download = `${name}.png`;
+    link.download = 'sheet.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
   }
