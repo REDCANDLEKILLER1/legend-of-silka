@@ -176,28 +176,47 @@ function fireplaceTile(pos, f){
     if (pos === 2) R(g,0,3,2,13,'#453f38');
   });
 }
+const roofRidge = (base, hi, lo) => tile(g => { R(g,0,0,16,16,base); R(g,0,0,16,3,hi); R(g,0,13,16,3,lo); R(g,2,5,3,2,hi); R(g,10,8,3,2,lo); });
+const roofShingle = (base, hi, lo) => tile(g => { R(g,0,0,16,16,base); R(g,0,0,16,2,hi); R(g,0,5,16,2,lo); R(g,0,10,16,2,lo); R(g,0,15,16,1,lo); R(g,3,2,3,2,hi); R(g,11,7,3,2,hi); });
 const TILES = {
 village: {
   '#': tile(g => { R(g,0,0,16,16,'#1d3312'); R(g,0,0,16,5,'#2c4d1a'); R(g,1,2,3,2,'#3c6624'); R(g,9,1,4,2,'#3c6624'); R(g,5,4,3,2,'#244016'); }),
   '^': tile(g => { R(g,0,0,16,16,'#6b5a49'); R(g,0,0,16,4,'#8a7660'); R(g,0,12,16,4,'#4e4033'); R(g,2,6,5,2,'#7d6a55'); R(g,10,8,4,2,'#594a3a'); }),
-  'R': tile(g => { R(g,0,0,16,16,'#7a7268'); R(g,0,0,16,5,'#948b7f'); R(g,0,11,16,5,'#5b544b'); R(g,3,6,4,3,'#867d71'); R(g,10,5,3,4,'#665e54'); }),
-  '=': tile(g => { R(g,0,0,16,16,'#9a917e'); R(g,0,0,16,2,'#b3a98f'); R(g,0,14,16,2,'#7d7462'); R(g,7,0,2,16,'#847a66'); R(g,0,7,16,2,'#847a66'); }),
+  '=': tile(g => { R(g,0,0,16,16,'#8c857b'); R(g,0,0,16,3,'#c4bdb2'); R(g,0,3,16,1,'#6e675e'); for (const x of [1, 5, 9, 13]) R(g,x,4,2,9,'#a39a89'); R(g,0,13,16,3,'#57504a'); }),
   '+': tile(g => { R(g,0,0,16,16,'#a9834f'); R(g,0,0,16,3,'#bd985c'); R(g,0,13,16,3,'#8a6a3c'); R(g,3,6,3,2,'#97744a'); R(g,11,9,3,2,'#97744a'); }),
-  'H': tile(g => { R(g,0,0,16,16,'#7e2f26'); R(g,0,0,16,4,'#9c4034'); R(g,0,4,16,2,'#6b271e'); R(g,0,9,16,2,'#6b271e'); R(g,0,14,16,2,'#5d211a'); R(g,2,1,3,2,'#b05244'); R(g,6,5,4,5,'#4a1f18'); R(g,7,6,2,1,'#6b271e'); R(g,7,8,2,1,'#6b271e'); }),
-  'W': tile(g => { R(g,0,0,16,16,'#e6d7b8'); R(g,0,0,2,16,'#4a2814'); R(g,14,0,2,16,'#4a2814'); R(g,0,7,16,2,'#4a2814'); R(g,4,10,2,5,'#8e2320'); R(g,10,10,2,5,'#8e2320'); R(g,6,10,4,5,'#7fb2d9'); R(g,6,10,4,1,'#cfe6f7'); R(g,0,15,16,1,'#b8a888'); }),
-  'U': tile(g => { R(g,0,0,16,16,'#e6d7b8'); R(g,0,0,2,16,'#4a2814'); R(g,14,0,2,16,'#4a2814'); R(g,3,3,10,3,'#4a2814'); R(g,4,6,8,10,'#6b3a1e'); R(g,5,6,6,10,'#7d4a28'); R(g,7,8,2,3,'#aee4fb'); R(g,7,8,2,1,'#e8f7ff'); R(g,4,6,1,10,'#8c5a30'); }),
-  'D': tile(g => { R(g,0,0,16,16,'#e6d7b8'); R(g,0,0,2,16,'#4a2814'); R(g,14,0,2,16,'#4a2814'); R(g,4,0,8,14,'#6b3a1e'); R(g,5,0,6,14,'#7d4a28'); R(g,5,0,1,14,'#8c5a30'); R(g,8,0,1,14,'#5d3a1e'); R(g,5,3,6,1,'#4a2814'); R(g,5,10,6,1,'#4a2814'); R(g,10,7,1,2,'#f5bd1f'); R(g,2,14,12,2,'#8c897d'); R(g,2,14,12,1,'#a09c90'); }),
-  'T': tile(g => { R(g,0,0,16,16,'#3f7a2a'); R(g,1,1,9,7,'#4f9433'); R(g,6,5,9,8,'#356b21'); R(g,2,2,3,2,'#63aa42'); R(g,10,9,3,2,'#2c5c1c'); R(g,7,13,2,3,'#4a2814'); }),
   '.': tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,0,0,16,3,'#5a9c38'); R(g,2,5,2,1,'#63aa42'); R(g,11,11,2,1,'#63aa42'); R(g,7,8,2,1,'#3f7425'); R(g,13,3,2,1,'#3f7425'); }),
-  'f': tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,0,0,16,3,'#5a9c38'); R(g,3,4,1,1,'#fff8e8'); R(g,11,6,1,1,'#f5bd1f'); R(g,6,11,1,1,'#e77fb0'); R(g,13,12,1,1,'#fff8e8'); R(g,8,3,1,1,'#e77fb0'); }),
-  'F': [0,1].map(f => tile(g => { R(g,0,0,16,16,'#8f97a3'); R(g,2,2,12,12,'#6e7683'); R(g,4,4,8,8,'#5db9e8'); R(g,5,5,3,2,'#aee4fb'); R(g,7,2,2,3,'#cfd6de');
-    if (f === 0){ R(g,7,1,2,2,'#eaf7ff'); R(g,10,9,2,1,'#aee4fb'); R(g,5,11,2,1,'#aee4fb'); }
-    else { R(g,7,0,2,3,'#eaf7ff'); R(g,6,3,1,2,'#aee4fb'); R(g,9,10,2,1,'#aee4fb'); R(g,11,6,2,1,'#aee4fb'); } })),
-  'S': tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,3,11,10,4,'#8c897d'); R(g,4,12,8,2,'#a09c90'); R(g,5,10,6,1,'#76726a'); }),
+  'f': tile(g => { R(g,0,0,16,16,'#8a6a3c'); R(g,1,2,2,2,'#e77fb0'); R(g,6,5,2,2,'#fff8e8'); R(g,11,3,2,2,'#f5bd1f'); R(g,4,10,2,2,'#c42838'); R(g,9,11,2,2,'#e77fb0'); R(g,13,8,2,2,'#fff8e8'); R(g,2,13,2,1,'#28823e'); R(g,8,1,2,1,'#28823e'); }),
+  'T': tile(g => { R(g,0,0,16,16,'#3f7a2a'); R(g,1,1,9,7,'#4f9433'); R(g,6,5,9,8,'#356b21'); R(g,2,2,3,2,'#63aa42'); R(g,10,9,3,2,'#2c5c1c'); R(g,7,13,2,3,'#4a2814'); }),
   'P': tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,0,0,16,3,'#5a9c38'); R(g,4,9,2,1,'#63aa42'); R(g,12,6,2,1,'#3f7425'); }),
   'N': tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,0,0,16,3,'#5a9c38'); R(g,6,7,2,1,'#63aa42'); }),
   'c': tile(g => { R(g,0,0,16,16,'#8a6a3c'); R(g,1,0,2,16,'#28823e'); R(g,5,0,2,16,'#28823e'); R(g,9,0,2,16,'#28823e'); R(g,13,0,2,16,'#28823e'); R(g,1,3,2,3,'#f5bd1f'); R(g,9,8,2,3,'#f5bd1f'); R(g,5,12,2,3,'#e0aa00'); R(g,13,2,2,3,'#e0aa00'); }),
-  'E': tile(g => { R(g,0,0,16,16,'#9a917e'); R(g,0,0,16,2,'#b3a98f'); R(g,0,14,16,2,'#7d7462'); R(g,2,7,12,2,'#847a66'); })
+  'S': tile(g => { R(g,0,0,16,16,'#8c857b'); R(g,0,2,16,3,'#c4bdb2'); R(g,0,7,16,3,'#a39a89'); R(g,0,12,16,3,'#847a6a'); R(g,0,0,2,16,'#6e675e'); R(g,14,0,2,16,'#6e675e'); }),
+  'C': tile(g => { R(g,0,0,16,16,'#8c857b'); R(g,0,0,16,2,'#c4bdb2'); R(g,0,8,16,1,'#6e675e'); R(g,7,0,1,16,'#6e675e'); R(g,3,4,3,2,'#a39a89'); R(g,11,11,3,2,'#a39a89'); }),
+  'R': roofRidge('#7e2f26', '#9c4034', '#5d211a'),
+  'r': roofShingle('#7e2f26', '#9c4034', '#5d211a'),
+  'G': roofRidge('#4a3560', '#613e85', '#2c1e40'),
+  'g': roofShingle('#4a3560', '#613e85', '#2c1e40'),
+  'L': roofRidge('#2c5540', '#3d7a58', '#1d3a2a'),
+  'l': roofShingle('#2c5540', '#3d7a58', '#1d3a2a'),
+  'M': roofRidge('#8a6a2c', '#b08a3a', '#63491c'),
+  'm': roofShingle('#8a6a2c', '#b08a3a', '#63491c'),
+  'h': tile(g => { R(g,0,0,16,16,'#7e2f26'); R(g,4,3,8,13,'#8c4a38'); R(g,4,3,8,2,'#a85a44'); R(g,5,0,3,3,'#e4e0d4'); R(g,9,1,2,2,'#cfc9bd'); }),
+  'W': tile(g => { R(g,0,0,16,16,'#e6d7b8'); R(g,0,0,2,16,'#4a2814'); R(g,14,0,2,16,'#4a2814'); R(g,0,7,16,2,'#4a2814'); R(g,4,10,2,5,'#8e2320'); R(g,10,10,2,5,'#8e2320'); R(g,6,10,4,5,'#7fb2d9'); R(g,6,10,4,1,'#cfe6f7'); R(g,0,15,16,1,'#b8a888'); }),
+  'V': tile(g => { R(g,0,0,16,16,'#9a917e'); R(g,0,0,16,2,'#b3a98f'); R(g,0,8,16,1,'#7d7462'); R(g,7,0,1,16,'#7d7462'); R(g,5,10,6,5,'#7fb2d9'); R(g,5,10,6,1,'#cfe6f7'); R(g,0,15,16,1,'#847a66'); }),
+  'U': tile(g => { R(g,0,0,16,16,'#e6d7b8'); R(g,0,0,2,16,'#4a2814'); R(g,14,0,2,16,'#4a2814'); R(g,3,3,10,3,'#4a2814'); R(g,4,6,8,10,'#6b3a1e'); R(g,5,6,6,10,'#7d4a28'); R(g,7,8,2,3,'#aee4fb'); R(g,7,8,2,1,'#e8f7ff'); R(g,4,6,1,10,'#8c5a30'); }),
+  'D': tile(g => { R(g,0,0,16,16,'#e6d7b8'); R(g,0,0,2,16,'#4a2814'); R(g,14,0,2,16,'#4a2814'); R(g,4,0,8,14,'#6b3a1e'); R(g,5,0,6,14,'#7d4a28'); R(g,5,0,1,14,'#8c5a30'); R(g,8,0,1,14,'#5d3a1e'); R(g,5,3,6,1,'#4a2814'); R(g,5,10,6,1,'#4a2814'); R(g,10,7,1,2,'#f5bd1f'); R(g,2,14,12,2,'#8c897d'); R(g,2,14,12,1,'#a09c90'); }),
+  '!': tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,7,6,2,10,'#3a2412'); R(g,6,3,4,4,'#f5bd1f'); R(g,7,4,2,2,'#fff066'); R(g,5,2,6,1,'#181010'); }),
+  'b': tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,2,6,5,9,'#8c5a30'); R(g,2,6,5,2,'#a8703c'); R(g,2,10,5,1,'#5d3a1e'); R(g,9,6,5,9,'#8c5a30'); R(g,9,6,5,2,'#a8703c'); R(g,9,10,5,1,'#5d3a1e'); }),
+  'o': tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,3,8,10,7,'#8c857b'); R(g,3,8,10,2,'#c4bdb2'); R(g,5,2,6,6,'#d99200'); R(g,6,3,4,3,'#ffd21e'); R(g,7,1,2,2,'#ffd21e'); }),
+  'F': [0,1].map(f => tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,1,4,14,12,'#6e675e'); R(g,1,4,14,2,'#8c857b'); R(g,5,8,6,8,'#2c1e14');
+    if (f === 0){ R(g,6,10,4,6,'#ff6a1a'); R(g,7,8,2,8,'#ffd21e'); } else { R(g,6,11,4,5,'#ff6a1a'); R(g,7,9,2,7,'#ffd21e'); } })),
+  'a': tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,6,10,4,5,'#5d3a1e'); R(g,3,6,10,3,'#8c897d'); R(g,5,4,6,3,'#a09c90'); R(g,7,8,2,2,'#6e675e'); }),
+  'K': tile(g => { R(g,0,0,16,16,'#57504a'); R(g,0,0,16,2,'#8c857b'); R(g,0,8,16,1,'#3e3833'); R(g,7,0,1,16,'#3e3833'); R(g,2,3,4,3,'#6e675e'); }),
+  'u': tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,4,8,8,7,'#8c857b'); R(g,5,9,6,5,'#3d8fd1'); R(g,4,8,8,1,'#c4bdb2'); R(g,3,2,2,8,'#5d3a1e'); R(g,11,2,2,8,'#5d3a1e'); R(g,2,1,12,2,'#7e2f26'); }),
+  'E': tile(g => { R(g,0,0,16,16,'#a9834f'); R(g,0,0,2,16,'#5d3a1e'); R(g,14,0,2,16,'#5d3a1e'); R(g,0,0,16,2,'#8a6a3c'); R(g,3,6,3,2,'#97744a'); R(g,11,9,3,2,'#97744a'); }),
+  'A': tile(g => { R(g,0,0,16,16,'#9a917e'); R(g,0,0,16,2,'#b3a98f'); R(g,0,14,16,2,'#7d7462'); R(g,7,0,2,16,'#847a66'); R(g,0,7,16,2,'#847a66'); }),
+  'X': tile(g => { R(g,0,0,16,16,'#244016'); R(g,6,8,4,8,'#4a2814'); R(g,4,6,8,4,'#2c4d1a'); R(g,3,3,10,4,'#356b21'); R(g,5,0,6,4,'#3c6624'); }),
+  'O': tile(g => { R(g,0,0,16,16,'#6b5a49'); R(g,0,0,16,4,'#8a7660'); R(g,4,5,8,11,'#0a0a12'); R(g,5,6,6,10,'#050508'); R(g,4,5,8,1,'#3a2f24'); R(g,3,14,10,2,'#4e4033'); })
 },
 hall: {
   '#': tile(g => { R(g,0,0,16,16,'#4c4453'); R(g,0,0,16,3,'#655b6e'); R(g,0,13,16,3,'#372f3d'); R(g,7,0,2,16,'#3e3646'); R(g,0,7,16,1,'#3e3646'); }),
@@ -313,30 +332,42 @@ TILEVAR['dungeon.'] = variantTiles(TILES.dungeon['.'], [
   [[9,3,'#4e483f'],[5,13,'#776c5f']]]);
 // ============ maps ============
 const VILLAGE = [
-"####^^######^^^^^^^^######^^####",
-"###R##R####R########R####R##R###",
-"##============================##",
-"#++++++++++++++++++++++++++++++#",
-"#++HHHHH+++T..f..f..T+++HHHHH++#",
-"#++WWWWW+++....S.....+++WWWWW++#",
-"#++WWDWW+++.f..F..f..+++WWDWW++#",
-"#++++P+++++T........T++++++++++#",
-"#++++++++++....N.....++++++++++#",
-"#..ccccc...++++++++++...HHHHH..#",
-"#..ccccc...++HHHHHH++...WWWWW..#",
-"#..ccccc...++WWWWWW++...WWDWW..#",
-"#..T...T...++WWDWWD++.....N....#",
-"#..HHHHH...++++++++++...HHHHH..#",
-"#..WWWWW...++..N.....+++WWWWW++#",
-"#..WWDWW...++........+++WWDWW++#",
-"#..........++..T..T..++++++++++#",
-"#..ccccc...++........+++HHHHH++#",
-"#..ccccc...++..f..f..+++WWWWW++#",
-"#..ccccc...++........+++WWDWW++#",
-"#..T...T...+++++++++++++++N++++#",
-"#..............EE..............#",
-"##############....##############",
-"##############....##############"];
+"######^^##########^^^^^^^^^^^^##########^^######",
+"#####X##X########X############X########X##X#####",
+"###==========================================###",
+"##TT++++++++++++++++++++++++++++++++++++++++TT##",
+"##TT..RRRRRh....++....b..b....++....hRRRRR..TT##",
+"##....rrrrrr....++............++....rrrrrr....##",
+"##....WWWWWW.!..++....f..f....++..!.WWWWWW....##",
+"##....WWDWWW....++............++....WWDWWW....##",
+"##......P.......++++++++++++++++......N.......##",
+"CCCCCCCCCCCCCCCCSSSSCCCCCCCCCCCCSSSSCCCCCCCCCCCC",
+"CCCCCCCCCCCCCCCCSSSSCCCCCCCCCCCCSSSSCCCCCCCCCCCC",
+"##TT..f.........++++..ffff..++++.........f..TT##",
+"##TT..........++++++ffffffff++++++..........TT##",
+"##....*.....++++..ff..KKKK..ff..++++.....*....##",
+"##..........++++..ff..KKKK..ff..++++..........##",
+"##..........++++..ff..KKKK..ff..++++..........##",
+"##..........++++++..u.++++.u..++++++..........##",
+"##..RRRRRh......++++++....++++++......RRRRRh..##",
+"##..rrrrrr..o...++++++....++++++...F..rrrrrr..##",
+"##..WWWWWW..o...++....N..N....++...a..WWWWWW..##",
+"##..WWDWWW..!.........................WWDWWW..##",
+"##....++........++++++++++++++++........++....##",
+"##....++....*...++....b..b....++...*....++....##",
+"##..ccccc.......++............++.......ccccc..##",
+"##..ccccc...RRRRRh............hRRRRR...ccccc..##",
+"##..ccccc...rrrrrr............rrrrrr...ccccc..##",
+"##..ccccc...WWWWWW....f..f....WWWWWW...ccccc..##",
+"##..TT......WWDWWW............WWDWWW......TT..##",
+"##..TT........++................++........TT..##",
+"##............++++++++++++++++++++............##",
+"##....RRRRRh..++................++..hRRRRR....##",
+"##....rrrrrr..++................++..rrrrrr....##",
+"##....WWWWWW..++.......EE.......++..WWWWWW....##",
+"##....WWWWWD..++.......EE.......++..DWWWWW....##",
+"################======AAAA======################",
+"################======AAAA======################"];
 const HALL = [
 "################################",
 "#B###W#####B#####W#####B###W##B#",
@@ -376,7 +407,7 @@ const COTTAGE = [
 "#wwwwwwwwwwwwww#",
 "#######dd#######"];
 const SOLID = {
-  village: new Set(['#','^','R','H','W','T','F','S','c','U']),
+  village: new Set(['#','^','=','C','R','r','G','g','L','l','M','m','h','W','V','U','T','F','!','b','o','a','K','u','X','O','f']),
   hall: new Set(['#','B','W','T','C','H']),
   cottage: new Set(['#','F','G','J','T','b','L','s','o']),
   castle: new Set(['#','B','N','*','A','U','T','K','S','D','=']),
@@ -914,40 +945,94 @@ async function theTurn(){
 }
 
 function buildVillage(){
-  // Two-story houses (Michael's ruling, 2026-11-20): every door gets its
-  // upper half in the wall tile above it, so a door stands taller than a
-  // man and the houses read as two stories, not one.
-  const vgrid = VILLAGE.map(r => r.split(''));
-  for (let y = 1; y < vgrid.length; y++) for (let x = 0; x < vgrid[0].length; x++)
-    if (vgrid[y][x] === 'D' && vgrid[y - 1][x] === 'W') vgrid[y - 1][x] = 'U';
-  const VROWS = vgrid.map(r => r.join(''));
-  const statue = makeEnt(SPR.statue, 15, 5, { talk: async () => say([['', 'The Harvest King, in weathered stone. Both hands cup a great green gem at his belly.'],
+  // The extended village (Michael's ruling, 2026-11-20): the 48x36 master
+  // town — bigger houses, and every house its own look. Roof colourways
+  // per house, the chapel in stone, two-story doors throughout, and roads
+  // that actually leave: north to the castle, south and east to the fields.
+  const g = VILLAGE.map(r => r.split(''));
+  for (const y of [6, 7]) for (let x = 36; x <= 41; x++) if (g[y][x] === 'W') g[y][x] = 'V';
+  for (let y = 1; y < g.length; y++) for (let x = 0; x < g[0].length; x++)
+    if (g[y][x] === 'D' && (g[y - 1][x] === 'W' || g[y - 1][x] === 'V')) g[y - 1][x] = 'U';
+  const roofs = [[4,6,11,'L','l'],[4,36,41,'G','g'],[17,4,9,'R','r'],[17,38,43,'M','m'],[24,12,17,'G','g'],[24,30,35,'L','l'],[30,6,11,'M','m'],[30,36,41,'R','r']];
+  for (const [ry, x0, x1, rc, sc] of roofs)
+    for (let x = x0; x <= x1; x++){ if (g[ry][x] === 'R') g[ry][x] = rc; if (g[ry + 1][x] === 'r') g[ry + 1][x] = sc; }
+  for (let x = 32; x <= 47; x++) g[21][x] = '+';
+  const VROWS = g.map(r => r.join(''));
+  const statue = makeEnt(SPR.statue, 23, 15, { talk: async () => say([['', 'The Harvest King, in weathered stone. Both hands cup a great green gem at his belly.'],
     ['', 'Somebody still leaves flowers here. The petals are fresh.']]) });
-  const folkA = makeEnt(SPR.folkA, 12, 13, { ambient: { pause: [2000, 4200], roam: [9, 11, 14, 16] }, talk: async () => say(cyc(folkA, [['ORCHARD WIFE', 'A stranger in the valley! Mind the statue\u2019s flowers, love — Pearl leaves those, and Pearl counts them.'], ['ORCHARD WIFE', 'Pearl\u2019s cottage? Northwest, under the cliff. Follow the path past the fountain and keep the cliff on your right.'], ['ORCHARD WIFE', 'A hundred years since the last feast, and the statue still gets fresh flowers. That\u2019s Pearl. That\u2019s the whole story of Pearl.']])) });
-  const folkB = makeEnt(SPR.folkB, 21, 14, { ambient: { pause: [2000, 4200], roam: [19, 12, 24, 17] }, talk: async () => say(cyc(folkB, [['STONECUTTER', 'You\u2019ve the look of a man heading north. They all come back by the overlook, friend. The towers don\u2019t blink. They don\u2019t have to.'], ['STONECUTTER', 'If it\u2019s the overlook you want, it\u2019s the north edge, past the statue. Mind the balustrade — and mind what\u2019s past it.'], ['STONECUTTER', 'South road takes you to the fields, if the valley\u2019s all you came for. Somehow I doubt it.']])) });
-  const guard = makeEnt(SPR.guard, 18, 20, { ambient: { pause: [2400, 4800] }, talk: async () => say(cyc(guard, [['WATCHMAN', 'South gate\u2019s mine to watch. If it\u2019s the King you\u2019ve come for, his road climbs from the north overlook \u2014 the whole village knows why you\u2019re here, hero. Word travels.'], ['WATCHMAN', 'Northwest for Pearl, hero. Under the cliff. You\u2019ll smell the woodsmoke before you see the door.'], ['WATCHMAN', 'I watch the gate. The gate watches the road. The towers watch us all \u2014 that\u2019s the arrangement, like it or not.']])) });
-  const hero = makeEnt(SPR.cornman, 15, 21, {});
+  const folkA = makeEnt(SPR.folkA, 15, 11, { ambient: { pause: [2000, 4200], roam: [14, 11, 19, 12] }, talk: async () => say(cyc(folkA, [['ORCHARD WIFE', 'A stranger in the valley! Mind the statue\u2019s flowers, love \u2014 Pearl leaves those, and Pearl counts them.'], ['ORCHARD WIFE', 'Pearl\u2019s cottage? Northwest, under the cliff \u2014 the green roof, you can see it from the plaza.'], ['ORCHARD WIFE', 'A hundred years since the last feast, and the statue still gets fresh flowers. That\u2019s Pearl. That\u2019s the whole story of Pearl.']])) });
+  const folkB = makeEnt(SPR.folkB, 34, 21, { ambient: { pause: [2000, 4200], roam: [32, 20, 38, 22] }, talk: async () => say(cyc(folkB, [['STONECUTTER', 'You\u2019ve the look of a man heading north. They all come back by the overlook, friend. The towers don\u2019t blink. They don\u2019t have to.'], ['STONECUTTER', 'My house is the green roof by the fields, if you\u2019re asking. Cut the stone for half the doors in this town.'], ['STONECUTTER', 'East road takes you to the fields, south gate too. The valley\u2019s bigger than it looks from the gate, hero.']])) });
+  const guard = makeEnt(SPR.guard, 25, 31, { ambient: { pause: [2400, 4800] }, talk: async () => say(cyc(guard, [['WATCHMAN', 'South gate\u2019s mine to watch. If it\u2019s the King you\u2019ve come for, his road climbs from the north overlook \u2014 the whole village knows why you\u2019re here, hero. Word travels.'], ['WATCHMAN', 'Northwest for Pearl, hero. Under the cliff, green roof. You\u2019ll smell the woodsmoke before you see the door.'], ['WATCHMAN', 'I watch the gate. The gate watches the road. The towers watch us all \u2014 that\u2019s the arrangement, like it or not.']])) });
+  const hero = makeEnt(SPR.cornman, 23, 31, {});
   hero.dir = 'up';
   const doorLine = t => async () => say([['', t]]);
   return { set: 'village', rows: VROWS, player: hero,
     entities: [statue, folkA, folkB, guard],
     triggers: {
-      '5,6': async () => { mode = 'script'; await fadeTo(1, 500); act3(); },
-      '26,6': doorLine('The Harvest Chapel. The door is shut and the little bell is still. (Part Two)'),
-      '15,12': doorLine('The general store. A sign in the window: BACK AT HARVEST. (Part Two)'),
-      '18,12': doorLine('The blacksmith\u2019s forge is cold. A note: PEARL FIRST. THEN BUSINESS.'),
-      '26,11': doorLine('The Miller house. Smoke in the chimney, bread on the sill — and nobody answers. Odd.'),
-      '5,15': doorLine('The mill. The great wheel turns slow, though the stream is low.'),
-      '26,15': doorLine('The Stonecutter house. Fresh-cut stone stacked by the door, all of it grey.'),
-      '26,19': doorLine('The Harvest Inn. The innkeep, through the door: "Beds and supper for travelers — but Pearl first, hero. Pearl first."'),
-      '15,6': async () => say([['', 'The fountain runs clear and cold. Coins glint at the bottom — a hundred years of small wishes.']]),
-      '15,2': async () => { if (!G.roadSeen){ G.roadSeen = true;
+      '8,7': async () => { mode = 'script'; await fadeTo(1, 500); act3(); },
+      '38,7': doorLine('The Harvest Chapel. Stone walls, plum roof \u2014 and the door is shut for the morning count. The little bell is still.'),
+      '6,20': doorLine('The general store, under the red roof. A sign in the window: BACK AT HARVEST.'),
+      '40,20': doorLine('The blacksmith\u2019s house. The forge outside does the day\u2019s talking \u2014 mind the anvil.'),
+      '14,27': doorLine('The Miller house, plum roof. Smoke in the chimney, bread on the sill \u2014 and nobody answers. Odd.'),
+      '32,27': doorLine('The Stonecutter house, green roof. Fresh-cut stone stacked by the door, all of it grey.'),
+      '11,33': doorLine('The Old Mill, gold roof. The great wheel turns slow, though the stream is low.'),
+      '36,33': doorLine('The Harvest Inn, red roof. The innkeep, through the door: "Beds and supper for travelers \u2014 but Pearl first, hero. Pearl first."'),
+      '23,2': async () => { if (!G.roadSeen){ G.roadSeen = true;
           await say([['', 'From the overlook: the King\u2019s castle above the rooftops \u2014 and far north, small as a thumbnail, a castle that is not a castle for the living at all. It is black.'],
             ['', 'The castle road climbs from here.']]); }
         await travel(buildCastle, 24, 33, 'up'); },
-      '16,2': async () => say([['', 'From the overlook: the ruined castle above the rooftops, and far north, small as a thumbnail, a castle that is not ruined at all. It is black.']]),
-      '15,22': doorLine('The road south, to the first field and the wide world. That road is Part Two\u2019s business.'),
-      '16,22': doorLine('The road south, to the first field and the wide world. That road is Part Two\u2019s business.')
+      '23,32': async () => travel(buildFields, 15, 1, 'down'),
+      '24,32': async () => travel(buildFields, 15, 1, 'down'),
+      '23,33': async () => travel(buildFields, 15, 1, 'down'),
+      '24,33': async () => travel(buildFields, 15, 1, 'down'),
+      '47,21': async () => travel(buildFields, 1, 11, 'right')
+    },
+    refs: {} };
+}
+// The fields south and east of town: corn, crossroads, and — in the
+// south-east stone — the mouth of the old cave Pearl spoke of.
+const FIELDS = [
+"###############..###############",
+"##.............++.............##",
+"##..ccccccccc..++..ccccccccc..##",
+"##..ccccccccc..++..ccccccccc..##",
+"##..ccccccccc..++..ccccccccc..##",
+"##.............++.............##",
+"##..ccccccccc..++..ccccccccc..##",
+"##..ccccccccc..++..ccccccccc..##",
+"##..ccccccccc..++..ccccccccc..##",
+"##..ccccccccc..++..ccccccccc..##",
+"##.............++.............##",
+"++++++++++++++++++++++++++++++++",
+"++++++++++++++++++++++++++++++++",
+"##.............++.............##",
+"##..ccccccccc..++..ccccc......##",
+"##..ccccccccc..++..ccccc......##",
+"##..ccccccccc..++..ccccc......##",
+"##.............++...^^^^^^^^^^##",
+"##..................^^^^^^O^^^##",
+"##..................^^......^^##",
+"##..................^^......^^##",
+"##..T.......................T.##",
+"##............................##",
+"################################"];
+function buildFields(){
+  const crow = makeEnt(SPR.crowA, 13, 5, { talk: async () => say([['', 'A crow, watching you from the field\u2019s edge. It does not startle. Out here, they never do.']]) });
+  const cave = makeEnt(tile(g => {}), 26, 19, { noShadow: true, talk: async () => say([
+    ['', 'The old cave. The dark goes down and down, and the air that comes up smells of wet stone and old rain.'],
+    ['', 'Pearl\u2019s cave. Whatever road runs under the mountain starts here. (Part Two)']]) });
+  const hero = makeEnt(SPR.cornman, 15, 1, {});
+  hero.dir = 'down';
+  const doorLine = t => async () => say([['', t]]);
+  return { set: 'village', rows: FIELDS, player: hero,
+    entities: [crow, cave],
+    triggers: {
+      '15,0': async () => travel(buildVillage, 23, 31, 'up'),
+      '16,0': async () => travel(buildVillage, 23, 31, 'up'),
+      '0,11': async () => travel(buildVillage, 45, 21, 'left'),
+      '0,12': async () => travel(buildVillage, 45, 21, 'left'),
+      '31,11': doorLine('The east road runs on toward the wide world. That road is Part Two\u2019s business.'),
+      '31,12': doorLine('The east road runs on toward the wide world. That road is Part Two\u2019s business.')
     },
     refs: {} };
 }
@@ -1221,8 +1306,8 @@ function buildCottage(){
   hero.dir = 'up';
   return { set: 'cottage', rows: COTTAGE, player: hero,
     entities: [pearl],
-    triggers: { '7,11': async () => { if (G.told) await endPart(); else await travel(buildVillage, 5, 7, 'down'); },
-                '8,11': async () => { if (G.told) await endPart(); else await travel(buildVillage, 5, 7, 'down'); } },
+    triggers: { '7,11': async () => { if (G.told) await endPart(); else await travel(buildVillage, 8, 8, 'down'); },
+                '8,11': async () => { if (G.told) await endPart(); else await travel(buildVillage, 8, 8, 'down'); } },
     refs: { pearl } };
 }
 
@@ -1282,8 +1367,8 @@ async function theMovie(){
   player.hidden = true;
   scene.dim = .42;
   scene.focus = scene.entities[0];
-  const oldKing = makeEnt(SPR.king, 15, 8, {}); oldKing.dir = 'up';
-  const youngPearl = makeEnt(SPR.pearlY, 13, 9, {}); youngPearl.dir = 'up';
+  const oldKing = makeEnt(SPR.king, 23, 18, {}); oldKing.dir = 'up';
+  const youngPearl = makeEnt(SPR.pearlY, 21, 19, {}); youngPearl.dir = 'up';
   scene.entities.push(oldKing, youngPearl);
   await fadeTo(0, 900);
   await say([['PEARL\u2019S VOICE', 'At dawn he came down to the village himself, and stood a long while looking at the fields he had saved, and the price of them.'],
@@ -1325,7 +1410,7 @@ async function act2(){
   mode = 'script';
   loadScene(buildVillage());
   await fadeTo(0, 800);
-  await moveEntTo(player, 15, 18);
+  await moveEntTo(player, 23, 27);
   await say([['', 'Castle-Foot Village, a hundred harvests after the last feast. The fields are gold. The statue\u2019s flowers are fresh.'],
     ['', 'You have come to ask what happened here. Begin where the valley begins: with its King.']]);
   objective('Find the King \u2014 his road climbs from the north overlook');

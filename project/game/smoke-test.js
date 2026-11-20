@@ -27,7 +27,7 @@ const src = data + '\n' + titleData + '\n' + scripts[scripts.length - 1] + `
   for (let i = 0; i < 90; i++) loop(i * 16.7);
   titleOn = false;
   out.push('title screen: rendered 90 frames (waterfall phases, twinkle, PUSH START blink)');
-  for (const [name, build] of [['hall', buildHall], ['village', buildVillage], ['cottage', buildCottage]]){
+  for (const [name, build] of [['hall', buildHall], ['village', buildVillage], ['cottage', buildCottage], ['castle', buildCastle], ['dungeon', buildDungeon], ['castle2', buildCastle2F], ['castle3', buildCastle3F], ['fields', buildFields]]){
     loadScene(build());
     for (let i = 0; i < 120; i++) render();
     out.push(name + ': rendered 120 frames, entities=' + scene.entities.length);

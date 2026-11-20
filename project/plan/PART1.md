@@ -131,3 +131,13 @@ same morning it is ANIMATED in-game: 4 pre-rendered frames cycle at
 through the corn — art/build_title_frames.py) plus live overlays:
 pulsing emerald glows on all seven gems, a breathing glow on the
 PUSH START plaque, twinkling stars. Preview: art/title-animated-preview.gif.
+
+**VILLAGE EXTENDED (Michael, 2026-11-20 14:01 CST):** the 32×24 village
+was too little and sealed. Replaced by the 48×36 master village (filed
+candidate, walk-tested 2026-11-19): eight buildings, each house its own
+roof colour (Pearl green, chapel plum + stone walls, store red, smithy
+gold, miller plum, stonecutter green, mill gold, inn red), two-story
+doors throughout. Exits work: north overlook → castle; south gate and
+east road → the FIELDS (new scene: corn, crossroads, the old cave's
+mouth in the south-east stone, Part Two's door). The 32×24 size ruling
+in VILLAGE-PLAN.md is superseded by this one.
