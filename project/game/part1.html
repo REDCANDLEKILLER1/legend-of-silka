@@ -116,17 +116,66 @@ function bake(rows, pal){
   return c;
 }
 const SPR = {};
-for (const n of ['silka','pearlY','pearlO','eli','folkA','folkB','guard','cornman','crowA','crowB'])
-  SPR[n] = bake(SPRITES[n], PAL);
-SPR.king = bake(SPRITES.king, KING_PAL);
-SPR.statue = bake(SPRITES.king, STATUE_PAL);
+function bakeSet(name, pal){
+  const set = {};
+  for (const d of ['down','up','left','right']){
+    if (!SPRITES[name + '_' + d]) continue;
+    const e = { i: bake(SPRITES[name + '_' + d], pal) };
+    if (SPRITES[name + '_' + d + '_w']) e.w = bake(SPRITES[name + '_' + d + '_w'], pal);
+    set[d] = e;
+  }
+  return set;
+}
+for (const n of ['silka','pearlY','pearlO','eli','folkA','folkB','guard','cornman'])
+  SPR[n] = bakeSet(n, PAL);
+SPR.king = bakeSet('king', KING_PAL);
+SPR.statue = bake(SPRITES.king_down, STATUE_PAL);
+SPR.crowA = bake(SPRITES.crowA, PAL);
+SPR.crowB = bake(SPRITES.crowB, PAL);
 SPR.wizardA = bake(SPRITES.wizardA, WIZ_PAL);
 SPR.wizardB = bake(SPRITES.wizardB, WIZ_PAL);
+{ // CornMan punch sets: anticipation / extension / recover, per direction + arm
+  const P = {};
+  for (const k of ['down_r','down_l','right_r','up_r','left_r']){
+    const a = SPRITES['cornman_pa_' + k], x = SPRITES['cornman_px_' + k], r = SPRITES['cornman_pr_' + k];
+    if (a && x && r) P[k] = [bake(a, PAL), bake(x, PAL), bake(r, PAL)];
+  }
+  if (Object.keys(P).length) SPR.cornman.punch = P;
+}
 
 // ============ tile painters (one light, upper left) ============
 function tile(fn){ const c = document.createElement('canvas'); c.width = 16; c.height = 16;
   const g = c.getContext('2d'); fn(g); return c; }
 function R(g, x, y, w, h, col){ g.fillStyle = col; g.fillRect(x, y, w, h); }
+// One tile of Pearl's 3-wide fireplace. pos: 0 left, 1 centre (kettle), 2 right.
+// Flames are tapered tongues (wide bed, narrow tip, bright core) that dance per
+// frame — never stacked bars.
+function fireplaceTile(pos, f){
+  return tile(g => {
+    R(g,0,0,16,16,'#5b544b'); R(g,0,0,16,2,'#76726a'); R(g,0,2,16,1,'#453f38');
+    R(g,1,3,14,13,'#241a12');
+    R(g,2,13,12,2,'#3a2412'); R(g,3,14,10,1,'#241505');           // logs
+    const emb = ['#e8641e','#c42838','#f5bd1f'];                   // ember bed, shifts per frame
+    for (let i = 0; i < 5; i++) R(g, 3 + ((i * 3 + f * 2) % 10), 13, 1, 1, emb[(i + f) % 3]);
+    const fc = pos === 0 ? 11 : pos === 2 ? 5 : 8;                 // tongue centre leans to the middle tile
+    const H = (pos === 1 ? [10, 12, 11] : [6, 7, 6])[f];           // flame height dances
+    const sway = [0, 1, 0][f];
+    for (let y = 13; y >= 14 - H; y--){                            // outer tongue
+      const hw = y >= 11 ? 3 : y >= 8 ? 2 : 1;
+      R(g, fc - hw + (y < 9 ? sway : 0), y, hw * 2, 1, '#e8641e');
+    }
+    for (let y = 12; y >= 14 - Math.max(3, H - 3); y--){           // bright core
+      const hw = y >= 10 ? 2 : 1;
+      R(g, fc - hw, y, hw * 2, 1, y >= 10 ? '#f5bd1f' : '#fff066');
+    }
+    R(g, fc + (f === 1 ? -4 : 4), 10, 1, 3, '#e8641e');             // side lick
+    if (pos === 1){ // the kettle, hanging over the fire
+      R(g,7,2,2,2,'#181010'); R(g,5,4,6,4,'#1a1512'); R(g,6,5,2,1,'#3a352f'); R(g,5,8,6,1,'#0f0c0a');
+    }
+    if (pos === 0) R(g,14,3,2,13,'#453f38');
+    if (pos === 2) R(g,0,3,2,13,'#453f38');
+  });
+}
 const TILES = {
 village: {
   '#': tile(g => { R(g,0,0,16,16,'#1d3312'); R(g,0,0,16,5,'#2c4d1a'); R(g,1,2,3,2,'#3c6624'); R(g,9,1,4,2,'#3c6624'); R(g,5,4,3,2,'#244016'); }),
@@ -140,7 +189,9 @@ village: {
   'T': tile(g => { R(g,0,0,16,16,'#3f7a2a'); R(g,1,1,9,7,'#4f9433'); R(g,6,5,9,8,'#356b21'); R(g,2,2,3,2,'#63aa42'); R(g,10,9,3,2,'#2c5c1c'); R(g,7,13,2,3,'#4a2814'); }),
   '.': tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,0,0,16,3,'#5a9c38'); R(g,2,5,2,1,'#63aa42'); R(g,11,11,2,1,'#63aa42'); R(g,7,8,2,1,'#3f7425'); R(g,13,3,2,1,'#3f7425'); }),
   'f': tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,0,0,16,3,'#5a9c38'); R(g,3,4,1,1,'#fff8e8'); R(g,11,6,1,1,'#f5bd1f'); R(g,6,11,1,1,'#e77fb0'); R(g,13,12,1,1,'#fff8e8'); R(g,8,3,1,1,'#e77fb0'); }),
-  'F': tile(g => { R(g,0,0,16,16,'#8f97a3'); R(g,2,2,12,12,'#6e7683'); R(g,4,4,8,8,'#5db9e8'); R(g,5,5,3,2,'#aee4fb'); R(g,7,2,2,3,'#cfd6de'); }),
+  'F': [0,1].map(f => tile(g => { R(g,0,0,16,16,'#8f97a3'); R(g,2,2,12,12,'#6e7683'); R(g,4,4,8,8,'#5db9e8'); R(g,5,5,3,2,'#aee4fb'); R(g,7,2,2,3,'#cfd6de');
+    if (f === 0){ R(g,7,1,2,2,'#eaf7ff'); R(g,10,9,2,1,'#aee4fb'); R(g,5,11,2,1,'#aee4fb'); }
+    else { R(g,7,0,2,3,'#eaf7ff'); R(g,6,3,1,2,'#aee4fb'); R(g,9,10,2,1,'#aee4fb'); R(g,11,6,2,1,'#aee4fb'); } })),
   'S': tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,3,11,10,4,'#8c897d'); R(g,4,12,8,2,'#a09c90'); R(g,5,10,6,1,'#76726a'); }),
   'P': tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,0,0,16,3,'#5a9c38'); R(g,4,9,2,1,'#63aa42'); R(g,12,6,2,1,'#3f7425'); }),
   'N': tile(g => { R(g,0,0,16,16,'#4d8a2f'); R(g,0,0,16,3,'#5a9c38'); R(g,6,7,2,1,'#63aa42'); }),
@@ -154,19 +205,74 @@ hall: {
   '+': tile(g => { R(g,0,0,16,16,'#8d8578'); R(g,0,0,16,2,'#a39a89'); R(g,0,14,16,2,'#6f675c'); R(g,7,0,1,16,'#776f62'); R(g,0,7,16,1,'#776f62'); }),
   'r': tile(g => { R(g,0,0,16,16,'#8e2432'); R(g,0,0,16,2,'#a92c3c'); R(g,0,14,16,2,'#6e1824'); R(g,1,1,1,14,'#f5bd1f'); R(g,14,1,1,14,'#f5bd1f'); }),
   'T': tile(g => { R(g,0,0,16,16,'#5d3a1e'); R(g,0,2,16,12,'#7d4a28'); R(g,0,2,16,2,'#9c622f'); R(g,3,5,4,3,'#e8e2d2'); R(g,10,9,4,3,'#e8e2d2'); R(g,4,6,2,1,'#f5bd1f'); R(g,11,10,2,1,'#c42838'); R(g,8,4,2,2,'#f5bd1f'); }),
-  'C': tile(g => { R(g,0,0,16,16,'#8d8578'); R(g,7,6,2,9,'#8c6214'); R(g,3,3,2,4,'#8c6214'); R(g,11,3,2,4,'#8c6214'); R(g,3,1,2,2,'#ffd91a'); R(g,11,1,2,2,'#ffd91a'); R(g,7,2,2,3,'#ffd91a'); R(g,7,1,2,1,'#fff6c9'); }),
+  'C': [0,1].map(f => tile(g => { R(g,0,0,16,16,'#8d8578'); R(g,7,6,2,9,'#8c6214'); R(g,3,3,2,4,'#8c6214'); R(g,11,3,2,4,'#8c6214');
+    if (f === 0){ R(g,3,1,2,2,'#ffd91a'); R(g,11,1,2,2,'#ffd91a'); R(g,7,2,2,3,'#ffd91a'); R(g,7,1,2,1,'#fff6c9'); }
+    else { R(g,2,1,2,2,'#ffd91a'); R(g,12,0,2,2,'#ffd91a'); R(g,7,1,2,3,'#ffd91a'); R(g,8,0,1,1,'#fff6c9'); R(g,3,0,1,1,'#fff6c9'); } })),
   'H': tile(g => { R(g,0,0,16,16,'#6e1824'); R(g,2,3,12,13,'#8e2432'); R(g,2,3,12,3,'#f5bd1f'); R(g,4,8,8,6,'#a92c3c'); R(g,7,4,2,2,'#fff066'); }),
   'd': tile(g => { R(g,0,0,16,16,'#3e3646'); R(g,4,1,8,15,'#5d3a1e'); R(g,5,2,6,13,'#6f4525'); R(g,7,1,2,15,'#181010'); R(g,6,8,1,2,'#f5bd1f'); R(g,9,8,1,2,'#f5bd1f'); })
 },
 cottage: {
   '#': tile(g => { R(g,0,0,16,16,'#4a2f1a'); R(g,0,3,16,2,'#5d3a1e'); R(g,0,10,16,2,'#3a2412'); R(g,0,0,16,2,'#66452a'); }),
   'w': tile(g => { R(g,0,0,16,16,'#8a6136'); R(g,0,0,16,2,'#9c7444'); R(g,0,7,16,1,'#6f4a26'); R(g,0,15,16,1,'#6f4a26'); R(g,5,0,1,16,'#77522c'); R(g,11,0,1,16,'#77522c'); }),
-  'F': tile(g => { R(g,0,0,16,16,'#5b544b'); R(g,2,4,12,12,'#3a352f'); R(g,5,8,6,7,'#e8641e'); R(g,6,10,4,5,'#f5bd1f'); R(g,7,12,2,3,'#fff066'); R(g,2,2,12,2,'#76726a'); }),
+  'F': [0,1,2].map(f => fireplaceTile(0, f)),
+  'G': [0,1,2].map(f => fireplaceTile(1, f)),
+  'J': [0,1,2].map(f => fireplaceTile(2, f)),
+  'L': tile(g => { R(g,0,0,16,16,'#8a6136'); R(g,0,0,16,2,'#9c7444'); R(g,0,7,16,1,'#6f4a26'); R(g,0,15,16,1,'#6f4a26');
+    R(g,2,9,6,5,'#5d3a1e'); R(g,3,10,4,3,'#9c7444'); R(g,4,11,2,1,'#5d3a1e');
+    R(g,8,9,6,5,'#6f4525'); R(g,9,10,4,3,'#b0824f'); R(g,10,11,2,1,'#5d3a1e');
+    R(g,5,5,6,5,'#5d3a1e'); R(g,6,6,4,3,'#9c7444'); R(g,7,7,2,1,'#5d3a1e'); }),
+  's': tile(g => { R(g,0,0,16,16,'#4a2f1a'); R(g,0,3,16,2,'#5d3a1e'); R(g,0,10,16,2,'#3a2412'); R(g,0,0,16,2,'#66452a');
+    R(g,1,12,14,2,'#6f4525'); R(g,1,12,14,1,'#8c5a30');
+    R(g,3,8,3,4,'#8496b0'); R(g,3,8,3,1,'#c42838'); R(g,8,7,3,5,'#e4e0d4'); R(g,8,7,3,1,'#28823e'); R(g,12,8,3,4,'#f5bd1f'); R(g,13,9,1,2,'#181010'); }),
+  'o': tile(g => { R(g,0,0,16,16,'#8a6136'); R(g,0,0,16,2,'#9c7444'); R(g,0,7,16,1,'#6f4a26'); R(g,0,15,16,1,'#6f4a26');
+    R(g,4,5,8,3,'#9c622f'); R(g,4,5,8,1,'#c98a4a'); R(g,5,8,2,5,'#5d3a1e'); R(g,9,8,2,5,'#5d3a1e'); R(g,5,12,6,1,'#4a2f1a'); }),
   'T': tile(g => { R(g,0,0,16,16,'#8a6136'); R(g,1,3,14,10,'#6f4525'); R(g,1,3,14,2,'#8c5a30'); R(g,6,6,4,3,'#e8e2d2'); }),
   'b': tile(g => { R(g,0,0,16,16,'#8a6136'); R(g,1,2,14,12,'#7e3b4f'); R(g,1,2,14,4,'#e8e2d2'); R(g,1,10,14,4,'#93536a'); R(g,1,2,14,1,'#fff8e8'); }),
   'r': tile(g => { R(g,0,0,16,16,'#7e2f26'); R(g,1,1,14,14,'#93392c'); R(g,3,3,10,10,'#a34a28'); R(g,5,5,6,6,'#f5bd1f'); }),
   'd': tile(g => { R(g,0,0,16,16,'#4a2f1a'); R(g,4,1,8,15,'#5d3a1e'); R(g,5,2,6,13,'#6f4525'); R(g,10,8,1,2,'#f5bd1f'); })
 }};
+// ============ tile variants ============
+// The same material, textured differently from tile to tile (the Minecraft
+// lesson: texture everywhere, and no two tiles stamped identical). Chosen by
+// a position hash, so a given tile always wears the same variant — texture,
+// never shimmer.
+function variantTiles(base, dots){
+  return dots.map(list => tile(g => { g.drawImage(base, 0, 0); for (const [x, y, c] of list) R(g, x, y, 1, 1, c); }));
+}
+const TILEVAR = {
+  'hall+': variantTiles(TILES.hall['+'], [
+    [[3,5,'#7d7462'],[11,9,'#7d7462'],[8,3,'#a39a89']],
+    [[6,11,'#7d7462'],[13,4,'#776f62'],[2,8,'#a39a89']],
+    [[9,6,'#776f62'],[4,13,'#7d7462'],[12,12,'#a39a89']]]),
+  'cottagew': variantTiles(TILES.cottage['w'], [
+    [[4,4,'#77522c'],[12,11,'#77522c'],[9,13,'#6f4a26']],
+    [[7,9,'#77522c'],[2,13,'#6f4a26'],[13,5,'#77522c']],
+    [[10,3,'#6f4a26'],[5,12,'#77522c'],[1,6,'#77522c']]]),
+  'village+': variantTiles(TILES.village['+'], [
+    [[3,4,'#97744a'],[11,10,'#8a6a3c'],[7,7,'#bd985c']],
+    [[6,12,'#97744a'],[13,5,'#97744a'],[2,9,'#8a6a3c']],
+    [[9,3,'#8a6a3c'],[4,10,'#bd985c'],[12,13,'#97744a']]]),
+  'village.': variantTiles(TILES.village['.'], [
+    [[4,6,'#63aa42'],[12,9,'#3f7425'],[8,13,'#63aa42']],
+    [[7,4,'#3f7425'],[2,11,'#63aa42'],[13,7,'#5a9c38']],
+    [[10,12,'#63aa42'],[5,3,'#3f7425'],[14,14,'#63aa42']]]),
+  'village#': variantTiles(TILES.village['#'], [
+    [[3,8,'#3c6624'],[11,12,'#244016'],[7,10,'#2c4d1a']],
+    [[6,13,'#3c6624'],[13,6,'#244016'],[2,11,'#3c6624']],
+    [[9,9,'#244016'],[4,12,'#2c4d1a'],[12,4,'#3c6624']]]),
+  'hall#': variantTiles(TILES.hall['#'], [
+    [[4,5,'#655b6e'],[11,10,'#372f3d']],
+    [[8,11,'#655b6e'],[3,9,'#372f3d'],[13,4,'#655b6e']],
+    [[6,3,'#372f3d'],[12,13,'#655b6e']]]),
+  'cottage#': variantTiles(TILES.cottage['#'], [
+    [[5,6,'#66452a'],[11,12,'#3a2412']],
+    [[9,5,'#3a2412'],[3,13,'#66452a']],
+    [[7,11,'#66452a'],[13,7,'#3a2412'],[2,5,'#66452a']]]),
+  'village=': variantTiles(TILES.village['='], [
+    [[4,5,'#847a66'],[12,10,'#7d7462']],
+    [[8,3,'#847a66'],[3,12,'#7d7462'],[13,8,'#847a66']],
+    [[6,9,'#7d7462'],[11,13,'#847a66'],[2,4,'#847a66']]])
+};
 // ============ maps ============
 const VILLAGE = [
 "####^^######^^^^^^^^######^^####",
@@ -220,9 +326,9 @@ const HALL = [
 "###############dd###############"];
 const COTTAGE = [
 "################",
-"#FFF#wwwwwwwwww#",
-"#wwwwwwwwwwwwww#",
-"#wwwwwwTTwwwwww#",
+"#FGJ#wwwwwwwsww#",
+"#Lwwwwwwwwwwwww#",
+"#wwwwwoTTwwwwww#",
 "#wwwwwwTTwwwwww#",
 "#wwwwwwwwwwwwww#",
 "#wwwwwrrrrwwwww#",
@@ -234,7 +340,7 @@ const COTTAGE = [
 const SOLID = {
   village: new Set(['#','^','R','H','W','T','F','S','c']),
   hall: new Set(['#','B','W','T','C','H']),
-  cottage: new Set(['#','F','T','b'])
+  cottage: new Set(['#','F','G','J','T','b','L','s','o'])
 };
 
 // ============ engine ============
@@ -247,7 +353,8 @@ function walkable(s, x, y, self){
 }
 function makeEnt(spr, x, y, opts = {}){
   return Object.assign({ spr, x, y, px: x * TILE, py: y * TILE, dir: 'down', moveT: 0,
-    fromX: x, fromY: y, hidden: false, name: '', talk: null }, opts);
+    fromX: x, fromY: y, hidden: false, name: '', talk: null,
+    ambT: 0, punch: null, noShadow: false }, opts);
 }
 function stepEnt(e, dir){
   const d = { up: [0,-1], down: [0,1], left: [-1,0], right: [1,0] }[dir];
@@ -258,6 +365,7 @@ function stepEnt(e, dir){
   return true;
 }
 function updateEnt(e, dt){
+  if (e.punch){ e.punch.t += dt; if (e.punch.t >= 260) e.punch = null; }
   if (e.moveT > 0){
     e.moveT += dt / 130;
     const t = Math.min(1, e.moveT);
@@ -300,6 +408,44 @@ function moveEntTo(e, tx, ty){
     const iv = setInterval(() => { if ((!e.path || !e.path.length) && e.moveT === 0){ clearInterval(iv); res(); } }, 40);
   });
 }
+// Pick the sprite for an entity's current state: directional sets choose by
+// facing + walk frame (+1px bob on the walk frame); a punch in flight wins;
+// plain canvases and tick-functions (the Wizard) pass through.
+function entImg(e){
+  if (typeof e.spr === 'function') return { img: e.spr(tick), bob: 0 };
+  const s = e.spr;
+  if (s && s.down){
+    if (e.punch && s.punch){
+      const p = s.punch[e.dir + '_' + e.punch.arm] || s.punch['down_' + e.punch.arm];
+      if (p) return { img: p[e.punch.t < 100 ? 0 : e.punch.t < 155 ? 1 : 2], bob: 0 };
+    }
+    const d = s[e.dir] || s.down;
+    const moving = e.moveT > 0 || (e.path && e.path.length);
+    if (moving && d.w){ const f = Math.floor(tick / 7) % 2; return { img: f ? d.w : d.i, bob: f }; }
+    return { img: d.i, bob: 0 };
+  }
+  return { img: s, bob: 0 };
+}
+// Ambient life: in free play only, NPCs with an ambient profile turn in place
+// or wander a small home area. Collision and other entities are respected by
+// stepEnt; dialogue and cutscenes never reach this (mode gate at the call site).
+const DIRS4 = ['up','down','left','right'];
+const DVEC = { up: [0,-1], down: [0,1], left: [-1,0], right: [1,0] };
+function ambient(e, dt){
+  if (!e.ambient || e === player || e.hidden || e.punch) return;
+  if ((e.path && e.path.length) || e.moveT > 0) return;
+  e.ambT -= dt;
+  if (e.ambT > 0) return;
+  const A = e.ambient;
+  e.ambT = A.pause[0] + Math.random() * (A.pause[1] - A.pause[0]);
+  const d = DIRS4[Math.floor(Math.random() * 4)];
+  if (A.roam && Math.random() < .45){
+    const nx = e.x + DVEC[d][0], ny = e.y + DVEC[d][1];
+    if (nx >= A.roam[0] && ny >= A.roam[1] && nx <= A.roam[2] && ny <= A.roam[3]){ if (!stepEnt(e, d)) e.dir = d; }
+    else e.dir = d;
+  } else e.dir = d;
+}
+let punchArm = 'l';
 function loadScene(def){
   scene = def; scene.entities = def.entities || [];
   for (const e of scene.entities){ e.px = e.x * TILE; e.py = e.y * TILE; e.moveT = 0; e.path = []; }
@@ -328,13 +474,26 @@ function render(){
   const y0 = Math.max(0, Math.floor(camY / TILE)), y1 = Math.min(scene.rows.length - 1, Math.ceil((camY + VIEW_H * TILE) / TILE));
   for (let y = y0; y <= y1; y++)
     for (let x = x0; x <= x1; x++){
-      const t = TILES[scene.set][scene.rows[y][x]];
-      if (t) ctx.drawImage(t, x * TILE, y * TILE);
+      const ch = scene.rows[y][x];
+      const t = TILES[scene.set][ch];
+      if (t){
+        let img = Array.isArray(t) ? t[Math.floor(tick / 9) % t.length] : t;
+        const vv = TILEVAR[scene.set + ch];
+        if (vv) img = vv[(x * 7 + y * 13) % vv.length];
+        ctx.drawImage(img, x * TILE, y * TILE);
+      }
     }
   const es = [...scene.entities].filter(e => !e.hidden).sort((a, b) => a.py - b.py);
   for (const e of es){
-    const img = typeof e.spr === 'function' ? e.spr(tick) : e.spr;
-    const dx = e.px, dy = e.py + TILE - img.height;
+    const { img, bob } = entImg(e);
+    const dx = e.px, dy = e.py + TILE - img.height + bob;
+    if (!e.noShadow){
+      ctx.fillStyle = 'rgba(12,8,6,0.30)';
+      ctx.beginPath();
+      if (ctx.ellipse) ctx.ellipse(dx + img.width / 2, e.py + TILE - 1, img.width * .38, 2.6, 0, 0, 7);
+      else ctx.rect(dx + 2, e.py + TILE - 2, img.width - 4, 3);
+      ctx.fill();
+    }
     if (e.aura){
       const p = .5 + .5 * Math.sin(tick * .09);
       const gx = dx + img.width / 2, gy = dy + img.height / 2;
@@ -369,6 +528,11 @@ function loop(ts){
   const dt = Math.min(50, ts - lastT); lastT = ts;
   if (titleOn){ drawTitle(ts); requestAnimationFrame(loop); return; }
   if (scene) for (const e of scene.entities) updateEnt(e, dt);
+  if (mode === 'play' && scene) for (const e of scene.entities) ambient(e, dt);
+  if (mode === 'play' && player && bPressed && player.spr && player.spr.punch && !player.punch){
+    bPressed = false; punchArm = punchArm === 'r' ? 'l' : 'r';
+    player.punch = { t: 0, arm: punchArm };
+  }
   if (mode === 'play' && player && !(player.path && player.path.length)) playerControl();
   render();
   requestAnimationFrame(loop);
@@ -397,13 +561,16 @@ $('bbtn').addEventListener('pointerdown', e => { e.preventDefault(); bPressed = 
 $('dlg').addEventListener('pointerdown', () => { aPressed = true; });
 $('card').addEventListener('pointerdown', () => { aPressed = true; });
 function playerControl(){
-  if (player.moveT > 0) return;
+  if (player.moveT > 0 || player.punch) return;
   for (const d of ['up','down','left','right']) if (held[d]){ stepEnt(player, d); return; }
 }
 function takeA(){ const a = aPressed || bPressed; aPressed = false; bPressed = false; return a; }
 
 // ============ dialogue / cards / objective ============
 const dlgEl = $('dlg'), dlgWho = dlgEl.querySelector('.who'), dlgTxt = dlgEl.querySelector('.txt');
+// Small talk varies: repeat visits cycle phrasings instead of repeating
+// verbatim, and the later phrasings point you where the story wants you.
+function cyc(e, pages){ e._li = e._li || 0; const p = pages[e._li % pages.length]; e._li++; return [p]; }
 async function say(pages){
   mode = 'dlg'; dlgEl.style.display = 'block';
   for (const p of pages){
@@ -454,7 +621,11 @@ async function interact(){
   const d = { up: [0,-1], down: [0,1], left: [-1,0], right: [1,0] }[player.dir];
   const tx = player.x + d[0], ty = player.y + d[1];
   for (const e of scene.entities){
-    if (e !== player && !e.hidden && e.x === tx && e.y === ty && e.talk){ await e.talk(); return; }
+    if (e !== player && !e.hidden && e.x === tx && e.y === ty && e.talk){
+      e.dir = Math.abs(player.x - e.x) > Math.abs(player.y - e.y)
+        ? (player.x > e.x ? 'right' : 'left') : (player.y > e.y ? 'down' : 'up');
+      await e.talk(); return;
+    }
   }
   const fn = scene.triggers && scene.triggers[tx + ',' + ty];
   if (fn) await fn();
@@ -465,7 +636,7 @@ const G = { stage: 0, cup: false, told: false };
 const wizSpr = t => (Math.floor(t / 8) % 2 ? SPR.wizardB : SPR.wizardA);
 
 function buildHall(){
-  const king = makeEnt(SPR.king, 15, 5, { name: 'THE HARVEST KING', talk: async () => {
+  const king = makeEnt(SPR.king, 15, 5, { name: 'THE HARVEST KING', ambient: { pause: [2800, 5600] }, talk: async () => {
     if (G.stage === 1){
       await say([['THE HARVEST KING', 'Pearl. You have your grandmother\u2019s eyes and her habit of standing where the truth is.'],
         ['THE HARVEST KING', 'Tomorrow at dawn I seal the Great Barn myself, as my father did. What sleeps under this valley stays asleep.'],
@@ -480,10 +651,10 @@ function buildHall(){
     } else if (G.stage === 0){
       await say([['', 'The King is deep in talk with his captains. Silka first — she asked for you.']]);
     } else {
-      await say([['THE HARVEST KING', 'Go on, child. The feast won\u2019t eat itself.']]);
+      await say(cyc(king, [['THE HARVEST KING', 'Go on, child. The feast won\u2019t eat itself.'], ['THE HARVEST KING', 'The toast comes when the cup does, Pearl. Eli has it — west table.']]));
     }
   }});
-  const silka = makeEnt(SPR.silka, 17, 5, { name: 'SILKA', talk: async () => {
+  const silka = makeEnt(SPR.silka, 17, 5, { name: 'SILKA', ambient: { pause: [2200, 4600] }, talk: async () => {
     if (G.stage === 0){
       await say([['SILKA', 'Pearl! There you are. Stand where I can see you — tonight I want every face I love in one room.'],
         ['SILKA', 'Father seals the Great Barn at dawn. After that, he says, the valley is safe for another hundred years.'],
@@ -491,22 +662,22 @@ function buildHall(){
         ['SILKA', 'No. Neither do I. Now — go and pay your respects to my father before the toast.']]);
       G.stage = 1; objective('Pay your respects to the Harvest King');
     } else {
-      await say([['SILKA', 'Whatever the old stories say, tonight this hall is warm and full. That is real. Hold on to real things, Pearl.']]);
+      await say(cyc(silka, [['SILKA', 'Whatever the old stories say, tonight this hall is warm and full. That is real. Hold on to real things, Pearl.'], ['SILKA', 'Father is on the dais when you\u2019re ready, Pearl. He pretends not to watch for you. He watches.']]));
     }
   }});
-  const eli = makeEnt(SPR.eli, 8, 11, { name: 'ELI', talk: async () => {
+  const eli = makeEnt(SPR.eli, 8, 11, { name: 'ELI', ambient: { pause: [1800, 3800], roam: [6, 10, 10, 12] }, talk: async () => {
     if (G.stage === 2){
       await say([['ELI', 'Pearl! Mind the cup — no, take it, that\u2019s why I\u2019m holding it like a fool. The King\u2019s harvest cup.'],
         ['ELI', 'Carry it straight. If you spill on the King\u2019s carpet I\u2019ll deny knowing you, and I\u2019ve known you since you were six.']]);
       G.cup = true; G.stage = 3; objective('Bring the harvest cup to the King');
     } else {
-      await say([['ELI', 'Best feast in ten years. The miller\u2019s wife brought pies, the stonecutter brought opinions.']]);
+      await say(cyc(eli, [['ELI', 'Best feast in ten years. The miller\u2019s wife brought pies, the stonecutter brought opinions.'], ['ELI', 'If it\u2019s the King you\u2019re after, he\u2019s up on the dais with Silka. Mind your manners and your elbows, in that order.']]));
     }
   }});
-  const folkA = makeEnt(SPR.folkA, 22, 11, { talk: async () => say([['ORCHARD WIFE', 'A hundred years of harvests without a blight. Whatever the King\u2019s family did back then, it worked.']]) });
-  const folkB = makeEnt(SPR.folkB, 10, 16, { talk: async () => say([['STONECUTTER', 'I cut the stone for the new barn door. Sealed at dawn, the King says. Sealed against what, he doesn\u2019t say.']]) });
-  const g1 = makeEnt(SPR.guard, 14, 22, { talk: async () => say([['GUARD', 'Mind the feast, little miss. Nothing leaves this hall tonight but songs.']]) });
-  const g2 = makeEnt(SPR.guard, 17, 22, { talk: async () => say([['GUARD', 'Strange sky tonight. The crows have all gone quiet at once.']]) });
+  const folkA = makeEnt(SPR.folkA, 22, 11, { ambient: { pause: [2000, 4200], roam: [20, 10, 25, 17] }, talk: async () => say(cyc(folkA, [['ORCHARD WIFE', 'A hundred years of harvests without a blight. Whatever the King\u2019s family did back then, it worked.'], ['ORCHARD WIFE', 'Mind you don\u2019t miss the toast, little miss. The King raises the cup himself — Eli\u2019s carrying it, over by the west table.'], ['ORCHARD WIFE', 'My pies went in the first hour. A hundred years of peace makes an appetite, I suppose.']])) });
+  const folkB = makeEnt(SPR.folkB, 10, 16, { ambient: { pause: [2000, 4200], roam: [8, 15, 13, 20] }, talk: async () => say(cyc(folkB, [['STONECUTTER', 'I cut the stone for the new barn door. Sealed at dawn, the King says. Sealed against what, he doesn\u2019t say.'], ['STONECUTTER', 'You want the cup, it\u2019s Eli you want. West table. Careful — he\u2019ll talk your ear off about the miller\u2019s wife\u2019s pies.'], ['STONECUTTER', 'Good stone in this valley. Bad dreams, though, the last few nights. The crows feel it too.']])) });
+  const g1 = makeEnt(SPR.guard, 14, 22, { ambient: { pause: [2200, 4600] }, talk: async () => say(cyc(g1, [['GUARD', 'Mind the feast, little miss. Nothing leaves this hall tonight but songs.'], ['GUARD', 'Doors are mine till the toast is done. After that — well. After that is after that.']])) });
+  const g2 = makeEnt(SPR.guard, 17, 22, { ambient: { pause: [2200, 4600] }, talk: async () => say(cyc(g2, [['GUARD', 'Strange sky tonight. The crows have all gone quiet at once.'], ['GUARD', 'Quiet crows, quiet bells. I don\u2019t care for either, if I\u2019m honest.']])) });
   const pearl = makeEnt(SPR.pearlY, 16, 21, {});
   pearl.dir = 'up';
   return { set: 'hall', rows: HALL, player: pearl,
@@ -522,7 +693,7 @@ async function theTurn(){
   scene.dim = .5;
   const crows = [];
   for (let i = 0; i < 5; i++){
-    const c = makeEnt(i % 2 ? SPR.crowB : SPR.crowA, -5 - i * 3, 1, {});
+    const c = makeEnt(i % 2 ? SPR.crowB : SPR.crowA, -5 - i * 3, 1, { noShadow: true });
     c.hidden = false; scene.entities.push(c); crows.push(c);
   }
   await new Promise(res => {
@@ -549,9 +720,9 @@ async function theTurn(){
 function buildVillage(){
   const statue = makeEnt(SPR.statue, 15, 5, { talk: async () => say([['', 'The Harvest King, in weathered stone. Both hands cup a great green gem at his belly.'],
     ['', 'Somebody still leaves flowers here. The petals are fresh.']]) });
-  const folkA = makeEnt(SPR.folkA, 12, 13, { talk: async () => say([['ORCHARD WIFE', 'A stranger in the valley! Mind the statue\u2019s flowers, love — Pearl leaves those, and Pearl counts them.']]) });
-  const folkB = makeEnt(SPR.folkB, 21, 14, { talk: async () => say([['STONECUTTER', 'You\u2019ve the look of a man heading north. They all come back by the overlook, friend. The towers don\u2019t blink. They don\u2019t have to.']]) });
-  const guard = makeEnt(SPR.guard, 18, 20, { talk: async () => say([['WATCHMAN', 'South gate\u2019s mine to watch, the north is nobody\u2019s. If it\u2019s Pearl you want, her cottage is northwest, under the cliff. She\u2019s expecting — no. She\u2019s always expecting.']]) });
+  const folkA = makeEnt(SPR.folkA, 12, 13, { ambient: { pause: [2000, 4200], roam: [9, 11, 14, 16] }, talk: async () => say(cyc(folkA, [['ORCHARD WIFE', 'A stranger in the valley! Mind the statue\u2019s flowers, love — Pearl leaves those, and Pearl counts them.'], ['ORCHARD WIFE', 'Pearl\u2019s cottage? Northwest, under the cliff. Follow the path past the fountain and keep the cliff on your right.'], ['ORCHARD WIFE', 'A hundred years since the last feast, and the statue still gets fresh flowers. That\u2019s Pearl. That\u2019s the whole story of Pearl.']])) });
+  const folkB = makeEnt(SPR.folkB, 21, 14, { ambient: { pause: [2000, 4200], roam: [19, 12, 24, 17] }, talk: async () => say(cyc(folkB, [['STONECUTTER', 'You\u2019ve the look of a man heading north. They all come back by the overlook, friend. The towers don\u2019t blink. They don\u2019t have to.'], ['STONECUTTER', 'If it\u2019s the overlook you want, it\u2019s the north edge, past the statue. Mind the balustrade — and mind what\u2019s past it.'], ['STONECUTTER', 'South road takes you to the fields, if the valley\u2019s all you came for. Somehow I doubt it.']])) });
+  const guard = makeEnt(SPR.guard, 18, 20, { ambient: { pause: [2400, 4800] }, talk: async () => say(cyc(guard, [['WATCHMAN', 'South gate\u2019s mine to watch, the north is nobody\u2019s. If it\u2019s Pearl you want, her cottage is northwest, under the cliff. She\u2019s expecting — no. She\u2019s always expecting.'], ['WATCHMAN', 'Northwest for Pearl, hero. Under the cliff. You\u2019ll smell the woodsmoke before you see the door.'], ['WATCHMAN', 'I watch the gate. The gate watches the road. The towers watch us all — that\u2019s the arrangement, like it or not.']])) });
   const hero = makeEnt(SPR.cornman, 15, 21, {});
   hero.dir = 'up';
   const doorLine = t => async () => say([['', t]]);
@@ -576,7 +747,7 @@ function buildVillage(){
 }
 
 function buildCottage(){
-  const pearl = makeEnt(SPR.pearlO, 3, 3, { name: 'OLD PEARL', talk: async () => { if (!G.told) theTelling(); } });
+  const pearl = makeEnt(SPR.pearlO, 3, 3, { name: 'OLD PEARL', ambient: { pause: [1600, 3400] }, talk: async () => { if (!G.told) theTelling(); } });
   const hero = makeEnt(SPR.cornman, 7, 10, {});
   hero.dir = 'up';
   return { set: 'cottage', rows: COTTAGE, player: hero,
