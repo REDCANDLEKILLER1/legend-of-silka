@@ -73,55 +73,10 @@
 <div class="layout">
   <div class="panel">
     <label>1. Paste palette + sprite code (any of our formats — JS or JSON, quoted or not):</label>
-    <textarea id="code-input" spellcheck="false" oninput="debouncedRender()">// Paste ANY palette + sprite matrix block here — it renders as you paste!
-const STORM_WIZARD_PALETTE = {
-  K: '#09080F',
-  R: '#FF2A3C',
-  W: '#FFFFFF',
-  E: '#E9D5FF',
-  V: '#9333EA',
-  d: '#181E2C',
-  S: '#2B354A',
-  L: '#4E5E80',
-  B: '#5C3D24',
-  H: '#F7C294',
-  M: '#613E85'
-};
-
-const STORM_WIZARD_FRAME_A = [
-  "............KK..........",
-  "...........KLLK.........",
-  "..W.K.E...KLLdLK........",
-  ".EV.B.VE.KLLdddLK.......",
-  "WEVKBKVEWKLdddddLK......",
-  ".VKVVVKV.KLLdddLLK......",
-  "...KBK..KLdKKKKKdLK.....",
-  "...KBK.KLLKKKKKKKLLK....",
-  "...KBK.KLdKKKKKKKdLK....",
-  "...KBK.KLSKRRKKRRKLK....",
-  "...KBK.KLdKKKKKKKdLK....",
-  ".KKKBKKKKLddKKKddLKKKK..",
-  "KLLSSSLLLddSVWVddSLLSLHK",
-  "KLSdKLLddVWEWddSSLLKdK..",
-  "KLd.KdSdVWEVddSSMdK.dK..",
-  "KK..KdVWEVdSSVWEVSK..K..",
-  "....KVWEVdSSVWEVddK.....",
-  "...B.KdVddSVWEVdddK.....",
-  "...B.KdSdVWEVdVdddK.....",
-  "...B.KdVWEVddSVWEdK.....",
-  "...B.KVWEdSSVWEVddK.....",
-  "...B.KdVddSVWEVdddK.....",
-  "...B.KdSdVWEVdSSddK.....",
-  "...B.KdVWEVddVWEVdK.....",
-  "...B.KVWEdSSVWEVddK.....",
-  "...B.KdVddSVWEVdddK.....",
-  "...B.KdSdVWEVdVdddK.....",
-  "...B.KdVWEVddSVWEdK......",
-  "...B.KdKdVddKdVWKdKd....",
-  "...B.Kd.KdKd.KdEVKdK....",
-  "...B.K..KdK...KVE.dK....",
-  "...K....KK.....WK..K...."
-];</textarea>
+    <textarea id="code-input" spellcheck="false" oninput="debouncedRender()">// Our real Storm Wizard (the v5 standard) — paste any sprite block over it and it renders as you type.
+const PAL = {"K": "#09080F", "R": "#FF2A3C", "W": "#FFFFFF", "E": "#E9D5FF", "V": "#9333EA", "v": "#581C87", "d": "#181E2C", "S": "#2B354A", "L": "#4E5E80", "B": "#5C3D24"};
+const A = ["............KK..........", "...........KLLK.........", "..W.K.E...KLLdLK........", ".EV.B.VE.KLLdddLK.......", "WEVKBKVEWKLdddddLK......", ".VKVVVKV.KLLdddLLK......", "...KBK..KLdKKKKKdLK.....", "...KBK.KLLKKKKKKKLLK....", "...KBK.KLdKKKKKKKdLK....", "...KBK.KLSKRRKKRRKLK....", "...KBK.KLdKKKKKKKdLK....", ".KKKBKKKKLddVEKddLKKKK..", "KLLSSSLLLddSVEdddSLLSLLK", "KLSdKLLddddddVESSLLKdK..", "KLd.KdSddddEVdSSSdK.dK..", "KK..KdddddEVSddSSSK..K..", "....KdddddSSVEddddK.....", "...B.KddddSSSVEdddK.....", "...B.KdSdddEVdddddK.....", "...B.KddddEVdSddddK.....", "...B.KddddSSVEddddK.....", "...B.KddddSSdVEdddK.....", "...B.KdSdddEVdSSddK.....", "...B.KdddddddVEdddK.....", "...B.KddddSEVdddddK.....", "...B.KddddEVddddddK.....", "...B.KdSdddSVEddddK.....", "...B.KddddddVEdddK......", "...B.KdKddddKVEdKdKd....", "...B.Kd.KdKEVKddKKdK....", "...B.K..KdK...KdK.dK....", "...K....KK.....dK..K...."];
+const B = ["............KK..........", "...........KLLK.........", "..E.K.W...KLLdLK........", ".VE.B.EV.KLLdddLK.......", "EVWKBKWVEKLdddddLK......", ".EKVVVKE.KLLdddLLK......", "...KBK..KLdKKKKKdLK.....", "...KBK.KLLKKKKKKKLLK....", "...KBK.KLdKKKKKKKdLK....", "...KBK.KLSKRRKKRRKLK....", "...KBK.KLdKKKKKKKdLK....", ".KKKBKKKKLddKVEddLKKKK..", "KLLSSSLLLddSdVEddSLLSLLK", "KLSdKLLddSSEVddddSSLLKdK", "KLd.KdSdSSdddVEddSSdK.dK", "KK..KdSSSSddddVEdSK..K..", "....KdSSSSddEVddddK.....", "...B.KdSSSdEVSddddK.....", "...B.KddddSddVEdddK.....", "...B.KdSddddddVEddK.....", "...B.KddddddEVddddK.....", "...B.KddddSEVdddddK.....", "...B.KddddSSdVEdddK.....", "...B.KdSdddEVdddddK.....", "...B.KdddddddVEdddK.....", "...B.KddddSSddVEddK.....", "...B.KddddSSEVddddK.....", "...B.KdSdddddVEdddK.....", "...B.KdKdddEVdddKdKd....", "...B.Kd.KdKd.VEdKKdK....", "...B.K..KdK...KdK.dK....", "...K....KK.....dK..K...."];</textarea>
     <div class="controls">
       <button class="primary" onclick="renderCode()">&#9654; Render Sprite</button>
       <button onclick="document.getElementById('code-input').value=''">Clear</button>
