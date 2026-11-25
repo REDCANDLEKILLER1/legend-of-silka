@@ -26,3 +26,11 @@ OPEN (Michael, same morning): CornMan's back view inside the act is still
 the old potted-plant back (the act was recorded with the owner-sheet
 generation). Next step is swapping the act's corn_up frames to the unified
 full-size back from Castle_TowerStairs_v4, same as the game builds.
+- 2026-11-25 (later): CornMan's back in the act unified — corn_up_0..3 +
+  corn_up_canon_0 replaced with the game's corrected back frames (the
+  owner-sheet generation's back was a potted plant; Michael flagged it).
+  Verified by screenshot at the fall beat: proper back, full size.
+- Inn lady walk: her side/down cycles are one standing pose repeated
+  (Michael flagged the glide). GPT package sent 2026-11-25 for true
+  4-frame right + down cycles (frame-strip acceptance test); left will
+  be the mirror. Pending return.
