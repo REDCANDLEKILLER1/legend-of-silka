@@ -84,3 +84,18 @@ regressions), entry through the real castle-door trigger and exit back to
 the village in the delivered file, and the castle selftest now reads
 74/74 (the old chest-test artifact is gone — the random teleport that used
 to trip it now opens a chooser instead of traveling mid-test).
+
+## v3 (2026-11-25) — the banners blocked the landing strip
+Castle_TowerStairs_v3_REMY.html (md5 5fdd34d6547d339dba5261038d9cba62)
+supersedes v2. Michael's report (07:12, two screenshots): one blocked spot
+on the second floor — he could not walk the landing strip past the hanging
+banners toward the flights. Measured: both banners' footprints were solid
+in the walk mask across the whole strip (gaps at x 545-651 west and
+x 801-903 east, every strip row), cutting the strip into three pieces; the
+only way around was dipping south off the strip. The banners hang on the
+balustrade face — the floor in front of them is ordinary floor. Fix:
+paint-only, +14,094 mask cells (x 545-651 and x 801-903, y 353-450).
+Verified in the build: strip walked end to end in both directions past
+both banners, carpet run strip-to-throne-floor-to-gallery, flight passages
+and tower choosers unchanged, selftest 74/74, entry/exit through the real
+castle door in the delivered file.
