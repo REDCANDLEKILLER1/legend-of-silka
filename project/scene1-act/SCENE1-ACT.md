@@ -34,3 +34,12 @@ full-size back from Castle_TowerStairs_v4, same as the game builds.
   (Michael flagged the glide). GPT package sent 2026-11-25 for true
   4-frame right + down cycles (frame-strip acceptance test); left will
   be the mirror. Pending return.
+- 2026-11-25 (later still): inn lady walk FIXED. GPT returned true
+  4-frame right + down cycles (contact/passing/contact/passing, shoes
+  alternating visibly beyond the hem). Remy fitted them to 32x48
+  (silhouette-mask extraction — GPT delivered on black with a glow, not
+  true transparency), mirrored right for left, installed all directions,
+  and gave the lady her own %4 cycle pick in the act script (the guard
+  keeps his 7-frame cycle). Verified in-scene at her east walk and at
+  the carry. Package + returns + fitted frames live in
+  black-castle-game/scene1-act-lady-walk/.
