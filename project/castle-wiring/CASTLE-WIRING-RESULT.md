@@ -64,3 +64,23 @@ The potted-plant back frames are replaced with the back row from Michael's
 approved v3 sprite pack (green silk hair, red cape). Michael's verdict:
 "I like the new back view — he did look like a potted plant for sure."
 The plant question is closed.
+
+## v2 (2026-11-24, later) — Michael's two playtest fixes
+Castle_TowerStairs_v2_REMY.html (md5 0374d1297b3faa1d1c023d29e6688c2e)
+supersedes the BackFix build. Michael, playing the BackFix build, reported:
+1. "On the second floor you can't walk past this ribbon or banner" at BOTH
+   flight tops. Measured: the passage through the balustrade line at each
+   flight top was a 26px slot in feet terms — passable in tests, a wall on
+   a phone drag. Widened both passages (paint-only, +1,608 mask cells) to
+   a 49px channel centered on each flight.
+2. Tower entrances teleported with no choice. Now every NW/NE tower
+   entrance (ground and upper floors) opens a chooser with named
+   destinations: "Up to NW/NE Tower · Floor I", "Up to the Throne Room",
+   "Down to the Ground Floor". The tower spirals' upper-floor option is
+   relabeled "Down to the Throne Room" to match.
+Verified: full walk suite in the real build (all passages at three offsets
+each, all four entrance choosers, tower loop, dungeon/kitchen/main-door
+regressions), entry through the real castle-door trigger and exit back to
+the village in the delivered file, and the castle selftest now reads
+74/74 (the old chest-test artifact is gone — the random teleport that used
+to trip it now opens a chooser instead of traveling mid-test).
