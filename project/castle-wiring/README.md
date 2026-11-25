@@ -5,8 +5,10 @@ build is Castle_NewMaps_REMY.html in this folder; the save point and plates
 below are the record it was built from. Grok does not need to wire anything.
 
 UPDATE, same evening: the circulation wiring is also done — see
-CASTLE-WIRING-RESULT.md. Current build: Castle_TowerStairs_REMY.html
-(grand stairs balcony-only; floors connect only through the tower stairs).
+CASTLE-WIRING-RESULT.md. Current build: Castle_TowerStairs_BackFix_REMY.html — tower wiring +
+CornMan back-view fix + castle entry repaired (see the correction at the
+end of CASTLE-WIRING-RESULT.md). Castle_TowerStairs_REMY.html is
+superseded: its castle door does not open (embed encoding flaw).
 
 ---
 

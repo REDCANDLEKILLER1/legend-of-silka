@@ -43,3 +43,24 @@ fixes the wiring to the design.
 Castle_TowerStairs_REMY.html (this folder), md5 fa94ec9ab728a621b29069c10dfdf046.
 Village side byte-identical to the swap build outside the castle. Live
 Pages root untouched — goes live only on Michael's say-so.
+
+## Correction (later that evening) — castle entry was broken, now fixed
+The Castle_TowerStairs build above had a flaw Remy introduced at the embed
+step: the castle document was packed into the village build with a plain
+JSON string, which left literal "</script>" sequences inside it. The
+browser cut the castle-door wiring script at the first one, so the door
+never opened — you could not enter the castle at all in that build (nor in
+the first back-fix copy, which inherited it). The original pipeline escaped
+those sequences ("<\/script>"); the fix re-embeds the same castle document
+with that escaping restored. Nothing else changed.
+Current build: Castle_TowerStairs_BackFix_REMY.html (md5
+6493c2c5f3d2048e48b83e9fbc613190) — new maps + tower wiring + CornMan's
+back view fixed (below) + working entry. Verified in the real file: entered
+through the actual castle-door trigger, walked the hall, exited back to
+the village.
+
+## CornMan's back view (Michael approved 2026-11-24)
+The potted-plant back frames are replaced with the back row from Michael's
+approved v3 sprite pack (green silk hair, red cape). Michael's verdict:
+"I like the new back view — he did look like a potted plant for sure."
+The plant question is closed.
