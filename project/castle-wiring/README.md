@@ -4,6 +4,10 @@ Michael's call, 2026-11-24 evening: Remy did the swap himself. The finished
 build is Castle_NewMaps_REMY.html in this folder; the save point and plates
 below are the record it was built from. Grok does not need to wire anything.
 
+UPDATE, same evening: the circulation wiring is also done — see
+CASTLE-WIRING-RESULT.md. Current build: Castle_TowerStairs_REMY.html
+(grand stairs balcony-only; floors connect only through the tower stairs).
+
 ---
 
 # Castle wiring — for Grok (superseded)
