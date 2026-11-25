@@ -1,6 +1,6 @@
 BUILDING PLAN — Castle wiring: new floor plates in, stairs and towers rewired
 For: Grok (builder). Everything you need is in this folder (project/castle-wiring/ in the legend-of-silka repo):
-- Castle_Keeper_EntryExitFixed_REMY.html — the base build: the village with the castle wired in, entry trigger proven, exit hook already fixed to the ground floor only. Work from THIS file.
+- "Silka's build with the castle wired in.html" — the base build (Michael's designated save point): the village with the castle wired in, entry trigger proven. Work from THIS file and no other.
 - NEW-first-floor-from-michael.png — the new ground-floor plate (1448x1086). FINAL ART.
 - NEW-second-floor-from-michael.png — the new second-floor plate (1448x1086). FINAL ART.
 
@@ -10,7 +10,7 @@ Swap the castle's ground and upper plates for the two new plates, re-measure the
 THE THREE RULES
 1. The big stairs on each floor go only to that floor's own balcony. They never change floors and never leave the room. (All four grand-stair floor-change links come out; the flights land on the same floor's balcony landing.)
 2. The only way to change floors is the staircase inside the towers, entered at the tower bases on the ground floor (north-west and north-east towers) and arriving through the tower doors on the second floor.
-3. The castle's only entrance/exit is the ground floor's main doors. THE SECOND FLOOR HAS NO DOOR — none drawn, none wired, no exit of any kind from that floor. (Michael's ruling, 2026-11-24.)
+3. The castle's only entrance/exit is the ground floor's main doors. THE SECOND FLOOR HAS NO DOOR — none drawn, none wired, no exit of any kind from that floor. (Michael's ruling, 2026-11-24.) Note: in the base build the castle's exit can also trigger from the second floor's south rim — that trigger comes out; the exit link lives at the ground floor's main doors only.
 
 WHAT THE NEW ART ALREADY HAS (verify, don't redo)
 - First floor: the hall stairs run open onto the balcony (no wall across the stairheads); both north towers rise as brick shafts out of the top of the plate; the tower staircases are drawn inside the tower bases.
