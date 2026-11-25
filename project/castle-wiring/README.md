@@ -5,9 +5,9 @@ build is Castle_NewMaps_REMY.html in this folder; the save point and plates
 below are the record it was built from. Grok does not need to wire anything.
 
 UPDATE, same evening: the circulation wiring is also done — see
-CASTLE-WIRING-RESULT.md. Current build: Castle_TowerStairs_v3_REMY.html — v2 plus the landing-strip
-banner fix (strip walkable past both banners; see CASTLE-WIRING-RESULT.md).
-Earlier TowerStairs builds are superseded.
+CASTLE-WIRING-RESULT.md. Current build: Castle_TowerStairs_v4_REMY.html — v3 plus the unified
+CornMan sprite set (one full-size back view in both games; see
+CASTLE-WIRING-RESULT.md). Earlier TowerStairs builds are superseded.
 
 ---
 

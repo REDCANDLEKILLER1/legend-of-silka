@@ -99,3 +99,20 @@ Verified in the build: strip walked end to end in both directions past
 both banners, carpet run strip-to-throne-floor-to-gallery, flight passages
 and tower choosers unchanged, selftest 74/74, entry/exit through the real
 castle door in the delivered file.
+
+## v4 (2026-11-25) — one CornMan everywhere
+Castle_TowerStairs_v4_REMY.html (md5 ac9a23e3687f5c2188c17de6b69123f3)
+supersedes v3. Michael's report (07:29): CornMan's sprite differed inside
+vs outside — the castle back view (v3-pack row fitted in BackFix) measured
+22x39 with feet at y=41 against a 46-tall body with feet at 46 everywhere
+else, so he shrank and floated walking north; and the village's own back
+view was still the old potted-plant (28x46). Fix: the approved back-view
+art rescaled to the body's exact footprint (content 46 tall, feet at 46,
+NEAREST resample of the alpha-cropped art), installed as corn_up +
+corn_up_idle in BOTH sprite sets, and the castle's corn_down synced to
+the village's frames. Verified byte-for-byte in the shipped file: every
+shared CornMan key (corn_up, corn_down, corn_side, corn_side_left,
+corn_front, corn_up_idle) is now identical between the village SRC and
+the castle SRC. In-game screenshots confirm the same full-size back view
+outside the cottage and inside the castle hall; selftest 74/74; entry,
+passage climb, and exit re-verified in the delivered file.
