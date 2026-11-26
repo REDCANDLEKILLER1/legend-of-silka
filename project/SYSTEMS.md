@@ -45,6 +45,14 @@ overworld, heart-style growth, and the item-get moment.
 - **Pause and save:** the player may pause anywhere and save.
   Two doors to safety: the story's milestones, and the player's
   own hand.
+- **Sleeping in a bed saves** (Michael's addition, 2026-11-26):
+  a bed is the in-world save. His own bed at the cottage, a bed
+  at Winnie's inn, a bed in any friendly house — sleeping saves
+  the game **and restores hearts and magic in full**. The split
+  that keeps every door honest: pause-save saves progress only;
+  a bed saves *and* restores, so rest stays a place you travel
+  to, not a menu you open. The bed was already this story's
+  hinge — the dream leaves him in one, and he wakes in his own.
 
 ## Magic
 
