@@ -253,23 +253,34 @@ the Corn Emerald, for King Cob, and for Princess Silka.
 - **The Storm Wizard** — faceless pointed hood, red eyes, purple
   fire. Gathering the Emeralds for the Evil King.
 - **The Evil King** — the power behind the Wizard. Offstage so far.
-- **The Inn Lady** — keeps the village inn. In the dream she takes
-  CornMan in; in the real village she is the heart of it.
+- **Winnie, the Inn Lady** — keeps the village inn. In the dream
+  she takes CornMan in; in the real village she is the heart of it.
 - **The Soldier** — village guard. First to reach the fall, in the
   dream and in truth.
-- **The villagers** — the village cast. Regular parts now; the
-  firefighting is theirs when the fire night comes.
-- **The Astrologer** — the castle tower's sky-watcher. Reads the
-  stars, not spells.
-- **The Priest** — keeper of the temple. Unwritten so far.
+- **Rowe, Bucket Man** — villager; first link of the bucket chain.
+- **Amber, Bucket Woman** — villager; second link of the bucket
+  chain. "We have to take him in!"
+- **Brand, the Smith** — the village smith.
+- **Silas, the Elder** — village elder; the panic's voice.
+- **Vesper, the Astrologer** — the castle tower's sky-watcher.
+  Reads the stars, not spells.
+- **Father Corin, the Priest** — keeper of the temple. Unwritten
+  so far.
 - **The garrison** — the castle's soldiers, one face many times.
   Their watch is the dungeon.
 - **The Wizard in the pit** — see Scene 4. If the Storm Wizard and
   the prisoner are one and the same: OPEN, and the Night answers it.
-- **The Child** — the village child (shelf 26), CornMan's smallest
-  soldier. His salute and his questions open the Day (Scene 3).
+- **Nib, the Child** — the village child (shelf 26), CornMan's
+  smallest soldier. His salute and his questions open the Day
+  (Scene 3).
 
-Names for the inn lady, the soldier, and the villagers: not set yet.
+> The names Winnie, Rowe, Amber, Brand, Silas, Vesper, Father
+> Corin, and Nib were given by Remy on 2026-11-25, at Michael's
+> direction that the characters have names instead of job labels.
+> They are Michael's to change — a rename updates this list, the
+> shelf, and the Telegram gallery captions together. The whole cast
+> is posted, labeled by name, in the 🧍 Sprites topic of THE LEGEND
+> OF SILKA Telegram group.
 
 ---
 
