@@ -75,7 +75,7 @@ CornMan sits up.
 > castle bed chamber. Both are gone — he wakes at home, and he is
 > late for the palace.
 
-### Scene 3 — Good Morning, Colonel Corn
+### Scene 3 — Good Morning, Kernal Corn
 
 *An act inside the play. CornMan bursts out of his house on his own
 (the exit plays itself), and the player walks him south down the
@@ -89,10 +89,10 @@ CornMan there and cannot move him until the talk is done.*
 
 The Child snaps to attention and salutes, like a little soldier.
 
-- CHILD: "Good morning, Colonel Corn!"
+- CHILD: "Good morning, Kernal Corn!"
 - CHILD: "I want to be like you one day!"
 - CHILD: "Tell me the story again — how you captured the Wizard,
-  Colonel Corn!"
+  Kernal Corn!"
 
 CornMan is kind — and in a hurry. He is late, and he is supposed to
 be at the palace right now.
@@ -115,7 +115,7 @@ palace door.*
 
 ### Scene 4 — The Day
 
-*Colonel Corn's normal day — the last one. He is King Cob's Kernel,
+*Kernal Corn's normal day — the last one. He is King Cob's Kernal,
 and tomorrow is the festival. The player walks the castle and the
 village, meets everyone in their regular parts, and learns who
 CornMan is by living his day: who he is to the King, to the guards,
@@ -161,7 +161,7 @@ And it was **CornMan himself who captured him** — the kingdom's
 favorite story, the one every child wants told again. That is why
 the watch is his:
 
-**Colonel Corn's primary job is to make sure the Wizard never
+**Kernal Corn's primary job is to make sure the Wizard never
 escapes.**
 
 In the beginning we never see him. No face, no voice — just the pit,
@@ -243,7 +243,7 @@ the Corn Emerald, for King Cob, and for Princess Silka.
 
 ## The cast
 
-- **CornMan** — the hero. King Cob's Kernel ("Colonel Corn"). His
+- **CornMan** — the hero. King Cob's Kernal ("Kernal Corn"). His
   weapon is a wrench. The C on his chest is his emblem — he carries
   no shield.
 - **King Cob** — King of the corn kingdom. Kidnapped in Part One.
@@ -275,6 +275,9 @@ Names for the inn lady, the soldier, and the villagers: not set yet.
 
 ## Standing facts (canon — do not contradict)
 
+- **His rank is spelled KERNAL** — K-E-R-N-A-L. Kernal Corn, King
+  Cob's Kernal. In every line, every file, always. (Michael's
+  spelling, set 2026-11-25. Not "Colonel," not "Kernel.")
 - **There are no humans in this world. Everybody is corn folk** —
   every face in the game is a corn face, from the King to the
   smallest child. (Michael's ruling, 2026-11-25. It reversed an art
