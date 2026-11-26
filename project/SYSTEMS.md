@@ -59,10 +59,16 @@ overworld, heart-style growth, and the item-get moment.
 
 ## Magic
 
-- A MAGIC meter sits under the hearts, golden — gold is the
+- A MAGIC **bar** sits under the hearts, golden — gold is the
   kingdom's magic color, the same gold as the pit chains' glow.
   Starts at 4 blocks; **Magic Containers** found in the world
   raise it to 8 (Zelda II's measure, kept for magic only).
+- **The fusion, drawn** (Michael's screenshots, 2026-11-26): the
+  BAR is Zelda II's — magic gets the bar. The HEARTS are Zelda
+  I's — life gets the hearts. Two different games, one HUD. The
+  bar carries Zelda II's HUD language with it: the track levels
+  shown beside their meters, and **NEXT** — the experience still
+  needed for the next level-up — counted at the top.
 - Every spell costs magic; the MAGIC level lowers the cost.
 - Restoration is **people, split in two** (Zelda II's town law):
   Winnie restores LIFE at the inn; Father Corin restores MAGIC at
