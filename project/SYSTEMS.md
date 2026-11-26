@@ -19,7 +19,10 @@ overworld, heart-style growth, and the item-get moment.
 ## Health — hearts (Michael's ruling, 2026-11-26)
 
 - The HUD carries **hearts**, Zelda I style — not Zelda II's
-  blocks. CornMan starts with **3 Heart Containers**.
+  blocks. CornMan starts with **3 Heart Containers**. The hearts
+  are drawn in **#00FF00** (Michael's ruling, 2026-11-26) — the
+  house green on black, against the magic meter's gold: green is
+  his life, gold is the kingdom's magic.
 - His maximum grows two ways, both found, never bought:
   **Pieces of Heart** (four pieces make a container) hidden
   through the world, and **whole Heart Containers** resting in
@@ -126,9 +129,8 @@ level.
   found treasure (the rings' heir) that halves damage forever once
   he earns it? Spell costs magic every area; a treasure is a
   coronation. The research supports both; the feel differs.
-- The hearts' drawing: classic red hearts, or hearts drawn as
-  golden kernels? (The meter being hearts is settled — Michael's
-  ruling. Only the drawing is open.)
+- ~~The hearts' drawing~~ — SETTLED 2026-11-26: the hearts are
+  **#00FF00** green (Michael's ruling).
 - THUNDER's teacher, and whether FAIRY/SPELL get Silka forms.
 - DOWN SLAM / UP THRUST teachers.
 - Spell order across the Parts (which spells Part One teaches:
