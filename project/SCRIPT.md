@@ -78,6 +78,54 @@ inn lady at her inn, the soldier at his post, the townspeople at
 their work. Regular parts only. Nothing burns yet. The player has
 seen these faces before — in the dream — and that is the point.
 
+#### The castle, filled
+
+The castle is a palace — people live here, and the Day is when the
+player learns the place by walking it.
+
+- **The garrison.** Soldiers fill the castle — posts at the doors,
+  the towers, the stairs. They all look the same; that's fine, that's
+  what a garrison is. Their real purpose is the dungeon (below).
+- **The King.** King Cob holds his throne. He has a bed chamber of
+  his own among the bedrooms — we may never need to show him in it;
+  the throne is where the kingdom sees him, and the throne room is
+  where the Night takes him.
+- **The three other houses.** The palace's other residences have
+  people in them — we have to decide who lives in each. OPEN.
+- **The Priest.** The temple has a priest. Who he is: OPEN.
+- **The Astrologer.** At the top of the tower lives the sky-watcher
+  — not a wizard: an astrologer, a man who reads the sky. If anyone
+  in the castle could have seen the storm coming, it's him.
+
+#### The dungeon — the Wizard in the pit
+
+Under the castle is the dungeon, and in the dungeon is the pit, and
+in the pit is **the Wizard** — held there a long time. Everybody in
+the castle knows he's down there. The garrison exists to keep him
+there.
+
+**Colonel Corn's primary job is to make sure the Wizard never
+escapes.**
+
+In the beginning we never see him. No face, no voice — just the pit,
+the guards, and the knowledge. The player walks the Day knowing
+something is locked under the castle.
+
+> Working direction (Michael, 2026-11-25) — to be confirmed as it
+> builds. It gives the Night its engine: the BOOM writes its own
+> question — did he get out, or did something come to get him out?
+
+#### The hidden tunnel
+
+Somewhere in the Day's exploring there is a hidden tunnel, and in
+it a small scene: CornMan finds something down there — a weapon, a
+tool, a keepsake — that he takes with him and carries into the rest
+of the game. There may be a boss on it. MAYBE.
+
+> OPEN: what he finds. Canon note: CornMan's weapon is the wrench —
+> the find is either the wrench itself (its origin) or something he
+> carries alongside it.
+
 > Status: the castle and village maps are built and playable; the
 > day's errands and meetings are to be written here as we build them.
 
@@ -154,6 +202,13 @@ the Corn Emerald, for King Cob, and for Princess Silka.
   dream and in truth.
 - **The villagers** — the village cast. Regular parts now; the
   firefighting is theirs when the fire night comes.
+- **The Astrologer** — the castle tower's sky-watcher. Reads the
+  stars, not spells.
+- **The Priest** — keeper of the temple. Unwritten so far.
+- **The garrison** — the castle's soldiers, one face many times.
+  Their watch is the dungeon.
+- **The Wizard in the pit** — see Scene 3. If the Storm Wizard and
+  the prisoner are one and the same: OPEN, and the Night answers it.
 
 Names for the inn lady, the soldier, and the villagers: not set yet.
 
@@ -177,5 +232,12 @@ Names for the inn lady, the soldier, and the villagers: not set yet.
 
 - The Wizard's demand line — DRAFT, awaiting Michael's approval.
 - Cast names (inn lady, soldier, villagers) — not set.
+- Who lives in the palace's three other houses — OPEN.
+- The Priest — who he is. OPEN.
+- The dungeon Wizard: working direction, to be confirmed as it
+  builds. Is he the Storm Wizard? OPEN.
+- The hidden tunnel's find — what CornMan carries away. OPEN
+  (canon: his weapon is the wrench).
+- A boss on the Day / the tunnel — MAYBE.
 - The Day's errands and meetings (Scene 3) — to be written as built.
 - Princess Silka's scenes — to be written.
