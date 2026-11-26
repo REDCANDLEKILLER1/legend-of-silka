@@ -1,9 +1,12 @@
 # THE LEGEND OF SILKA — Systems: Health, Magic, Growth
 
-Status: PROPOSAL — Remy's draft, 2026-11-26, at Michael's direction
-("build the health and magic... everything Zelda II has, fused
-with Zelda I"). Michael's to approve, cut, or rename. Nothing here
-is canon until he says so. Story lives in SCRIPT.md; this doc is
+Status: PROPOSAL with rulings applied — Remy's draft, 2026-11-26,
+at Michael's direction ("build the health and magic... everything
+Zelda II has, fused with Zelda I"). Michael's rulings of
+2026-11-26 are IN and marked: **hearts, not blocks; no lives;
+3 hearts to start; pieces and whole containers; saving by
+milestone save points and by pausing.** The rest is Michael's to
+approve, cut, or rename. Story lives in SCRIPT.md; this doc is
 the machine under it.
 
 ## The fusion, in one line
@@ -13,34 +16,42 @@ people, experience that levels three tracks, side-view combat with
 a high/low guard — carried on Zelda I's bones: the top-down
 overworld, heart-style growth, and the item-get moment.
 
-## Health
+## Health — hearts (Michael's ruling, 2026-11-26)
 
-- The HUD carries a LIFE meter of blocks (Zelda II style), red.
-  CornMan starts with 4 blocks.
-- **Life Vessels** raise the maximum, one block each, to 8 — found
-  in palaces, given for quests, hidden in the world (the Zelda I
-  heart-container beat, in Zelda II's meter).
+- The HUD carries **hearts**, Zelda I style — not Zelda II's
+  blocks. CornMan starts with **3 Heart Containers**.
+- His maximum grows two ways, both found, never bought:
+  **Pieces of Heart** (four pieces make a container) hidden
+  through the world, and **whole Heart Containers** resting in
+  special places — the heart of a palace, the end of a great deed.
 - Damage is a **table, not a formula** (Zelda II's true design,
   verified in RESEARCH-ZELDA-HEALTH.md): every enemy carries a
-  damage class, and a hit reads class × his LIFE level off an 8×8
-  table. The weakest class falls from a full block at LIFE 1 to a
-  quarter-block at LIFE 8; the top class takes 255 at *every*
-  level — the instant-death class. **The Wizard's purple fire is
-  that class.** It never gets cheaper, at any level, ever.
-- **Lives:** he starts with 3. Falling spends one and wakes him at
-  the last door he entered (side view) or the village edge
-  (overworld). Losing the last life is a game over: he wakes at the
-  Corn Palace, keeping every level, spell, and item — the world
-  does not take his growth back — **but every unspent experience
-  point is lost** (Zelda II's one sting, and what makes banking
-  points a gamble). Little CornMan dolls hidden in the world each
-  add a life (Zelda II's Link dolls, ours).
+  damage class, and a hit reads class × his LIFE level off a
+  table, paid in fractions of a heart. The weakest class falls
+  from a full heart at LIFE 1 to a quarter-heart at LIFE 8; the
+  top class is the instant-death class at *every* level. **The
+  Wizard's purple fire is that class.** It never gets cheaper, at
+  any level, ever.
+- **No lives.** There is no life counter, no dolls, no game-over
+  march back to the palace. Death is handled by the save system
+  below: he wakes at his last save, whole — what he earned since
+  that save is lost with the time, and that loss is the sting.
+
+## Saving (Michael's ruling, 2026-11-26)
+
+- **Milestone save points:** after each milestone — a scene
+  turned, a quest finished, the wrench earned, an Emerald made
+  safe — the game sets a save point. Fall, and he wakes there.
+- **Pause and save:** the player may pause anywhere and save.
+  Two doors to safety: the story's milestones, and the player's
+  own hand.
 
 ## Magic
 
-- A MAGIC meter sits under LIFE, golden — gold is the kingdom's
-  magic color, the same gold as the pit chains' glow. Starts at 4
-  blocks; **Magic Vessels** raise it to 8, same as life.
+- A MAGIC meter sits under the hearts, golden — gold is the
+  kingdom's magic color, the same gold as the pit chains' glow.
+  Starts at 4 blocks; **Magic Containers** found in the world
+  raise it to 8 (Zelda II's measure, kept for magic only).
 - Every spell costs magic; the MAGIC level lowers the cost.
 - Restoration is **people, split in two** (Zelda II's town law):
   Winnie restores LIFE at the inn; Father Corin restores MAGIC at
@@ -54,7 +65,7 @@ knows:
 
 | Spell | What it does | Teacher |
 |---|---|---|
-| MEND | Restores exactly 3 blocks of life — healing is rationed, never a full heal (Zelda II's LIFE) | Winnie, at the inn |
+| MEND | Restores exactly 3 hearts — healing is rationed, never a full heal (Zelda II's LIFE) | Winnie, at the inn |
 | HUSK | A golden husk of light; halves all damage until it breaks | Father Corin, at the temple |
 | EMBER | Golden fire from the wrench's head (Zelda II's FIRE) | Brand, at the forge |
 | LEAP | A jump twice his height, for side-view heights (Zelda II's JUMP) | Vesper, at the tower |
@@ -107,8 +118,9 @@ level.
   found treasure (the rings' heir) that halves damage forever once
   he earns it? Spell costs magic every area; a treasure is a
   coronation. The research supports both; the feel differs.
-- The meter read: blocks (Zelda II) as drafted, or hearts (Zelda
-  I) drawn as kernels?
+- The hearts' drawing: classic red hearts, or hearts drawn as
+  golden kernels? (The meter being hearts is settled — Michael's
+  ruling. Only the drawing is open.)
 - THUNDER's teacher, and whether FAIRY/SPELL get Silka forms.
 - DOWN SLAM / UP THRUST teachers.
 - Spell order across the Parts (which spells Part One teaches:

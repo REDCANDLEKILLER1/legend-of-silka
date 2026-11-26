@@ -107,3 +107,11 @@ a boss-killer's luxury at level 1 becomes a habit at level 8.
 7. HUSK (our Shield) halves table damage for one area; Zelda I's
    rings stand as the alternative — a found treasure that halves
    forever. Michael's pick, flagged in SYSTEMS.md.
+
+> **Superseded in part by Michael's ruling, 2026-11-26:** Silka
+> has **no lives and no blocks** — hearts only, 3 containers to
+> start, growth by Pieces of Heart and whole containers in special
+> places, and saving by milestone save points plus pause-and-save.
+> Item 6's game-over sting therefore does not carry into Silka;
+> death returns him to his last save. The Zelda facts above stand
+> as researched; SYSTEMS.md carries the game as ruled.
