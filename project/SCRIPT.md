@@ -48,24 +48,72 @@ soldier find him where he landed.*
 
 ### Scene 2 — The Wake
 
-*Black. Then CornMan sits up in his own bed, in his room at the
-castle. Unhurt. Home.*
+*The dream's last image is CornMan in the inn's bed. The wake opens
+on the same bed, in the same framing — but it is his own bed, in his
+own house (the west cottage by the mill). A match-cut on the bed:
+same bed, new room, morning.*
+
+CornMan sits up.
 
 - CORNMAN: "That was a terrible dream."
 
-*He looks around his room.*
+*He looks around his own room.*
 
 - CORNMAN: "I'm home."
 
-> Status: Michael's lines, set 2026-11-25. The scene to build next:
-> a short staged wake in the castle bed chamber, then control hands
-> to the player right there in the room.
->
-> Superseded: the old Scene 1 plan had him waking at midnight in the
-> inn room. That wake is gone — the inn is where the *dream* leaves
-> him; the real waking is at home.
+*Then he sees the light — and remembers what morning it is.*
 
-### Scene 3 — The Day
+- CORNMAN: "Oh no — I'm late!"
+
+> Status: Michael's lines and staging, set 2026-11-25. Production
+> note (Michael's): use the same bed as the dream's last image,
+> laid over the wake scene, so the two beds are one bed on screen
+> and the cut is smooth.
+>
+> Superseded: the old Scene 1 plan had him waking at midnight in
+> the inn room, and an earlier draft of this script woke him in a
+> castle bed chamber. Both are gone — he wakes at home, and he is
+> late for the palace.
+
+### Scene 3 — Good Morning, Colonel Corn
+
+*An act inside the play. CornMan bursts out of his house on his own
+(the exit plays itself), and the player walks him south down the
+sidewalk, past the fountain, north toward the palace door. The
+whole village is awake, and everybody loves him — good mornings and
+waves the whole way. He can stop and talk to anyone he wants.*
+
+*Almost at the palace door, the Child runs up and stops him. From
+here the scene plays itself: control locks — the player holds
+CornMan there and cannot move him until the talk is done.*
+
+The Child snaps to attention and salutes, like a little soldier.
+
+- CHILD: "Good morning, Colonel Corn!"
+- CHILD: "I want to be like you one day!"
+- CHILD: "Tell me the story again — how you captured the Wizard,
+  Colonel Corn!"
+
+CornMan is kind — and in a hurry. He is late, and he is supposed to
+be at the palace right now.
+
+- CORNMAN: "I can't talk right now, son — I'm late."
+- CHILD: "Then at least tell me about the golden chains — and how
+  they'll never break in a million billion years!"
+- CORNMAN: "I'll talk to you soon."
+
+*He shoos him gently — never unkind — and the Child steps out of
+the way. Control returns to the player, and CornMan goes in the
+palace door.*
+
+> Michael's scene, set 2026-11-25 (dialogue drafted from his words,
+> his to approve). Its job: in the first minutes of play, the player
+> learns the whole backstory from a child's mouth — CornMan himself
+> captured the Wizard, and the Wizard is held in the pit by golden
+> chains of magic that will never break. The child says "never" the
+> way children do. The Night will test it.
+
+### Scene 4 — The Day
 
 *Colonel Corn's normal day — the last one. He is King Cob's Kernel,
 and tomorrow is the festival. The player walks the castle and the
@@ -104,6 +152,15 @@ in the pit is **the Wizard** — held there a long time. Everybody in
 the castle knows he's down there. The garrison exists to keep him
 there.
 
+He is not held by iron. He is held by **magic**: golden chains,
+beautiful as jewelry, glowing softly with the spell on them —
+chains that will never break in a million billion years. (The
+Child's words, Scene 3. The whole kingdom believes them.)
+
+And it was **CornMan himself who captured him** — the kingdom's
+favorite story, the one every child wants told again. That is why
+the watch is his:
+
 **Colonel Corn's primary job is to make sure the Wizard never
 escapes.**
 
@@ -129,7 +186,7 @@ of the game. There may be a boss on it. MAYBE.
 > Status: the castle and village maps are built and playable; the
 > day's errands and meetings are to be written here as we build them.
 
-### Scene 4 — The Night It Starts
+### Scene 5 — The Night It Starts
 
 *Midnight. A calm night — water moving, lamps flickering. Then a
 large BOOM, and screams. The village is burning.*
@@ -157,14 +214,14 @@ to the King, takes him, and they warp out.
 
 ## PART TWO — THE DREAM COMES TRUE
 
-### Scene 5 — The Fall, For Real
+### Scene 6 — The Fall, For Real
 
 Part Two opens exactly where the dream opened: the storm, the
 village, CornMan falling out of the sky. The player has watched this
 once. This time it is real, and this time he lands on his feet in a
 village under attack — and the game hands him the controls.
 
-### Scene 6 — The Village, For Real
+### Scene 7 — The Village, For Real
 
 The cast he dreamed is here, in their regular parts — the inn lady,
 the soldier, the townspeople — except now their home is burning, and
@@ -207,8 +264,10 @@ the Corn Emerald, for King Cob, and for Princess Silka.
 - **The Priest** — keeper of the temple. Unwritten so far.
 - **The garrison** — the castle's soldiers, one face many times.
   Their watch is the dungeon.
-- **The Wizard in the pit** — see Scene 3. If the Storm Wizard and
+- **The Wizard in the pit** — see Scene 4. If the Storm Wizard and
   the prisoner are one and the same: OPEN, and the Night answers it.
+- **The Child** — the village child (shelf 26), CornMan's smallest
+  soldier. His salute and his questions open the Day (Scene 3).
 
 Names for the inn lady, the soldier, and the villagers: not set yet.
 
@@ -216,16 +275,27 @@ Names for the inn lady, the soldier, and the villagers: not set yet.
 
 ## Standing facts (canon — do not contradict)
 
+- **There are no humans in this world. Everybody is corn folk** —
+  every face in the game is a corn face, from the King to the
+  smallest child. (Michael's ruling, 2026-11-25. It reversed an art
+  direction the same night: the human-faced Astrologer board was
+  superseded by his corn-faced one — "the guy with the purple robe
+  is beautiful.")
 - Every king and every place holds an **Emerald**. The Storm Wizard
   gathers them for the **Evil King**. If he gets them all, they rule.
 - The Wizard's fire is **purple**.
+- The Wizard in the pit is held by **golden chains of magic** —
+  golden like jewelry, glowing with the spell. Not iron. They will
+  never break in a million billion years.
+- **CornMan captured the Wizard himself.** It is the kingdom's
+  favorite story.
 - CornMan's house is the west cottage by the mill, in the village.
-  His room at the castle is where Part One's waking happens.
+  Part One's waking happens there — he is late for the palace.
 - The castle: grand stairs reach only their own floor's balcony;
   floors connect only through the tower staircases; the castle exit
   is the ground-floor main doors only. There is no door out of the
   second floor.
-- The dream (Scene 1) and the fall (Scene 5) are the same event,
+- The dream (Scene 1) and the fall (Scene 6) are the same event,
   seen twice — once dreamed, once real.
 
 ## Open and draft
